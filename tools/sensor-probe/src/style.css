@@ -1,0 +1,160 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  padding: 12px 16px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: #9b59b6;
+}
+
+h2 {
+  font-size: 14px;
+  color: #8e44ad;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+header {
+  margin-bottom: 12px;
+}
+
+#env-info {
+  font-size: 11px;
+  color: #888;
+  word-break: break-all;
+}
+
+#status-bar {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.panel {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+button {
+  background: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+button:hover {
+  background: #3c3c3c;
+}
+
+button:active {
+  background: #9b59b6;
+}
+
+#btn-begin {
+  background: #9b59b6;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 32px;
+  border: none;
+  border-radius: 6px;
+}
+
+#btn-begin:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#controls {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#record-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+#record-controls input {
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  width: 140px;
+}
+
+select {
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.hud-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-size: 12px;
+}
+
+.hud-grid .label {
+  color: #888;
+}
+
+.hud-grid .value {
+  color: #2ecc71;
+  font-variant-numeric: tabular-nums;
+}
+
+.recording {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
+}
+
+#cam-canvas {
+  border: 1px solid #333;
+  margin-top: 6px;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
+
+#mic-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+  align-items: center;
+}

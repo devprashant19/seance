@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Séance Sensor Probe</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header id="header">
+      <h1>SÉANCE PROBE</h1>
+      <div id="env-info"></div>
+      <div id="status-bar"></div>
+    </header>
+
+    <section id="controls">
+      <button id="btn-begin" type="button">Begin</button>
+      <span id="wake-lock-status"></span>
+    </section>
+
+    <section id="panel-motion" class="panel" hidden>
+      <h2>Motion</h2>
+      <div id="motion-hud"></div>
+      <div id="record-controls">
+        <button type="button" data-duration="10">Rec 10s</button>
+        <button type="button" data-duration="30">Rec 30s</button>
+        <button type="button" data-duration="60">Rec 60s</button>
+        <label>Label: <input id="trace-label" type="text" placeholder="e.g. iPhone 15 Pro" /></label>
+      </div>
+      <div id="record-status"></div>
+    </section>
+
+    <section id="panel-orientation" class="panel" hidden>
+      <h2>Orientation</h2>
+      <div id="orientation-hud"></div>
+    </section>
+
+    <section id="panel-mic" class="panel">
+      <h2>Microphone</h2>
+      <button id="btn-mic" type="button">Start Mic</button>
+      <div id="mic-controls" hidden>
+        <label>fftSize:
+          <select id="fft-size">
+            <option value="2048">2048</option>
+            <option value="8192">8192</option>
+            <option value="32768" selected>32768</option>
+          </select>
+        </label>
+        <button id="btn-tone-440" type="button">Tone 440 Hz</button>
+        <button id="btn-tone-1000" type="button">Tone 1000 Hz</button>
+        <button id="btn-tone-stop" type="button" hidden>Stop Tone</button>
+      </div>
+      <div id="mic-hud"></div>
+    </section>
+
+    <section id="panel-cam" class="panel">
+      <h2>Webcam</h2>
+      <button id="btn-cam" type="button">Start Cam</button>
+      <canvas id="cam-canvas" width="320" height="240" hidden></canvas>
+      <div id="cam-hud"></div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
