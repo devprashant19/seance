@@ -1,0 +1,24 @@
+{
+    "name": "seance",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "description": "SÃ©ance: turn any phone into a lab instrument. A Kiro skeleton with two apps (Poltergeist Lab, Banshee Choir).",
+    "license": "MIT",
+    "scripts": {
+        "typecheck": "pnpm -r --if-present typecheck",
+        "test": "vitest run --passWithNoTests",
+        "test:watch": "vitest",
+        "build": "pnpm -r --if-present build",
+        "dev:lab": "pnpm --filter poltergeist-lab dev -- --host",
+        "dev:choir": "pnpm --filter banshee-choir dev -- --host",
+        "dev:relay": "pnpm --filter seance-relay dev"
+    },
+    "packageManager": "pnpm@10.20.0",
+    "devDependencies": {
+        "@types/node": "^26.6.6",
+        "fast-check": "^4.10.3",
+        "typescript": "^7.0.2",
+        "vitest": "^5.1.1"
+    }
+}

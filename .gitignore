@@ -1,0 +1,35 @@
+# dependencies & builds
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# tests
+coverage/
+playwright-report/
+test-results/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# IMPORTANT: never ignore .kiro/ (judges check it). Do not add it here.
+
+# Local planning docs (read by Kiro, never pushed)
+docs/plan/

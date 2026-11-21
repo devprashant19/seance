@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the pnpm version from "packageManager" in package.json (set by `corepack use pnpm@latest`).
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      # Property-based tests: pin the seed in CI output so failures can be replayed locally.
+      # fast-check prints the seed and path on failure; copy them into the test's fc.assert options to reproduce.

@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h9-writeup-log",
+      "description": "When a prompt starts with 'journal:', inject the journal entry template so Kiro appends a dated entry to docs/kiro-journal.md. Free command action; prints nothing for other prompts.",
+      "trigger": "PromptSubmit",
+      "action": {
+        "type": "command",
+        "command": "node scripts/kiro/journal-hook.mjs"
+      },
+      "timeout": 10,
+      "enabled": true
+    }
+  ]
+}
