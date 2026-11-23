@@ -64,36 +64,36 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 7.5 Property test: mock at rate r reports rateHz within 1%
     - _Requirements: 4.4_
 
-- [ ] 8. Timing and resampling
-  - [ ] 8.1 `intervals`, `jitterReport` (mean, median, p95, CV %, gaps)
+- [x] 8. Timing and resampling
+  - [x] 8.1 `intervals`, `jitterReport` (mean, median, p95, CV %, gaps)
     - _Requirements: 8.1_
-  - [ ] 8.2 `resampleLinear` with gap handling; `resampleCubic`*
+  - [x] 8.2 `resampleLinear` with gap handling; `resampleCubic`*
     - _Requirements: 8.2, 8.3_
-  - [ ] 8.3 Property test: jittered sine keeps its frequency after resampling
+  - [x] 8.3 Property test: jittered sine keeps its frequency after resampling
     - _Requirements: 8.4_
 
-- [ ] 9. Filters
-  - [ ] 9.1 `lowPass1`, `highPass1`, `biquadLowPass`, `filtfilt`
+- [x] 9. Filters
+  - [x] 9.1 `lowPass1`, `highPass1`, `biquadLowPass`, `filtfilt`
     - _Requirements: 9.1, 9.2_
-  - [ ] 9.2 `complementary` (gyro + accel tilt) and `kalman1d`
+  - [x] 9.2 `complementary` (gyro + accel tilt) and `kalman1d`
     - _Requirements: 9.3, 9.4_
-  - [ ] 9.3 Property tests: constant passthrough, pass-band/stop-band amplitude
+  - [x] 9.3 Property tests: constant passthrough, pass-band/stop-band amplitude
     - _Requirements: 9.5, 9.6_
 
-- [ ] 10. Spectral analysis
-  - [ ] 10.1 Radix-2 real FFT + windows (Hann, Hamming, rect) + `spectrum` with `df`
+- [x] 10. Spectral analysis
+  - [x] 10.1 Radix-2 real FFT + windows (Hann, Hamming, rect) + `spectrum` with `df`
     - _Requirements: 10.1, 10.2_
-  - [ ] 10.2 `peakFrequency` with parabolic interpolation
+  - [x] 10.2 `peakFrequency` with parabolic interpolation
     - _Requirements: 10.3_
-  - [ ] 10.3 Property tests: Parseval; between-bin peak accuracy
+  - [x] 10.3 Property tests: Parseval; between-bin peak accuracy
     - _Requirements: 10.4, 10.5_
 
-- [ ] 11. Event detection
-  - [ ] 11.1 `zeroCrossings` with hysteresis + sub-sample interpolation
+- [x] 11. Event detection
+  - [x] 11.1 `zeroCrossings` with hysteresis + sub-sample interpolation
     - _Requirements: 11.1_
-  - [ ] 11.2 `findPeaks` (prominence, distance), `windowsBelow`
+  - [x] 11.2 `findPeaks` (prominence, distance), `windowsBelow`
     - _Requirements: 11.2, 11.3_
-  - [ ] 11.3 Property tests: crossing interval = T; sub-hysteresis noise adds no crossings
+  - [x] 11.3 Property tests: crossing interval = T; sub-hysteresis noise adds no crossings
     - _Requirements: 11.4, 11.5_
 
 - [ ] 12. Damping, fits, uncertainty

@@ -69,3 +69,5 @@ export {
   MoodMachine,
   HealthMonitor,
 } from "./health.js";
+
+export * from "./dsp/index.js";
