@@ -2,10 +2,10 @@
 
 Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers from a phone on the laptop. Thursday morning: clock sync, health, reconnect, latency measured. Optional tasks are marked `*`.
 
-- [ ] 1. Shared protocol
-  - [ ] 1.1 `protocol.ts`: envelope, all message types, `PROTOCOL_VERSION = 1`, type guards
+- [x] 1. Shared protocol
+  - [x] 1.1 `protocol.ts`: envelope, all message types, `PROTOCOL_VERSION = 1`, type guards
     - _Requirements: 3.3, 3.4_
-  - [ ] 1.2 Batch encode/decode helpers (columnar, per channel group) + property test: split/reassemble preserves samples
+  - [x] 1.2 Batch encode/decode helpers (columnar, per channel group) + property test: split/reassemble preserves samples
     - _Requirements: 3.7_
 
 - [ ] 2. Relay server (`packages/seance-relay`)
@@ -41,7 +41,7 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
     - _Requirements: 5.3_
   - [ ]* 3.8 Microphone channel on the phone (only for experiments that ask)
     - _Requirements: 2.6_
-  - [ ]* 3.9 Mode-specific phone surface: the host sends its mode in control (`lab` = Begin + status, `choir` = full-screen touch-and-hold pad streaming `control.touch` in normal batches). Needed by Phase 6; Choir falls back to shake-only drone mode without it
+  - [ ] 3.9 Mode-specific phone surface: the host sends its mode in control (`lab` = Begin + status, `choir` = full-screen touch-and-hold pad streaming `control.touch` in normal batches). Needed by Phase 6; Choir falls back to shake-only drone mode without it
     - _Requirements: 3.1_
 
 - [ ] 4. Clock sync (pure core)
@@ -67,7 +67,7 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
     - _Requirements: 6.2_
   - [ ] 6.2 Phone resume with token → same Spirit id on host; host resume with host token
     - _Requirements: 6.3, 6.5_
-  - [ ] 6.3 Manual test: lock phone 30 s, unlock → spirit returns to `present` without rescanning
+  - [ ] 6.3 Manual test: lock phone 30 s, unlock → spirit returns to `present` without rescanning (pending real phone session)
     - _Requirements: 6.3, 6.4_
 
 - [ ] 7. QR and join UX (shared component in seance-avatars or app)
@@ -77,13 +77,13 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
     - _Requirements: 1.3, 1.5_
 
 - [ ] 8. Deploy and measure
-  - [ ] 8.1 Deploy relay to the chosen Node host near you; set `ALLOWED_ORIGINS`, `SEANCE_OBSERVER_KEY`
+  - [ ] 8.1 Deploy relay to the chosen Node host near you; set `ALLOWED_ORIGINS`, `SEANCE_OBSERVER_KEY` (scheduled for K6)
     - _Requirements: 9.1, 8.2_
-  - [ ] 8.2 Run the latency protocol (Wi-Fi + hotspot, 2 phones) and record results in `docs/sensor-reality.md` §Bridge
+  - [ ] 8.2 Run the latency protocol (Wi-Fi + hotspot, 2 phones) and record results in `docs/sensor-reality.md` §Bridge (scheduled for K5/K6)
     - _Requirements: 10.1_
 
 - [ ]* 9. WebRTC upgrade (only if median relay RTT > 150 ms)
-  - [ ]* 9.1 Signalling via relay (`rtc-offer/answer/ice`), unordered/no-retransmit data channel for `batch`
+  - [ ]* 9.1 Signalling via relay (`rtc-offer/answer/ice`), unordered/no-retransmit data channel for `batch` (optional fallback)
     - _Requirements: 10.1, 10.3_
-  - [ ]* 9.2 5 s timeout fallback to WebSocket, silently
+  - [ ]* 9.2 5 s timeout fallback to WebSocket, silently (optional fallback)
     - _Requirements: 10.2_
