@@ -7,6 +7,7 @@ import { LiveChart } from "./LiveChart.js";
 import { OraclePanel } from "./OraclePanel.js";
 import { UncertaintyBudget } from "./UncertaintyBudget.js";
 import { ExportMenu } from "./ExportMenu.js";
+import { NotebookView } from "../features/notebook/index.js";
 
 type RunnerState = "SETUP" | "READY_CHECK" | "RECORDING" | "ANALYZING" | "RESULT" | "ERROR";
 
@@ -25,6 +26,7 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
   const [budget, setBudget] = useState<readonly BudgetTerm[]>([]);
   const [chartData, setChartData] = useState<{ t: number; v: number }[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showNotebook, setShowNotebook] = useState(false);
   const [progress, setProgress] = useState(0);
   const channelsRef = useRef<Map<string, ChannelBuffer>>(new Map());
   const recordTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -104,6 +106,7 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
     setChartData([]);
     setProgress(0);
     setErrorMsg("");
+    setShowNotebook(false);
   }, []);
 
   const channelList = [...channelsRef.current.values()].map((ch) => ({
@@ -163,9 +166,30 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         </div>
       )}
 
+      {showNotebook && verdict && (
+        <NotebookView
+          experimentId={experiment.id}
+          experimentName={experiment.name}
+          spookyTitle={experiment.spooky}
+          plainDescription={experiment.plain}
+          safetyNote={experiment.safetyNote}
+          inputs={inputs}
+          inputSpecs={experiment.inputs}
+          channels={channelList}
+          verdict={verdict}
+          budget={budget}
+          onClose={() => setShowNotebook(false)}
+        />
+      )}
+
       {state === "RESULT" && verdict && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <OraclePanel verdict={verdict} />
+          <button onClick={() => setShowNotebook(true)} style={{
+            padding: "10px 24px", background: "#1a1a3e", border: "1px solid #446",
+            color: "#aabbdd", borderRadius: 6, cursor: "pointer", fontSize: 14,
+            alignSelf: "flex-start",
+          }}>Write it up (Lab Report)</button>
           <UncertaintyBudget budget={budget} dominantName={verdict.dominantTerm.name} />
           <ExportMenu
             experimentId={experiment.id}
