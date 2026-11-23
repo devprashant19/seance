@@ -32,24 +32,24 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 4.3 Run the contract suite against mock
     - _Requirements: 3.4_
 
-- [ ] 5. Ghost Trace v1
-  - [ ] 5.1 `GhostTrace` types + `encodeTrace` with stable key order and fixed number formatting
+- [x] 5. Ghost Trace v1
+  - [x] 5.1 `GhostTrace` types + `encodeTrace` with stable key order and fixed number formatting
     - _Requirements: 5.1, 5.5, 5.7_
-  - [ ] 5.2 `decodeTrace` with JSON-path error reporting and version check
+  - [x] 5.2 `decodeTrace` with JSON-path error reporting and version check
     - _Requirements: 5.2, 5.3_
-  - [ ] 5.3 `TraceRecorder` (subscribe, collect, stop → trace)
+  - [x] 5.3 `TraceRecorder` (subscribe, collect, stop → trace)
     - _Requirements: 5.4_
-  - [ ] 5.4 Property tests: encode/decode round-trip, deterministic encoding
+  - [x] 5.4 Property tests: encode/decode round-trip, deterministic encoding
     - _Requirements: 5.6, 5.7_
-  - [ ] 5.5 Convert the 10 Phase 1 probe traces to v1 and commit them to `fixtures/traces/raw/`
+  - [x] 5.5 Convert the 10 Phase 1 probe traces to v1 and commit them to `fixtures/traces/raw/`
     - _Requirements: 5.1_
 
-- [ ] 6. Replay transport
-  - [ ] 6.1 `createReplaySpirit(trace, {mode, speed, loop})` producing a `revenant`
+- [x] 6. Replay transport
+  - [x] 6.1 `createReplaySpirit(trace, {mode, speed, loop})` producing a `revenant`
     - _Requirements: 6.1, 6.3, 6.4_
-  - [ ] 6.2 Real-time scheduling (rAF in browser, timers in Node) within one frame
+  - [x] 6.2 Real-time scheduling (rAF in browser, timers in Node) within one frame
     - _Requirements: 6.2_
-  - [ ] 6.3 Contract suite + property test: replay → re-record equals original
+  - [x] 6.3 Contract suite + property test: replay → re-record equals original
     - _Requirements: 6.5, 3.4_
 
 - [ ] 7. Health model

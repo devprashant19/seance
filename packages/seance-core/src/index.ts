@@ -46,3 +46,15 @@ export {
 } from "./spirit.js";
 
 export { BaseSpirit } from "./base-spirit.js";
+
+export type {
+  TraceChannel,
+  GhostTrace,
+} from "./trace.js";
+
+export {
+  createTraceId,
+  validateTrace,
+} from "./trace.js";
+
+export { TraceRecorder } from "./trace-recorder.js";

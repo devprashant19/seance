@@ -7,7 +7,8 @@
                     ".":  "./src/index.ts",
                     "./testing":  "./src/testing/arbitraries.ts",
                     "./transports/mock":  "./src/transports/mock.ts",
-                    "./transports/contract":  "./src/transports/contract.ts"
+                    "./transports/contract":  "./src/transports/contract.ts",
+                    "./transports/replay":  "./src/transports/replay.ts"
                 },
     "scripts":  {
                     "typecheck":  "tsc -p tsconfig.json --noEmit",
