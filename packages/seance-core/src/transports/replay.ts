@@ -34,8 +34,8 @@ export class ReplaySpirit extends BaseSpirit {
     this._speed = config?.speed ?? 1;
     this._clockMode = config?.clock ?? "real";
     this.id = `replay-${trace.id}`;
-    this.kind = (trace.spiritKind as SpiritKind) ?? "revenant";
-    this.label = `Replay of ${trace.spiritId}`;
+    this.kind = (trace.spiritKind ?? trace.device?.kind ?? "revenant") as SpiritKind;
+    this.label = `Replay of ${trace.spiritId ?? trace.id}`;
     this.capabilities = trace.channels.map((ch) => ({
       id: ch.id,
       unit: ch.unit,

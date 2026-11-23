@@ -114,16 +114,16 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 13.3 Registry + example "hello" experiment used only in tests
     - _Requirements: 13.4_
 
-- [ ] 14. Local transport (browser)
-  - [ ] 14.1 Laptop mic → `audio.level` + `audio.spectrum` banshee spirit
+- [x] 14. Local transport (browser)
+  - [x] 14.1 Laptop mic → `audio.level` + `audio.spectrum` banshee spirit
     - _Requirements: 3.2_
   - [ ]* 14.2 Webcam stub for Watcher (real work in Phase 9 wow/stretch)
     - _Requirements: 3.2_
 
-- [ ] 15. Wire into CI and hooks
-  - [ ] 15.1 `pnpm -F seance-core test` and `typecheck` in CI
+- [x] 15. Wire into CI and hooks
+  - [x] 15.1 `pnpm -F seance-core test` and `typecheck` in CI
     - _Requirements: 14.3_
-  - [ ] 15.2 Enable hooks H3 (spirit-contract) and H4 (physics-guard); trigger each once and log it in `docs/kiro-journal.md`
+  - [x] 15.2 Enable hooks H3 (spirit-contract) and H4 (physics-guard); trigger each once and log it in `docs/kiro-journal.md`
     - _Requirements: 3.4_
   - [ ]* 15.3 Coverage report ≥ 80% on signal/, trace/, units, health/ (pending full Istanbul sweep)
     - _Requirements: 14.3_

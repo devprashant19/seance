@@ -49,12 +49,15 @@ export { BaseSpirit } from "./base-spirit.js";
 
 export type {
   TraceChannel,
+  TraceDevice,
   GhostTrace,
 } from "./trace.js";
 
 export {
   createTraceId,
   validateTrace,
+  decodeTrace,
+  encodeTrace,
 } from "./trace.js";
 
 export { TraceRecorder } from "./trace-recorder.js";
@@ -83,3 +86,5 @@ export {
   PluginRegistry,
   getGlobalRegistry,
 } from "./plugin.js";
+
+export { createLocalSpirit } from "./transports/local.js";

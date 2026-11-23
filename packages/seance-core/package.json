@@ -9,7 +9,8 @@
                     "./transports/mock":  "./src/transports/mock.ts",
                     "./transports/contract":  "./src/transports/contract.ts",
                     "./transports/replay":  "./src/transports/replay.ts",
-                    "./dsp":  "./src/dsp/index.ts"
+                    "./dsp":  "./src/dsp/index.ts",
+                    "./transports/local":  "./src/transports/local.ts"
                 },
     "scripts":  {
                     "typecheck":  "tsc -p tsconfig.json --noEmit",

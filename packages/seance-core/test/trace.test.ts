@@ -51,7 +51,7 @@ describe("TraceRecorder", () => {
     const trace = recorder.stop();
     expect(recorder.recording).toBe(false);
 
-    expect(trace.format).toBe("seance");
+    expect(trace.format).toBe("seance-trace");
     expect(trace.version).toBe(1);
     expect(trace.spiritId).toBe("mock-99");
     expect(trace.channels.length).toBe(2);
@@ -92,7 +92,17 @@ describe("validateTrace", () => {
 
   it("rejects wrong format or version", () => {
     expect(validateTrace({ format: "other", version: 1 })).toBe(false);
-    expect(validateTrace({ format: "seance", version: 2 })).toBe(false);
+    expect(validateTrace({ format: "seance-trace", version: 2 })).toBe(false);
+  });
+
+  it("accepts both seance and seance-trace formats", () => {
+    const base = {
+      version: 1,
+      id: "test",
+      channels: { accel: { unit: "m/s^2", axes: ["x"], t: [0], data: [[1]] } },
+    };
+    expect(validateTrace({ ...base, format: "seance" })).toBe(true);
+    expect(validateTrace({ ...base, format: "seance-trace" })).toBe(true);
   });
 });
 

@@ -78,7 +78,7 @@ export class TraceRecorder {
     }
 
     const trace: GhostTrace = {
-      format: "seance",
+      format: "seance-trace",
       version: 1,
       id: createTraceId(),
       spiritId: this._spirit.id,
