@@ -2,18 +2,18 @@
 
 Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replayed by the end of Monday and the signal toolkit + PBT are green by the end of Tuesday. Optional tasks are marked `*`.
 
-- [ ] 1. Package scaffold
-  - [ ] 1.1 Create `packages/seance-core` with `package.json` (exports map from design.md), `tsconfig.json` (strict, `noUncheckedIndexedAccess`), Vitest config, `src/index.ts`
+- [x] 1. Package scaffold
+  - [x] 1.1 Create `packages/seance-core` with `package.json` (exports map from design.md), `tsconfig.json` (strict, `noUncheckedIndexedAccess`), Vitest config, `src/index.ts`
     - _Requirements: 14.1, 14.3_
-  - [ ] 1.2 Add fast-check and a shared `test/arbitraries.ts` (seeded, re-exported via `seance-core/testing`)
+  - [x] 1.2 Add fast-check and a shared `test/arbitraries.ts` (seeded, re-exported via `seance-core/testing`)
     - _Requirements: 14.1_
 
-- [ ] 2. Units
-  - [ ] 2.1 Implement `Unit`, `Quantity<U>`, `q`, `add`, `sub`, `scale`, `convert` with the factor table
+- [x] 2. Units
+  - [x] 2.1 Implement `Unit`, `Quantity<U>`, `q`, `add`, `sub`, `scale`, `convert` with the factor table
     - _Requirements: 1.1, 1.3, 1.4_
-  - [ ] 2.2 Add type-level tests (`expectTypeOf` / `// @ts-expect-error`) proving `add(q(1,'m'), q(1,'s'))` fails
+  - [x] 2.2 Add type-level tests (`expectTypeOf` / `// @ts-expect-error`) proving `add(q(1,'m'), q(1,'s'))` fails
     - _Requirements: 1.2_
-  - [ ] 2.3 Property tests: conversion round-trip and linearity
+  - [x] 2.3 Property tests: conversion round-trip and linearity
     - _Requirements: 1.5, 1.6_
 
 - [ ] 3. Spirit core
@@ -117,7 +117,7 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
 - [ ] 14. Local transport (browser)
   - [ ] 14.1 Laptop mic → `audio.level` + `audio.spectrum` banshee spirit
     - _Requirements: 3.2_
-  - [ ]* 14.2 Webcam stub for Watcher (real work in Phase 9)
+  - [ ]* 14.2 Webcam stub for Watcher (real work in Phase 9 wow/stretch)
     - _Requirements: 3.2_
 
 - [ ] 15. Wire into CI and hooks
@@ -125,5 +125,5 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
     - _Requirements: 14.3_
   - [ ] 15.2 Enable hooks H3 (spirit-contract) and H4 (physics-guard); trigger each once and log it in `docs/kiro-journal.md`
     - _Requirements: 3.4_
-  - [ ]* 15.3 Coverage report ≥ 80% on signal/, trace/, units, health/
+  - [ ]* 15.3 Coverage report ≥ 80% on signal/, trace/, units, health/ (pending full Istanbul sweep)
     - _Requirements: 14.3_
