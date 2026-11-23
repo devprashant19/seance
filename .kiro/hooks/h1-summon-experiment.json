@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h1-summon-experiment",
+      "description": "H1: when an experiment spec (.kiro/specs/experiments/<id>/requirements.md) is saved, scaffold the experiment plugin if it does not exist yet, otherwise sync the code with what changed in the spec. Idempotent.",
+      "trigger": "PostFileSave",
+      "matcher": "\\.kiro[/\\\\]specs[/\\\\]experiments[/\\\\][^/\\\\]+[/\\\\]requirements\\.md$",
+      "action": {
+        "type": "agent",
+        "prompt": "Hook H1 (summon-experiment) fired: a Seance experiment spec was saved. The saved file path is in the hook context; the experiment id is its folder name.\n\n1. Read the saved requirements.md, including its 'Experiment metadata' table (id, titles, spirits, channels, inputs with units/defaults/uncertainties/ranges, primary result, reference, accuracy target, min recording, safety).\n2. Read .kiro/steering/physics.md, .kiro/steering/units.md if present, and use apps/poltergeist-lab/src/experiments/pendulum-g/ as the reference pattern for structure and style.\n3. Let DIR = apps/poltergeist-lab/src/experiments/<id>/.\n   - If DIR does NOT exist, scaffold it:\n     * index.ts: default export of defineExperiment(...) imported from 'seance-core' with id, title, spookyTitle, spirits, channels, inputs (unit, accepted units, default, uncertainty, range), steps with readiness/stop checks, safety lines from the metadata, notebook template, and analyze wired to analysis.ts.\n     * theory.ts: pure, unit-typed (Quantity<U>) forward and inverse models. Doc comment on each function: formula, source, validity range.\n     * analysis.ts: the pipeline the spec describes, returning { result, diagnostics, budget, stats } where result is an ExperimentResult with Measured values. Pure: no Date.now, no randomness, no DOM.\n     * uncertainty.ts: budget terms (name, relative uncertainty, sensitivity exponent, share of variance; shares sum to 1).\n     * notebook.md: the sections the spec lists, with formulas and the safety notices.\n     * Card.tsx: library card (spooky title, plain title, spirits needed) using components from 'seance-avatars'.\n     * theory.property.test.ts: one fast-check property test for EVERY line in the spec that starts with '**Property:**', each test named with its requirement number (e.g. 'R3.5 period is axis-invariant'). Use fixed seeds.\n   - If DIR DOES exist: do not overwrite anything. Diff the spec against the code, change only what the spec now requires differently, add property tests for new '**Property:**' lines, and never delete hand-written code without listing it in your reply.\n4. Import only from package entry points ('seance-core', 'seance-avatars'), never from their src folders.\n5. Run: pnpm --filter poltergeist-lab exec vitest run src/experiments/<id>\n6. Reply briefly with: files created or changed; which requirement numbers each file covers; test results; anything in the spec you could not implement or that looks physically wrong (formula, units, validity range). Do not mark spec tasks complete unless their tests pass."
+      },
+      "enabled": true
+    }
+  ]
+}

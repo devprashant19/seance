@@ -53,3 +53,15 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** packages/seance-avatars/ · apps/poltergeist-lab/ · .kiro/specs/avatars-and-moods/ · git tag phase-4
 - **Write-up section:** 7 PBT · 8 Avatars · 9 Accessibility
+
+---
+
+## 2026-11-24 · P5 · Poltergeist Lab MVP — Oracle, Experiments, Runner, Replay
+- **Surface:** IDE
+- **Kiro feature:** steering physics.md · spec poltergeist-lab · spec experiments · hook H1 · hook H2
+- **Trigger / ask:** Phase 5 build prompt — verdict engine, three MVP experiments, experiment runner UI, offline replay, bundled traces
+- **What Kiro did:** Built Poltergeist Lab MVP across 4 commits: (1) Physics Oracle verdict engine — z-score normalized difference `z=|x-xref|/√(ux²+uref²)`, 4-tier verdict (approves ≤1, veil 1-2, disagree 2-3, cursed >3 or low confidence), confidence model (major diagnostics / high jitter / high dropout → low), dominant-term finder via variance shares, spooky+plain cause generator with ranked diagnostics. (2) Three MVP experiments via `defineExperiment` contract — **pendulum-g**: 50Hz resample, dominant-axis auto-detect, zero-crossing median half-period, finite-amplitude + effective-length corrections, δg/g propagation; **free-fall**: low-g window detection (<2.0 m/s² for >100ms), sub-sample edge interpolation, δh/h=2δt/t uncertainty; **singing-ruler**: spectral peak with parabolic interpolation, cantilever frequency formula, 3-term uncertainty (h³, L⁴, f²). (3) ExperimentRunner React FSM (SETUP→READY_CHECK→RECORDING→ANALYZING→RESULT+ERROR) with InputsForm (unit-aware validation), LiveChart (canvas auto-scaling real-time), OraclePanel (tier-coloured verdict with causes), UncertaintyBudget (variance-share bars with dominant star), ExportMenu (raw CSV, summary CSV, .seance v1 JSON). (4) Offline ReplayController with trace manifest, selector dropdown, play/pause/speed 1×/4×, skip-to-verdict, Revenant badge; prebuild sync script copying 6 fixture traces to public/traces/; `/replay` route and Landing "Try Replay Mode" link.
+- **Outcome (numbers):** 28 tests passing (12 oracle + 10 property-based + 6 replay regression). Build 342KB gzipped (110KB). All 6 bundled traces sync and load. Property tests verify round-trips for all 3 experiments.
+- **Human correction:** none
+- **Evidence:** apps/poltergeist-lab/src/oracle/ · apps/poltergeist-lab/src/experiments/ · apps/poltergeist-lab/src/lab/ · apps/poltergeist-lab/src/replay/ · fixtures/traces/ · git tag phase-5
+- **Write-up section:** 10 Physics · 11 Uncertainty · 12 Replay
