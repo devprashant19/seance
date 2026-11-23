@@ -90,7 +90,7 @@
   - _Requirements: 7.1, 7.2, 7.3, 7.5_
 
 - [ ] 10. Verification
-- [ ] 10.1 Fixture replay tests: calm / jittery / dropout traces produce the expected mood sequences
+- [x] 10.1 Fixture replay tests: calm / jittery / dropout traces produce the expected mood sequences
   - _Requirements: 3.1, 3.2, 3.3, 3.6_
 - [ ]* 10.2 Playwright: QR before three.js chunk; replay within 3 s; reduced-motion renders no canvas (deferred to K6)
   - _Requirements: 5.1, 6.1, 6.6_

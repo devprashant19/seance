@@ -41,3 +41,15 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** packages/seance-core/src/transports/phone-bridge/ · packages/seance-relay/ · git tag phase-3
 - **Write-up section:** 5 Networking · 6 Latency
+
+---
+
+## 2026-11-23 · P4 · Possession Experience — Avatars, Moods, and Lab Scaffold
+- **Surface:** IDE
+- **Kiro feature:** steering avatars.md · spec avatars-and-moods · hook H3 · hook H4
+- **Trigger / ask:** Phase 4 build prompt — orientation math, mood visuals, 3D poltergeist, reduced-motion SVG, mood badges, Poltergeist Lab scaffold with possession route
+- **What Kiro did:** Built possession experience across seance-avatars and poltergeist-lab in 5 commits: (1) orientation quaternion math — Z-X'-Y'' Tait-Bryan with −90° screen correction, reference-pose capture via sign-aligned quaternion mean, heading normaliser, ghost rotation composition, slerp smoothing with 35° clamp, property tests via fast-check, (2) mood visual state machine mapping Mood → glow/opacity/hue/floatFreq/lanternScale with rate-based attenuation, plus mood copy table with spooky/plain/action lines, (3) Poltergeist3D Three.js avatar with LatheGeometry bell body (~1.5k tris), emissive lantern sphere, eye meshes with blink animation, mood-driven opacity/hue/glow/float/wobble; PoltergeistFlat reduced-motion SVG fallback; SpiritPlaceholder SVGs for 5 spirit types; RevenantWrapper; MoodBadge with geometric mood shapes; MoodTooltip with throttled aria-live, (4) Poltergeist Lab React app scaffold (Vite 6 + React 19 + react-router-dom 7) with Landing page (relay connection, inline QR code, room code, copy link, offline fallback, atmospheric summoning circle) and Join route (secure-context check, DeviceOrientation/DeviceMotion capture, 50ms batch interval, wake lock), (5) Possession route with tutorial state machine (tilt → shake → hold-still → doors), Three.js quaternion-to-euler ghost rotation, mood badge, disconnect overlay, mouse-drag fallback, door navigation.
+- **Outcome (numbers):** Build and typecheck pass for all packages. Poltergeist Lab bundle 317KB gzipped (101KB). 20 property-based tests for orientation math (identity, continuity, unit-norm, smoothing bounds). Mood visuals cover all 4 moods with rate-based lantern scaling.
+- **Human correction:** none
+- **Evidence:** packages/seance-avatars/ · apps/poltergeist-lab/ · .kiro/specs/avatars-and-moods/ · git tag phase-4
+- **Write-up section:** 7 PBT · 8 Avatars · 9 Accessibility
