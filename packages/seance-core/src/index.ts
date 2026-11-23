@@ -58,3 +58,14 @@ export {
 } from "./trace.js";
 
 export { TraceRecorder } from "./trace-recorder.js";
+
+export type {
+  HealthThresholds,
+  HealthSnapshot,
+} from "./health.js";
+
+export {
+  DEFAULT_THRESHOLDS,
+  MoodMachine,
+  HealthMonitor,
+} from "./health.js";

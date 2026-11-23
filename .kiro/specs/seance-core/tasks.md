@@ -52,16 +52,16 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 6.3 Contract suite + property test: replay → re-record equals original
     - _Requirements: 6.5, 3.4_
 
-- [ ] 7. Health model
-  - [ ] 7.1 `thresholds.ts` seeded with research defaults, then Phase 1 numbers
+- [x] 7. Health model
+  - [x] 7.1 `thresholds.ts` seeded with research defaults, then Phase 1 numbers
     - _Requirements: 7.2_
-  - [ ] 7.2 `HealthMonitor` sliding-window stats (rate, jitter, dropouts from seq gaps, noise floor when still)
+  - [x] 7.2 `HealthMonitor` sliding-window stats (rate, jitter, dropouts from seq gaps, noise floor when still)
     - _Requirements: 7.1, 7.3_
-  - [ ] 7.3 `moodFrom` with hysteresis and plain-language reasons
+  - [x] 7.3 `moodFrom` with hysteresis and plain-language reasons
     - _Requirements: 7.4, 7.5_
-  - [ ] 7.4 Property test: mood monotonicity
+  - [x] 7.4 Property test: mood monotonicity
     - _Requirements: 7.6_
-  - [ ] 7.5 Property test: mock at rate r reports rateHz within 1%
+  - [x] 7.5 Property test: mock at rate r reports rateHz within 1%
     - _Requirements: 4.4_
 
 - [ ] 8. Timing and resampling
