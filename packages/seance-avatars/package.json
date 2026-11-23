@@ -6,6 +6,13 @@
     "exports":  {
                     ".":  "./src/index.ts"
                 },
+    "dependencies": {
+        "seance-core": "workspace:*",
+        "three": "^0.170.0"
+    },
+    "devDependencies": {
+        "@types/three": "^0.170.0"
+    },
     "scripts":  {
                     "typecheck":  "tsc -p tsconfig.json --noEmit",
                     "test":  "vitest run --passWithNoTests"
