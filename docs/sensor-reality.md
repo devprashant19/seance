@@ -3,7 +3,9 @@
 Measured in Phase 1 with `tools/sensor-probe/` following `phases/phase-01-sensor-reality/measurement-protocol.md`.
 **Only measured values go in this file.** Leave a cell as `—` (not measured) rather than guessing.
 
-Measured on: `2026-11-22` · by: `puneet`
+> **Status: NOT MEASURED YET.** Every number below came from the synthetic traces in `fixtures/traces/raw/` (generated placeholders, not real phones). Do not cite any of them. Re-run the Phase 1 protocol with real phones and `tools/sensor-probe/`, replace each value, then delete this notice.
+
+Measured on: `—` · by: `—`
 
 ---
 
