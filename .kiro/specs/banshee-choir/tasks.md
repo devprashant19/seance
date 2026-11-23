@@ -52,16 +52,16 @@
 - [x] 6.4 Laptop-only: recorded séance (bundled `demo` traces) + keyboard-played voice
   - _Requirements: 9.5_
 
-- [ ] 7. Ghost Looper
-- [ ] 7.1 `BarClock` on the AudioContext timeline; visual beat; synthesized count-in clicks
+- [x] 7. Ghost Looper
+- [x] 7.1 `BarClock` on the AudioContext timeline; visual beat; synthesized count-in clicks
   - _Requirements: 8.1, 8.2_
-- [ ] 7.2 Arm → record on next bar → stop at loop end; capture apply-time control lane as a GhostTrace
+- [x] 7.2 Arm → record on next bar → stop at loop end; capture apply-time control lane as a GhostTrace
   - _Requirements: 8.2, 8.3_
-- [ ] 7.3 Lookahead scheduler (25 ms / 100 ms) + replay transport loop playback as a Revenant voice, re-anchored per iteration
+- [x] 7.3 Lookahead scheduler (25 ms / 100 ms) + replay transport loop playback as a Revenant voice, re-anchored per iteration
   - _Requirements: 8.4_
-- [ ]* 7.4 Property tests P-CH-8, P-CH-9
+- [x]* 7.4 Property tests P-CH-8, P-CH-9
   - _Requirements: 8.4_
-- [ ] 7.5 Up to 4 loops with mute/delete; scale change re-harmonises loops
+- [x] 7.5 Up to 4 loops with mute/delete; scale change re-harmonises loops
   - _Requirements: 8.5, 8.6_
 
 - [ ] 8. Validation
