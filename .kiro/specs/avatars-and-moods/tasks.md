@@ -69,14 +69,14 @@
 - [x] 7.2 Placeholder SVGs for banshee, watcher, golem, wisp, organist; neutral orb for unknown kinds
   - _Requirements: 9.2, 9.3_
 
-- [ ] 8. Landing route (poltergeist-lab)
-- [ ] 8.1 Candles, summoning circle, QR (≥ 280 px) + room code rendered before the three.js chunk loads
+- [x] 8. Landing route (poltergeist-lab)
+- [x] 8.1 Candles, summoning circle, QR (≥ 280 px) + room code rendered before the three.js chunk loads
   - _Requirements: 6.1_
-- [ ] 8.2 Relay-down state: hide QR, explain, offer replay, auto-retry every 5 s
+- [x] 8.2 Relay-down state: hide QR, explain, offer replay, auto-retry every 5 s
   - _Requirements: 6.2_
-- [ ] 8.3 "No phone? Watch a recorded haunting" → Revenant within 3 s
+- [x] 8.3 "No phone? Watch a recorded haunting" → Revenant within 3 s
   - _Requirements: 6.6_
-- [ ] 8.4 Phone-opened-landing detection → laptop suggestion + phone-only mode
+- [x] 8.4 Phone-opened-landing detection → laptop suggestion + phone-only mode
   - _Requirements: 7.4_
 
 - [ ] 9. Possession route (poltergeist-lab)
