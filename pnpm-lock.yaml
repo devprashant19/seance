@@ -31,7 +31,11 @@ importers:
 
   packages/seance-mcp: {}
 
-  packages/seance-relay: {}
+  packages/seance-relay:
+    dependencies:
+      seance-core:
+        specifier: workspace:*
+        version: link:../seance-core
 
   tools/sensor-probe:
     devDependencies:

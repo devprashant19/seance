@@ -8,20 +8,20 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [x] 1.2 Batch encode/decode helpers (columnar, per channel group) + property test: split/reassemble preserves samples
     - _Requirements: 3.7_
 
-- [ ] 2. Relay server (`packages/seance-relay`)
-  - [ ] 2.1 HTTP server with `/healthz`, ws upgrade, `ALLOWED_ORIGINS` check
+- [x] 2. Relay server (`packages/seance-relay`)
+  - [x] 2.1 HTTP server with `/healthz`, ws upgrade, `ALLOWED_ORIGINS` check
     - _Requirements: 9.1, 9.4_
-  - [ ] 2.2 Room registry: code alphabet, uniqueness, host token, capacity 8, expiry timers
+  - [x] 2.2 Room registry: code alphabet, uniqueness, host token, capacity 8, expiry timers
     - _Requirements: 1.1, 1.4, 1.5_
-  - [ ] 2.3 Property test: codes use only the allowed alphabet and never collide among live rooms
+  - [x] 2.3 Property test: codes use only the allowed alphabet and never collide among live rooms
     - _Requirements: 1.6_
-  - [ ] 2.4 Role routing: peer→host, host→peer (`to`), copies to observers; observer key check
+  - [x] 2.4 Role routing: peer→host, host→peer (`to`), copies to observers; observer key check
     - _Requirements: 8.1, 8.2_
-  - [ ] 2.5 Limits: 64 KB message cap, 60 msg/s token bucket, payload-free logging
+  - [x] 2.5 Limits: 64 KB message cap, 60 msg/s token bucket, payload-free logging
     - _Requirements: 9.2, 9.3_
-  - [ ] 2.6 Resume tokens for peers and hosts; keep room 10 min after host drop
+  - [x] 2.6 Resume tokens for peers and hosts; keep room 10 min after host drop
     - _Requirements: 6.1, 6.5_
-  - [ ] 2.7 Relay tests with fake timers (expiry, capacity, origin, rate limit, observer)
+  - [x] 2.7 Relay tests with fake timers (expiry, capacity, origin, rate limit, observer)
     - _Requirements: 1.4, 1.5, 9.1, 9.2, 8.2_
 
 - [ ] 3. Phone client
