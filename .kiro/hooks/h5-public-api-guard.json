@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h5-public-api-guard",
+      "description": "H5: when a seance-core public export changes, verify that no downstream packages break. Runs after any save to packages/seance-core/src/index.ts.",
+      "trigger": "PostFileSave",
+      "matcher": "packages[/\\\\]seance-core[/\\\\]src[/\\\\]index\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/check-public-api.mjs"
+      },
+      "enabled": true
+    }
+  ]
+}

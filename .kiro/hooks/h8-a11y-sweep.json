@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h8-a11y-sweep",
+      "description": "H8: when a React component in an app is saved, run a lightweight accessibility check for missing aria labels, color contrast, and keyboard navigation patterns.",
+      "trigger": "PostFileSave",
+      "matcher": "apps[/\\\\][^/\\\\]+[/\\\\]src[/\\\\].*\\.tsx$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/a11y-sweep.mjs"
+      },
+      "enabled": true
+    }
+  ]
+}

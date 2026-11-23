@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h7-trace-schema-check",
+      "description": "H7: when a fixture trace file is added or modified, validate it against the GhostTrace schema. Runs after any save to fixtures/traces/.",
+      "trigger": "PostFileSave",
+      "matcher": "fixtures[/\\\\]traces[/\\\\].*\\.seance$",
+      "action": {
+        "type": "agent",
+        "prompt": "Hook H7 (trace-schema-check) fired: a .seance fixture trace was saved.\n\n1. Read the saved file.\n2. Import validateTrace from 'seance-core' and run it against the parsed JSON.\n3. If valid, check: all channels have matching t.length and data.length; timestamps are monotonically increasing; data values are finite numbers.\n4. Reply briefly with: validation result, channel summary, any warnings about data quality."
+      },
+      "enabled": true
+    }
+  ]
+}

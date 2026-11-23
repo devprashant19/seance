@@ -72,8 +72,8 @@
 - [x]* 10.1 Property test: compare_traces(a, a) is all zeros
   - _Requirements: 7.1, 7.2, 7.3_
 
-- [ ] 11. Security checks
-  - [ ] Unknown-property rejection test for every tool; no raw audio in any output
+- [x] 11. Security checks
+  - [x] Unknown-property rejection test for every tool; no raw audio in any output
   - _Requirements: 8.2, 8.3_
 
 - [ ] 12. Docs and Power wiring

@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h6-mood-docs-sync",
+      "description": "H6: when avatar mood definitions change, verify that documentation references match. Runs after any save to packages/seance-avatars/src/moods/.",
+      "trigger": "PostFileSave",
+      "matcher": "packages[/\\\\]seance-avatars[/\\\\]src[/\\\\]moods[/\\\\].*\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/check-mood-docs.mjs"
+      },
+      "enabled": true
+    }
+  ]
+}
