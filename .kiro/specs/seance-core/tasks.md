@@ -16,20 +16,20 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 2.3 Property tests: conversion round-trip and linearity
     - _Requirements: 1.5, 1.6_
 
-- [ ] 3. Spirit core
-  - [ ] 3.1 Define `Spirit`, `SpiritStream`, `ChannelInfo`, `SampleBatch`, `HealthReport`, error classes
+- [x] 3. Spirit core
+  - [x] 3.1 Define `Spirit`, `SpiritStream`, `ChannelInfo`, `SampleBatch`, `HealthReport`, error classes
     - _Requirements: 2.1, 2.4_
-  - [ ] 3.2 Implement `BaseSpirit` (state machine, event emitter, per-channel fan-out, unsubscribe)
+  - [x] 3.2 Implement `BaseSpirit` (state machine, event emitter, per-channel fan-out, unsubscribe)
     - _Requirements: 2.2, 2.3, 2.5_
-  - [ ] 3.3 Implement `runSpiritContract(name, makeSpirit)` in `transports/contract.ts`
+  - [x] 3.3 Implement `runSpiritContract(name, makeSpirit)` in `transports/contract.ts`
     - _Requirements: 3.4, 2.7, 2.8_
 
-- [ ] 4. Mock transport
-  - [ ] 4.1 Seeded PRNG + signal builders (sine, damped sine, step, free-fall window, noise, constant)
+- [x] 4. Mock transport
+  - [x] 4.1 Seeded PRNG + signal builders (sine, damped sine, step, free-fall window, noise, constant)
     - _Requirements: 4.1, 4.3_
-  - [ ] 4.2 Rate, jitter, dropout and noise injection; batching at ~50 ms
+  - [x] 4.2 Rate, jitter, dropout and noise injection; batching at ~50 ms
     - _Requirements: 4.2_
-  - [ ] 4.3 Run the contract suite against mock
+  - [x] 4.3 Run the contract suite against mock
     - _Requirements: 3.4_
 
 - [ ] 5. Ghost Trace v1
