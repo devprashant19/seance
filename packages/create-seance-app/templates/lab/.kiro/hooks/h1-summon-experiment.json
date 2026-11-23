@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h1-summon-experiment",
+      "description": "H1: when an experiment spec (.kiro/specs/experiments/<id>/requirements.md) is saved, scaffold the experiment plugin if it does not exist yet, otherwise sync the code with what changed in the spec.",
+      "trigger": "PostFileSave",
+      "matcher": "\\.kiro[/\\\\]specs[/\\\\]experiments[/\\\\][^/\\\\]+[/\\\\]requirements\\.md$",
+      "action": {
+        "type": "agent",
+        "prompt": "Hook H1 (summon-experiment) fired: a Seance experiment spec was saved. The saved file path is in the hook context; the experiment id is its folder name.\n\n1. Read the saved requirements.md.\n2. Read .kiro/steering/physics.md and .kiro/steering/units.md.\n3. Let DIR = src/experiments/<id>/.\n   - If DIR does NOT exist, scaffold it: index.ts, theory.ts, analysis.ts, uncertainty.ts, notebook.md.\n   - If DIR DOES exist: diff the spec against the code, change only what the spec now requires differently.\n4. Run tests for the experiment.\n5. Reply with: files created or changed; test results; anything that looks wrong."
+      },
+      "enabled": true
+    }
+  ]
+}

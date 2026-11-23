@@ -1,0 +1,14 @@
+{
+  "name": "create-seance-app",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "create-seance-app": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  }
+}

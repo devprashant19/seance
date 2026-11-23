@@ -98,6 +98,8 @@ importers:
         specifier: ^6.0.0
         version: 6.4.6(@types/node@26.6.6)(lightningcss@1.33.0)(tsx@4.23.15)
 
+  packages/create-seance-app: {}
+
   packages/seance-avatars:
     dependencies:
       react:

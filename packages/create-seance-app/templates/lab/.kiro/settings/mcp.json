@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "seance": {
+      "command": "node",
+      "args": ["../../packages/seance-mcp/dist/index.js"],
+      "env": {
+        "SEANCE_RELAY_URL": "{{relayUrl}}",
+        "SEANCE_ROOM": "DEV1"
+      },
+      "disabled": true,
+      "autoApprove": ["list_spirits", "trace_stats"]
+    }
+  }
+}
