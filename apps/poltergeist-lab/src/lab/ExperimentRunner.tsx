@@ -1,13 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { ExperimentDefinition } from "./registry.js";
 import { judge } from "../oracle/judge.js";
-import type { Verdict, TraceStats, BudgetTerm } from "../oracle/types.js";
+import type { Verdict, TraceStats, BudgetTerm, ExperimentResult } from "../oracle/types.js";
 import { InputsForm } from "./InputsForm.js";
 import { LiveChart } from "./LiveChart.js";
 import { OraclePanel } from "./OraclePanel.js";
 import { UncertaintyBudget } from "./UncertaintyBudget.js";
 import { ExportMenu } from "./ExportMenu.js";
 import { NotebookView } from "../features/notebook/index.js";
+import { diagnoseDiscrepancies, type SpiritDiagnosis } from "../oracle/explain.js";
+import { AskTheSpiritModal } from "../oracle/AskTheSpiritModal.js";
 
 type RunnerState = "SETUP" | "READY_CHECK" | "RECORDING" | "ANALYZING" | "RESULT" | "ERROR";
 
@@ -23,10 +25,14 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
   const [state, setState] = useState<RunnerState>("SETUP");
   const [inputs, setInputs] = useState<Record<string, number>>({});
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [expResult, setExpResult] = useState<ExperimentResult | null>(null);
+  const [expStats, setExpStats] = useState<TraceStats | null>(null);
   const [budget, setBudget] = useState<readonly BudgetTerm[]>([]);
   const [chartData, setChartData] = useState<{ t: number; v: number }[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [showNotebook, setShowNotebook] = useState(false);
+  const [showSpirit, setShowSpirit] = useState(false);
+  const [diagnoses, setDiagnoses] = useState<readonly SpiritDiagnosis[]>([]);
   const [progress, setProgress] = useState(0);
   const channelsRef = useRef<Map<string, ChannelBuffer>>(new Map());
   const recordTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,6 +97,8 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
 
       const v = judge(result, stats, [], pendUncBudget);
       setVerdict(v);
+      setExpResult(result);
+      setExpStats(stats);
       setBudget(pendUncBudget);
       setState("RESULT");
     } catch (err) {
@@ -102,11 +110,15 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
   const handleReset = useCallback(() => {
     setState("SETUP");
     setVerdict(null);
+    setExpResult(null);
+    setExpStats(null);
     setBudget([]);
     setChartData([]);
     setProgress(0);
     setErrorMsg("");
     setShowNotebook(false);
+    setShowSpirit(false);
+    setDiagnoses([]);
   }, []);
 
   const channelList = [...channelsRef.current.values()].map((ch) => ({
@@ -166,6 +178,10 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         </div>
       )}
 
+      {showSpirit && (
+        <AskTheSpiritModal diagnoses={diagnoses} onClose={() => setShowSpirit(false)} />
+      )}
+
       {showNotebook && verdict && (
         <NotebookView
           experimentId={experiment.id}
@@ -185,6 +201,24 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
       {state === "RESULT" && verdict && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <OraclePanel verdict={verdict} />
+          {expResult && expStats && (
+            <button onClick={() => {
+              const facts = {
+                experimentId: experiment.id,
+                result: expResult,
+                stats: expStats,
+                verdict,
+                budget,
+                inputs,
+              };
+              setDiagnoses(diagnoseDiscrepancies(facts));
+              setShowSpirit(true);
+            }} style={{
+              padding: "10px 24px", background: "#1a1a3e", border: "1px solid #558",
+              color: "#aabbff", borderRadius: 6, cursor: "pointer", fontSize: 14,
+              alignSelf: "flex-start",
+            }}>Ask the Spirit</button>
+          )}
           <button onClick={() => setShowNotebook(true)} style={{
             padding: "10px 24px", background: "#1a1a3e", border: "1px solid #446",
             color: "#aabbdd", borderRadius: 6, cursor: "pointer", fontSize: 14,
