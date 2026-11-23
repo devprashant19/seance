@@ -1,13 +1,13 @@
 # Implementation Plan — Banshee Choir
 
-- [ ] 1. App scaffold and joining
-- [ ] 1.1 Create `apps/banshee-choir` (Vite + React, port 5174) importing only `seance-core` / `seance-avatars` entry points
+- [x] 1. App scaffold and joining
+- [x] 1.1 Create `apps/banshee-choir` (Vite + React, port 5174) importing only `seance-core` / `seance-avatars` entry points
   - _Requirements: 1.1, 1.2_
-- [ ] 1.2 Join an existing room from `?room=CODE`, or create one and show the summoning circle + QR
+- [x] 1.2 Join an existing room from `?room=CODE`, or create one and show the summoning circle + QR
   - _Requirements: 1.1, 1.2_
-- [ ] 1.3 `ChoirSession`: voice per present spirit, preset/colour/stage slot assignment, audience ghosts beyond 8
+- [x] 1.3 `ChoirSession`: voice per present spirit, preset/colour/stage slot assignment, audience ghosts beyond 8
   - _Requirements: 1.3, 1.5_
-- [ ] 1.4 Neutral-tilt capture prompt per new voice (1 s), double-tap re-centre
+- [x] 1.4 Neutral-tilt capture prompt per new voice (1 s), double-tap re-centre
   - _Requirements: 1.4_
 
 - [x] 2. Audio unlock
