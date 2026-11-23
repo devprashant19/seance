@@ -52,14 +52,14 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [x] 4.3 Host timer shell: send `sync` every 2 s per peer, record `t3`
     - _Requirements: 4.1_
 
-- [ ] 5. Host transport
-  - [ ] 5.1 `createPhoneBridgeHost` (create room, QR URL, peer map, `onSpirit`)
+- [x] 5. Host transport
+  - [x] 5.1 `createPhoneBridgeHost` (create room, QR URL, peer map, `onSpirit`)
     - _Requirements: 7.1, 1.2_
-  - [ ] 5.2 `PhoneSpirit` (capabilities from `ready`, time mapping, per-channel batches, generated label)
+  - [x] 5.2 `PhoneSpirit` (capabilities from `ready`, time mapping, per-channel batches, generated label)
     - _Requirements: 7.2, 7.3, 4.5_
-  - [ ] 5.3 Health integration: seq-gap dropouts, RTT/offset in report, slow-link and hidden reasons
+  - [x] 5.3 Health integration: seq-gap dropouts, RTT/offset in report, slow-link and hidden reasons
     - _Requirements: 3.5, 5.1, 5.2, 5.3_
-  - [ ] 5.4 `fake-relay.ts` + `runSpiritContract('phone-bridge')`
+  - [x] 5.4 `fake-relay.ts` + `runSpiritContract('phone-bridge')`
     - _Requirements: 7.4_
 
 - [x] 6. Reconnection
