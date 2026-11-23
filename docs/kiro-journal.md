@@ -65,3 +65,15 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** apps/poltergeist-lab/src/oracle/ · apps/poltergeist-lab/src/experiments/ · apps/poltergeist-lab/src/lab/ · apps/poltergeist-lab/src/replay/ · fixtures/traces/ · git tag phase-5
 - **Write-up section:** 10 Physics · 11 Uncertainty · 12 Replay
+
+---
+
+## 2026-11-24 · P6 · Banshee Choir MVP, Web Audio Synthesis, and Ghost Looper
+- **Surface:** IDE
+- **Kiro feature:** steering audio.md · spec banshee-choir
+- **Trigger / ask:** Phase 6 build prompt — web audio engine, scale snapping, voice synth, ghost looper, app scaffold, keyboard demo
+- **What Kiro did:** Built Banshee Choir across 4 commits: (1) Web Audio synthesis — 3 scale modes (graveyard/crypt/fog) with 0.15 hysteresis deadband, tilt-to-pitch/roll-to-cutoff/shake-to-tremolo mapping, dual detuned oscillators (saw+tri, +7 cents), 5.5 Hz vibrato LFO, dual-bandpass formant filters (oo/ah/ee presets), master bus with -3 dB limiter at 20:1. (2) Banshee voice instrument mapping sensor frames to voice params (orientation → pitch/cutoff, accel → tremolo, touch → gate, drone mode), Stage layout with scale/volume/drone controls, Singer SVG with mouth animation and vocal ripples. (3) Ghost Looper — BarClock synced to AudioContext, MotionRecorder with bar-boundary quantization storing control curves not audio, LoopScheduler with 4 concurrent loops and lookahead timer, RevenantSinger with progress ring. (4) App scaffold (Vite 6 + React 19 on port 5174), ChoirHome with keyboard piano (A-K notes, Space sing), JoinChoir mobile touch-and-hold controller with wake lock.
+- **Outcome (numbers):** 18 tests passing (8 audio property + 10 looper). Build 271KB (86KB gzipped). Two-app Skeleton Crew requirement met.
+- **Human correction:** none
+- **Evidence:** apps/banshee-choir/ · docs/choir-validation.md · git tag phase-6
+- **Write-up section:** 13 Audio · 14 Looper · 15 Choir
