@@ -68,6 +68,19 @@
       }
     },
     {
+      "id": "spin-find-chip-android",
+      "file": "raw/2026-11-22T10-00-00Z_probe-spin_find_chip.seance",
+      "experiment": "spin-find-chip",
+      "device": "Android",
+      "label": "Spin & Find the Chip — table spin",
+      "expected": {
+        "quantity": "|r|",
+        "reference": 0.041,
+        "unit": "m",
+        "tolerance": 0.01
+      }
+    },
+    {
       "id": "ruler-steel",
       "file": "raw/2026-11-22T10-00-00Z_probe-background_ios.seance",
       "experiment": "singing-ruler",

@@ -1,9 +1,11 @@
 import type { ExperimentDefinition } from "../experiments/pendulum-g/index.js";
+import { spinFindChip } from "../experiments/spin-find-chip/index.js";
 import { pendulumG } from "../experiments/pendulum-g/index.js";
 import { freeFall } from "../experiments/free-fall/index.js";
 import { singingRuler } from "../experiments/singing-ruler/index.js";
 
 const ALL_EXPERIMENTS: readonly ExperimentDefinition[] = [
+  spinFindChip,
   pendulumG,
   freeFall,
   singingRuler,
