@@ -96,22 +96,22 @@ Phase 2 (Mon Nov 23 – Tue Nov 24). Tasks are ordered so a trace can be replaye
   - [x] 11.3 Property tests: crossing interval = T; sub-hysteresis noise adds no crossings
     - _Requirements: 11.4, 11.5_
 
-- [ ] 12. Damping, fits, uncertainty
-  - [ ] 12.1 `logDecrement`, `dampingRatio`
+- [x] 12. Damping, fits, uncertainty
+  - [x] 12.1 `logDecrement`, `dampingRatio`
     - _Requirements: 12.1_
-  - [ ] 12.2 `linearFit` (OLS + weighted) with standard errors, covariance, R²
+  - [x] 12.2 `linearFit` (OLS + weighted) with standard errors, covariance, R²
     - _Requirements: 12.2_
-  - [ ] 12.3 `relQuadrature`, `propagate` (numeric partials)
+  - [x] 12.3 `relQuadrature`, `propagate` (numeric partials)
     - _Requirements: 12.3_
-  - [ ] 12.4 Property tests: exact-line fit; damped-sine ζ recovery
+  - [x] 12.4 Property tests: exact-line fit; damped-sine ζ recovery
     - _Requirements: 12.4, 12.5_
 
-- [ ] 13. Plugin API
-  - [ ] 13.1 `defineExperiment` with definition-time validation and safe `run()` wrapper
+- [x] 13. Plugin API
+  - [x] 13.1 `defineExperiment` with definition-time validation and safe `run()` wrapper
     - _Requirements: 13.1, 13.2, 13.5_
-  - [ ] 13.2 `defineInstrument`
+  - [x] 13.2 `defineInstrument`
     - _Requirements: 13.3_
-  - [ ] 13.3 Registry + example "hello" experiment used only in tests
+  - [x] 13.3 Registry + example "hello" experiment used only in tests
     - _Requirements: 13.4_
 
 - [ ] 14. Local transport (browser)

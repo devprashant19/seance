@@ -71,3 +71,15 @@ export {
 } from "./health.js";
 
 export * from "./dsp/index.js";
+
+export type {
+  InstrumentDef,
+  ExperimentDef,
+} from "./plugin.js";
+
+export {
+  defineInstrument,
+  defineExperiment,
+  PluginRegistry,
+  getGlobalRegistry,
+} from "./plugin.js";
