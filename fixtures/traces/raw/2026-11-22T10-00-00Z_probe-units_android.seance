@@ -36119,5 +36119,5 @@
     }
   },
   "expected": null,
-  "notes": "Slow 90deg yaw turn between t=3s and t=5s. Integration of gyro z should yield ~pi/2 rad."
+  "notes": "SYNTHETIC placeholder: generated data, not a real phone recording. Replace with a real tools/sensor-probe recording before citing any numbers. Slow 90deg yaw turn between t=3s and t=5s. Integration of gyro z should yield ~pi/2 rad."
 }

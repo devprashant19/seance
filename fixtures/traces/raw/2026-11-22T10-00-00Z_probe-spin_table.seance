@@ -42055,5 +42055,5 @@
     }
   },
   "expected": null,
-  "notes": "Phone spun face-up on smooth table. Initial spin ~3 rev/s decaying."
+  "notes": "SYNTHETIC placeholder: generated data, not a real phone recording. Replace with a real tools/sensor-probe recording before citing any numbers. Phone spun face-up on smooth table. Initial spin ~3 rev/s decaying."
 }

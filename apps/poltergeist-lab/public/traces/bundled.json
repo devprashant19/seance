@@ -5,93 +5,100 @@
       "id": "pendulum-android",
       "file": "raw/2026-11-22T10-00-00Z_probe-pendulum_phoneA.seance",
       "experiment": "pendulum-g",
-      "device": "Android",
-      "label": "Pendulum 1m string — Android",
+      "device": "iPhone",
+      "label": "Pendulum — iPhone (synthetic demo trace)",
       "expected": {
         "quantity": "g",
         "reference": 9.81,
         "unit": "m/s^2",
         "tolerance": 0.5
-      }
+      },
+      "synthetic": true
     },
     {
       "id": "pendulum-iphone",
       "file": "raw/2026-11-22T10-00-00Z_probe-pendulum_phoneB.seance",
       "experiment": "pendulum-g",
-      "device": "iPhone",
-      "label": "Pendulum 1m string — iPhone",
+      "device": "Android",
+      "label": "Pendulum — Android (synthetic demo trace)",
       "expected": {
         "quantity": "g",
         "reference": 9.81,
         "unit": "m/s^2",
         "tolerance": 0.5
-      }
+      },
+      "synthetic": true
     },
     {
       "id": "pendulum-cursed",
       "file": "raw/2026-11-22T10-00-00Z_probe-moving_jitter.seance",
       "experiment": "pendulum-g",
-      "device": "Android",
-      "label": "Pendulum — high jitter (cursed)",
+      "device": "iPhone",
+      "label": "Pendulum — high jitter (cursed) — iPhone (synthetic demo trace)",
       "expected": {
         "quantity": "g",
         "reference": 9.81,
         "unit": "m/s^2",
         "tolerance": 999
       },
-      "cursed": true
+      "cursed": true,
+      "synthetic": true
     },
     {
       "id": "freefall-50cm",
       "file": "raw/2026-11-22T10-00-00Z_probe-freefall_drop.seance",
       "experiment": "free-fall",
-      "device": "Android",
-      "label": "Free-fall 50cm drop",
+      "device": "iPhone",
+      "label": "Free-fall 50cm drop — iPhone (synthetic demo trace)",
       "expected": {
         "quantity": "h",
         "reference": 0.5,
         "unit": "m",
         "tolerance": 0.05
-      }
+      },
+      "synthetic": true
     },
     {
       "id": "freefall-toss",
       "file": "raw/2026-11-22T10-00-00Z_probe-spin_table.seance",
       "experiment": "free-fall",
       "device": "Android",
-      "label": "Toss and catch",
+      "label": "Toss and catch — Android (synthetic demo trace)",
       "expected": {
         "quantity": "h",
         "reference": 0.8,
         "unit": "m",
         "tolerance": 0.15
-      }
+      },
+      "synthetic": true
     },
     {
       "id": "spin-find-chip-android",
       "file": "raw/2026-11-22T10-00-00Z_probe-spin_find_chip.seance",
       "experiment": "spin-find-chip",
-      "device": "Android",
-      "label": "Spin & Find the Chip — table spin",
+      "device": "Synthetic",
+      "label": "Spin & Find the Chip — table spin (synthetic demo trace)",
       "expected": {
         "quantity": "|r|",
         "reference": 0.041,
         "unit": "m",
         "tolerance": 0.01
-      }
+      },
+      "synthetic": true
     },
     {
       "id": "ruler-steel",
       "file": "raw/2026-11-22T10-00-00Z_probe-background_ios.seance",
       "experiment": "singing-ruler",
       "device": "iPhone",
-      "label": "Steel ruler 20cm overhang",
+      "label": "Steel ruler 20cm overhang — iPhone (synthetic demo trace)",
       "expected": {
         "quantity": "E",
         "reference": 200000000000,
         "unit": "Pa",
         "tolerance": 40000000000
-      }
+      },
+      "synthetic": true
     }
   ]
 }

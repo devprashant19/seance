@@ -33627,5 +33627,5 @@
     }
   },
   "expected": null,
-  "notes": "At ~15s switched to another app for 10s. At ~35s locked screen for 10s. Two large gaps expected."
+  "notes": "SYNTHETIC placeholder: generated data, not a real phone recording. Replace with a real tools/sensor-probe recording before citing any numbers. At ~15s switched to another app for 10s. At ~35s locked screen for 10s. Two large gaps expected."
 }

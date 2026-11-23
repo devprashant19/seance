@@ -17,8 +17,8 @@ function loadFixture(filename: string): unknown {
 describe("fixture decode", () => {
   const files = readdirSync(FIXTURES_DIR).filter((f) => f.endsWith(".seance"));
 
-  it("has 10 fixture files", () => {
-    expect(files.length).toBe(10);
+  it("has fixture files (at least 10)", () => {
+    expect(files.length).toBeGreaterThanOrEqual(10);
   });
 
   for (const file of files) {

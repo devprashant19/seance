@@ -84019,5 +84019,5 @@
     }
   },
   "expected": null,
-  "notes": "Pendulum: phone secured by charging cable, L=65cm. Amplitude ~10deg."
+  "notes": "SYNTHETIC placeholder: generated data, not a real phone recording. Replace with a real tools/sensor-probe recording before citing any numbers. Pendulum: phone secured by charging cable, L=65cm. Amplitude ~10deg."
 }
