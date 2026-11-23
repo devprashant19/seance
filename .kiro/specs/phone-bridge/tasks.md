@@ -44,12 +44,12 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [ ] 3.9 Mode-specific phone surface: the host sends its mode in control (`lab` = Begin + status, `choir` = full-screen touch-and-hold pad streaming `control.touch` in normal batches). Needed by Phase 6; Choir falls back to shake-only drone mode without it
     - _Requirements: 3.1_
 
-- [ ] 4. Clock sync (pure core)
-  - [ ] 4.1 `offsetAndDelay`, `estimate` (min-RTT quartile + drift fit), `toHostTime`
+- [x] 4. Clock sync (pure core)
+  - [x] 4.1 `offsetAndDelay`, `estimate` (min-RTT quartile + drift fit), `toHostTime`
     - _Requirements: 4.2, 4.3, 4.4, 4.5_
-  - [ ] 4.2 Property tests: convergence within 5 ms after 8 exchanges (symmetric delay); error ≤ half asymmetry
+  - [x] 4.2 Property tests: convergence within 5 ms after 8 exchanges (symmetric delay); error ≤ half asymmetry
     - _Requirements: 4.6, 4.7_
-  - [ ] 4.3 Host timer shell: send `sync` every 2 s per peer, record `t3`
+  - [x] 4.3 Host timer shell: send `sync` every 2 s per peer, record `t3`
     - _Requirements: 4.1_
 
 - [ ] 5. Host transport
@@ -62,10 +62,10 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [ ] 5.4 `fake-relay.ts` + `runSpiritContract('phone-bridge')`
     - _Requirements: 7.4_
 
-- [ ] 6. Reconnection
-  - [ ] 6.1 Backoff policy (pure) + unit tests for the delay sequence and 2-minute give-up
+- [x] 6. Reconnection
+  - [x] 6.1 Backoff policy (pure) + unit tests for the delay sequence and 2-minute give-up
     - _Requirements: 6.2_
-  - [ ] 6.2 Phone resume with token → same Spirit id on host; host resume with host token
+  - [x] 6.2 Phone resume with token → same Spirit id on host; host resume with host token
     - _Requirements: 6.3, 6.5_
   - [ ] 6.3 Manual test: lock phone 30 s, unlock → spirit returns to `present` without rescanning (pending real phone session)
     - _Requirements: 6.3, 6.4_
