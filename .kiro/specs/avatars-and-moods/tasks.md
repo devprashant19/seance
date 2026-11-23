@@ -79,14 +79,14 @@
 - [x] 8.4 Phone-opened-landing detection → laptop suggestion + phone-only mode
   - _Requirements: 7.4_
 
-- [ ] 9. Possession route (poltergeist-lab)
-- [ ] 9.1 Summoning transition (≤ 1.5 s; instant in Calm mode)
+- [x] 9. Possession route (poltergeist-lab)
+- [x] 9.1 Summoning transition (≤ 1.5 s; instant in Calm mode)
   - _Requirements: 6.3_
-- [ ] 9.2 Tutorial state machine: Tilt → Shake (peak m/s²) → Hold still (calibration ring) → Doors; skippable
+- [x] 9.2 Tutorial state machine: Tilt → Shake (peak m/s²) → Hold still (calibration ring) → Doors; skippable
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 6.4, 6.5_
-- [ ] 9.3 Doors to Lab and Choir (room code carried); "Ghost of a past visitor" drawer with a bundled trace
+- [x] 9.3 Doors to Lab and Choir (room code carried); "Ghost of a past visitor" drawer with a bundled trace
   - _Requirements: 6.5, 9.1_
-- [ ] 9.4 Phone-side failure copy: permission denied + retry, no sensors, insecure context, wake-lock hint (coordinate with phone-bridge join page)
+- [x] 9.4 Phone-side failure copy: permission denied + retry, no sensors, insecure context, wake-lock hint (coordinate with phone-bridge join page)
   - _Requirements: 7.1, 7.2, 7.3, 7.5_
 
 - [ ] 10. Verification
