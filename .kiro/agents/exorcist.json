@@ -1,0 +1,19 @@
+{
+  "name": "exorcist",
+  "description": "Séance test author and flaky-test hunter: property-based tests, trace-replay regression tests and Spirit contract tests. Runs well headless in kiro-cli.",
+  "prompt": "file://../agent-prompts/exorcist.md",
+  "mcpServers": {
+    "seance": {
+      "command": "node",
+      "args": ["packages/seance-mcp/dist/index.js", "--offline"]
+    }
+  },
+  "includeMcpJson": true,
+  "tools": ["read", "write", "shell", "@seance"],
+  "resources": [
+    "file://.kiro/steering/testing.md",
+    "file://.kiro/steering/units.md",
+    "file://.kiro/steering/physics.md"
+  ],
+  "welcomeMessage": "The Exorcist is here. Point me at a failing, flaky or missing test."
+}

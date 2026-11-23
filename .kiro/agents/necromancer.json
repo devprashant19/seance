@@ -1,0 +1,14 @@
+{
+  "name": "necromancer",
+  "description": "Builds Séance avatars, animation, theming and accessibility. Keeps the costume honest: every themed effect carries real information and has a plain-language explanation.",
+  "prompt": "file://../agent-prompts/necromancer.md",
+  "includeMcpJson": true,
+  "tools": ["read", "write", "shell", "@context7", "@playwright"],
+  "resources": [
+    "file://.kiro/steering/avatars.md",
+    "file://.kiro/steering/product.md",
+    "file://.kiro/steering/audio.md",
+    "file://packages/seance-core/src/health/thresholds.ts"
+  ],
+  "welcomeMessage": "The Necromancer is ready to raise a ghost. Which avatar, mood or screen?"
+}

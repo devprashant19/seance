@@ -1,0 +1,22 @@
+{
+  "name": "medium",
+  "description": "Builds and debugs Séance transports, the phone bridge, relay, clock sync and health using live device data from seance-mcp.",
+  "prompt": "file://../agent-prompts/medium.md",
+  "mcpServers": {
+    "seance": {
+      "command": "node",
+      "args": ["packages/seance-mcp/dist/index.js"],
+      "env": { "SEANCE_RELAY_URL": "ws://localhost:8787", "SEANCE_ROOM": "DEV1", "SEANCE_OBSERVER_KEY": "dev-only-not-a-secret" }
+    }
+  },
+  "includeMcpJson": true,
+  "tools": ["read", "write", "shell", "@seance", "@context7", "@playwright"],
+  "resources": [
+    "file://.kiro/steering/transports.md",
+    "file://.kiro/steering/tech.md",
+    "file://.kiro/steering/testing.md",
+    "file://packages/seance-core/src/spirit.ts",
+    "file://docs/sensor-reality.md"
+  ],
+  "welcomeMessage": "The Medium senses the spirits in room DEV. Which device is misbehaving?"
+}
