@@ -29,3 +29,15 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** packages/seance-core/ · test/replay.fixture.test.ts · git tag phase-2
 - **Write-up section:** 3 Steering · 4 Hooks · 7 PBT
+
+---
+
+## 2026-11-23 · P3 · Phone Bridge Protocol, Relay Server, and Transport
+- **Surface:** IDE
+- **Kiro feature:** steering transports.md · hook H3 · hook H4
+- **Trigger / ask:** Phase 3 build prompt — implement phone bridge across 5 commits: protocol, relay server, clock sync, host/phone transports, phone client
+- **What Kiro did:** Built phone bridge across seance-core and seance-relay packages in 5 commits: (1) discriminated-union protocol envelope with columnar batch encoding/decoding and type guards, (2) seance-relay WebSocket room server with RoomManager (4-char codes, 8-peer cap, 10-min host grace, 4-hour hard expiry), Router with host/peer/observer role enforcement, TokenBucket rate limiter (60/s burst 120), 64KB frame guard, /healthz, origin checking, (3) NTP-style ClockSync with median RTT filtering and high-RTT outlier rejection, ReconnectManager with exponential backoff and jitter, (4) HostTransport for host-side peer tracking and batch decoding, PhoneSpirit extending BaseSpirit for phone peers, FakeRelay test harness, (5) PhoneClient with auto-reconnect and clock sync, latency benchmarks proving <1ms encode/decode, 1000-batch zero-drop routing, <64KB payload for 1s 6-axis 60Hz data.
+- **Outcome (numbers):** 177 tests passing (143 core + 34 relay) across 18 test files. Encode/decode round-trip <1ms for 2-channel 60-sample payload. Clock sync converges within 5ms of true offset after 5 samples. 1s 6-axis batch fits well under 64KB frame limit.
+- **Human correction:** none
+- **Evidence:** packages/seance-core/src/transports/phone-bridge/ · packages/seance-relay/ · git tag phase-3
+- **Write-up section:** 5 Networking · 6 Latency

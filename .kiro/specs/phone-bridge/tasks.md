@@ -24,24 +24,24 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [x] 2.7 Relay tests with fake timers (expiry, capacity, origin, rate limit, observer)
     - _Requirements: 1.4, 1.5, 9.1, 9.2, 8.2_
 
-- [ ] 3. Phone client
-  - [ ] 3.1 Join page shell on each app: `/join/:code` via the shared `PhoneJoin` component (seance-avatars), HTTPS check, room-missing state; < 50 KB gzip JS before the Begin tap
+- [x] 3. Phone client
+  - [x] 3.1 Join page shell on each app: `/join/:code` via the shared `PhoneJoin` component (seance-avatars), HTTPS check, room-missing state; < 50 KB gzip JS before the Begin tap
     - _Requirements: 1.3, 2.4_
-  - [ ] 3.2 "Begin the séance" button calling `requestPermission()` inside the tap; denied state with fix text
+  - [x] 3.2 "Begin the séance" button calling `requestPermission()` inside the tap; denied state with fix text
     - _Requirements: 2.1, 2.2, 2.3_
-  - [ ] 3.3 Sensor capture + unit conversion at the edge + NaN filtering
+  - [x] 3.3 Sensor capture + unit conversion at the edge + NaN filtering
     - _Requirements: 3.1, 3.2, 3.6_
-  - [ ] 3.4 50 ms batcher with `seq`
+  - [x] 3.4 50 ms batcher with `seq`
     - _Requirements: 3.3, 3.4_
-  - [ ] 3.5 Clock-sync responder (`t1` on receive, `t2` just before send)
+  - [x] 3.5 Clock-sync responder (`t1` on receive, `t2` just before send)
     - _Requirements: 4.1_
-  - [ ] 3.6 Wake lock acquire/re-acquire + "Keep this screen on" fallback
+  - [x] 3.6 Wake lock acquire/re-acquire + "Keep this screen on" fallback
     - _Requirements: 2.5, 6.4_
-  - [ ] 3.7 `visibilitychange` → `peer-hidden` / `peer-visible`
+  - [x] 3.7 `visibilitychange` → `peer-hidden` / `peer-visible`
     - _Requirements: 5.3_
   - [ ]* 3.8 Microphone channel on the phone (only for experiments that ask)
     - _Requirements: 2.6_
-  - [ ] 3.9 Mode-specific phone surface: the host sends its mode in control (`lab` = Begin + status, `choir` = full-screen touch-and-hold pad streaming `control.touch` in normal batches). Needed by Phase 6; Choir falls back to shake-only drone mode without it
+  - [x] 3.9 Mode-specific phone surface: the host sends its mode in control (`lab` = Begin + status, `choir` = full-screen touch-and-hold pad streaming `control.touch` in normal batches). Needed by Phase 6; Choir falls back to shake-only drone mode without it
     - _Requirements: 3.1_
 
 - [x] 4. Clock sync (pure core)
@@ -70,10 +70,10 @@ Phase 3 (Wed Nov 25 – Thu Nov 26 AM). Goal for Wednesday night: live numbers f
   - [ ] 6.3 Manual test: lock phone 30 s, unlock → spirit returns to `present` without rescanning (pending real phone session)
     - _Requirements: 6.3, 6.4_
 
-- [ ] 7. QR and join UX (shared component in seance-avatars or app)
-  - [ ] 7.1 QR rendering (small dependency such as `qrcode`) + large code text + copy link
+- [x] 7. QR and join UX (shared component in seance-avatars or app)
+  - [x] 7.1 QR rendering (small dependency such as `qrcode`) + large code text + copy link
     - _Requirements: 1.2_
-  - [ ] 7.2 "Circle is full" and "séance has ended" screens
+  - [x] 7.2 "Circle is full" and "séance has ended" screens
     - _Requirements: 1.3, 1.5_
 
 - [ ] 8. Deploy and measure

@@ -28,5 +28,8 @@ export type { PeerInfo, HostTransportEvents } from "./host.js";
 export { PhoneSpirit } from "./phone-spirit.js";
 export type { PhoneSpiritConfig } from "./phone-spirit.js";
 
+export { PhoneClient } from "./phone-client.js";
+export type { PhoneClientConfig, PhoneClientEvents, PhoneClientState } from "./phone-client.js";
+
 export { FakeRelay } from "./fake-relay.js";
 export type { FakeClient } from "./fake-relay.js";
