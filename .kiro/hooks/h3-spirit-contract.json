@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h3-spirit-contract",
+      "description": "H3: when a transport source file is saved, run the Spirit contract, mock replay and reconnection tests for seance-core. Cheap command action; failures are passed to the agent.",
+      "trigger": "PostFileSave",
+      "matcher": "packages[/\\\\]seance-core[/\\\\]src[/\\\\]transports[/\\\\].*\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/kiro/run-vitest.mjs --project packages/seance-core --filter contract,replay,reconnect,clock-sync"
+      },
+      "timeout": 120,
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "h4-physics-guard-checks",
+      "description": "H4a: when signal-processing or experiment source is saved, type-check units and run the property-based tests. Cheap command action; failures are passed to the agent.",
+      "trigger": "PostFileSave",
+      "matcher": "(packages[/\\\\]seance-core[/\\\\]src[/\\\\]signal|apps[/\\\\]poltergeist-lab[/\\\\]src[/\\\\]experiments)[/\\\\]([^/\\\\]+[/\\\\])*[A-Za-z0-9_-]+\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "node scripts/kiro/run-vitest.mjs --typecheck --project packages/seance-core --project apps/poltergeist-lab --filter property"
+      },
+      "timeout": 180,
+      "enabled": true
+    },
+    {
+      "name": "h4-physics-guard-review",
+      "description": "H4b: when an experiment's theory, analysis or uncertainty file is saved, review it for missing units, uncertainty, method and assumptions. Agent action (uses credits), so it only watches experiment physics files.",
+      "trigger": "PostFileSave",
+      "matcher": "apps[/\\\\]poltergeist-lab[/\\\\]src[/\\\\]experiments[/\\\\][a-z0-9-]+[/\\\\](theory|analysis|uncertainty)\\.ts$",
+      "action": {
+        "type": "agent",
+        "prompt": "Physics guard (hook H4b). An experiment physics file was just saved. Review ONLY that file against .kiro/steering/physics.md and .kiro/steering/units.md. Check: (1) every physical value in exported signatures uses Quantity<U> from seance-core/units, not bare number; (2) every result returned to the app has value, uncertainty, unit, method and assumptions; (3) every formula has a comment naming its source and validity range (e.g. small-angle pendulum, Euler-Bernoulli first mode); (4) uncertainty propagation matches the formula (relative errors in quadrature with the right powers); (5) theory functions are pure. If everything passes, reply with one line: 'Physics guard: OK'. If not, list each problem with the line number and a one-line fix, and apply only fixes that do not change the public API. Do not edit other files. If you add or change a theory function, remind the user that hook H8 will refresh the notebook template."
+      },
+      "enabled": true
+    }
+  ]
+}
