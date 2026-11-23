@@ -77,3 +77,15 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** apps/banshee-choir/ · docs/choir-validation.md · git tag phase-6
 - **Write-up section:** 13 Audio · 14 Looper · 15 Choir
+
+---
+
+## 2026-11-24 · P7 · MCP Server, Custom Agents, and Developer Hooks
+- **Surface:** IDE
+- **Kiro feature:** MCP server · custom agents · hooks H5-H8 · settings/mcp.json
+- **Trigger / ask:** Phase 7 build prompt — MCP tools, Kiro agents, developer automation hooks, power bundle
+- **What Kiro did:** Built Kiro Superpowers across 4 commits: (1) MCP stdio server with 3 tools (trace_stats, list_spirits, record_trace) using @modelcontextprotocol/sdk, zod v4 schemas, StdioServerTransport, stderr-only logging. Handles both array and object-map channel formats via decodeTrace. (2) 3 advanced MCP tools — read_stream (live WebSocket observer with decimation), run_experiment (pendulum-g/free-fall/singing-ruler pipelines with uncertainty), compare_traces (timing diff + channel RMS). Updated mcp.json autoApprove list. (3) 4 custom Kiro agents — Physicist (experiment validation), Medium (live session facilitation), Necromancer (trace resurrection), Exorcist (system debugging). (4) Hooks H5-H8 — public API guard (downstream typecheck), mood docs sync, trace schema validation, a11y sweep — with 3 helper scripts.
+- **Outcome (numbers):** 9 tests passing (3 core + 6 advanced). 6 MCP tools registered. 4 agents. 8 hooks total. Build clean, typecheck clean.
+- **Human correction:** none
+- **Evidence:** packages/seance-mcp/ · .kiro/agents/ · .kiro/hooks/ · power/ · git tag phase-7
+- **Write-up section:** 16 MCP · 17 Agents · 18 Hooks

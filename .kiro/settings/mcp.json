@@ -2,14 +2,22 @@
   "mcpServers": {
     "seance": {
       "command": "node",
-      "args": ["packages/seance-mcp/dist/index.js"],
+      "args": [
+        "packages/seance-mcp/dist/index.js"
+      ],
       "env": {
         "SEANCE_RELAY_URL": "ws://localhost:8787",
         "SEANCE_ROOM": "DEV1",
         "SEANCE_OBSERVER_KEY": "dev-only-not-a-secret"
       },
-      "disabled": true,
-      "autoApprove": ["list_spirits", "trace_stats", "read_stream", "run_experiment", "compare_traces"]
+      "disabled": false,
+      "autoApprove": [
+        "list_spirits",
+        "trace_stats",
+        "read_stream",
+        "run_experiment",
+        "compare_traces"
+      ]
     },
     "context7": {
       "url": "https://mcp.context7.com/mcp",
@@ -17,7 +25,9 @@
     },
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"],
+      "args": [
+        "@playwright/mcp@latest"
+      ],
       "disabled": true
     }
   }

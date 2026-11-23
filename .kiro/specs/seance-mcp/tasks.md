@@ -46,9 +46,9 @@
 - [x]* 6.1 Property test: record → decode lossless for random buffers
   - _Requirements: 4.3_
 
-- [ ] 7. Enable in Kiro
-  - [ ] Set `seance.disabled = false` in `.kiro/settings/mcp.json`; autoApprove read-only tools
-  - [ ] Verify the MCP panel shows the tools; verify hook H2 fires after a `record_trace` call
+- [x] 7. Enable in Kiro
+  - [x] Set `seance.disabled = false` in `.kiro/settings/mcp.json`; autoApprove read-only tools
+  - [x] Verify the MCP panel shows the tools; verify hook H2 fires after a `record_trace` call
   - _Requirements: 1.1, 4.8_
 
 - [x]* 8. read_stream tool
@@ -76,6 +76,6 @@
   - [x] Unknown-property rejection test for every tool; no raw audio in any output
   - _Requirements: 8.2, 8.3_
 
-- [ ] 12. Docs and Power wiring
-  - [ ] Copy the tool reference to `docs/seance-mcp.md`; make `power/mcp.json` start the published or packaged server with `--offline`
+- [x] 12. Docs and Power wiring
+  - [x] Copy the tool reference to `docs/seance-mcp.md`; make `power/mcp.json` start the published or packaged server with `--offline`
   - _Requirements: 1.5_
