@@ -9,7 +9,7 @@
         "SEANCE_OBSERVER_KEY": "dev-only-not-a-secret"
       },
       "disabled": true,
-      "autoApprove": ["list_spirits", "trace_stats"]
+      "autoApprove": ["list_spirits", "trace_stats", "read_stream", "run_experiment", "compare_traces"]
     },
     "context7": {
       "url": "https://mcp.context7.com/mcp",

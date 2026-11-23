@@ -51,25 +51,25 @@
   - [ ] Verify the MCP panel shows the tools; verify hook H2 fires after a `record_trace` call
   - _Requirements: 1.1, 4.8_
 
-- [ ]* 8. read_stream tool
-  - [ ] Summary stats + min-max decimation, `waitForFresh`, spectrum peaks
+- [x]* 8. read_stream tool
+  - [x] Summary stats + min-max decimation, `waitForFresh`, spectrum peaks
   - _Requirements: 5.1–5.5_
 
-- [ ]* 8.1 Property test: decimation preserves the global min/max per axis
+- [x]* 8.1 Property test: decimation preserves the global min/max per axis
   - _Requirements: 5.2_
 
-- [ ]* 9. run_experiment tool
-  - [ ] Registry lookup, inputs merge, `vsExpected`, `pipeline`, `skipResample`
+- [x]* 9. run_experiment tool
+  - [x] Registry lookup, inputs merge, `vsExpected`, `pipeline`, `skipResample`
   - _Requirements: 6.1–6.5_
 
-- [ ]* 9.1 Property test: synthetic pendulum traces recover g within reported uncertainty
+- [x]* 9.1 Property test: synthetic pendulum traces recover g within reported uncertainty
   - _Requirements: 6.1_
 
-- [ ]* 10. compare_traces tool
-  - [ ] Timing diff, common-grid RMS difference, dominant frequency, result delta, rule-based likelyCauses
+- [x]* 10. compare_traces tool
+  - [x] Timing diff, common-grid RMS difference, dominant frequency, result delta, rule-based likelyCauses
   - _Requirements: 7.1–7.4_
 
-- [ ]* 10.1 Property test: compare_traces(a, a) is all zeros
+- [x]* 10.1 Property test: compare_traces(a, a) is all zeros
   - _Requirements: 7.1, 7.2, 7.3_
 
 - [ ] 11. Security checks
