@@ -16,10 +16,12 @@
         "@types/three": "^0.170.0",
         "@vitejs/plugin-react": "^4.3.0",
         "three": "^0.170.0",
+        "tsx": "^4.23.15",
         "vite": "^6.0.0"
     },
     "scripts": {
         "dev": "vite --host --port 5173",
+        "prebuild": "tsx scripts/sync-traces.ts",
         "build": "vite build",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "test": "vitest run --passWithNoTests"

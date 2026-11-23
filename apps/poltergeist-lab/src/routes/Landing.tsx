@@ -150,8 +150,8 @@ export function Landing() {
         </>
       )}
 
-      <a href="/?replay=1" style={{ marginTop: 32, color: "#667", fontSize: 14, textDecoration: "none" }}>
-        No phone? Watch a recorded haunting &rarr;
+      <a href="/replay" style={{ marginTop: 32, color: "#667", fontSize: 14, textDecoration: "none" }}>
+        No phone? Try Replay Mode &rarr;
       </a>
 
       <style>{`@keyframes pulse { 0%,100% { opacity:.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.05); } }`}</style>

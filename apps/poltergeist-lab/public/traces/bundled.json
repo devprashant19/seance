@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "traces": [
+    {
+      "id": "pendulum-android",
+      "file": "raw/2026-11-22T10-00-00Z_probe-pendulum_phoneA.seance",
+      "experiment": "pendulum-g",
+      "device": "Android",
+      "label": "Pendulum 1m string — Android",
+      "expected": {
+        "quantity": "g",
+        "reference": 9.81,
+        "unit": "m/s^2",
+        "tolerance": 0.5
+      }
+    },
+    {
+      "id": "pendulum-iphone",
+      "file": "raw/2026-11-22T10-00-00Z_probe-pendulum_phoneB.seance",
+      "experiment": "pendulum-g",
+      "device": "iPhone",
+      "label": "Pendulum 1m string — iPhone",
+      "expected": {
+        "quantity": "g",
+        "reference": 9.81,
+        "unit": "m/s^2",
+        "tolerance": 0.5
+      }
+    },
+    {
+      "id": "pendulum-cursed",
+      "file": "raw/2026-11-22T10-00-00Z_probe-moving_jitter.seance",
+      "experiment": "pendulum-g",
+      "device": "Android",
+      "label": "Pendulum — high jitter (cursed)",
+      "expected": {
+        "quantity": "g",
+        "reference": 9.81,
+        "unit": "m/s^2",
+        "tolerance": 999
+      },
+      "cursed": true
+    },
+    {
+      "id": "freefall-50cm",
+      "file": "raw/2026-11-22T10-00-00Z_probe-freefall_drop.seance",
+      "experiment": "free-fall",
+      "device": "Android",
+      "label": "Free-fall 50cm drop",
+      "expected": {
+        "quantity": "h",
+        "reference": 0.5,
+        "unit": "m",
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "freefall-toss",
+      "file": "raw/2026-11-22T10-00-00Z_probe-spin_table.seance",
+      "experiment": "free-fall",
+      "device": "Android",
+      "label": "Toss and catch",
+      "expected": {
+        "quantity": "h",
+        "reference": 0.8,
+        "unit": "m",
+        "tolerance": 0.15
+      }
+    },
+    {
+      "id": "ruler-steel",
+      "file": "raw/2026-11-22T10-00-00Z_probe-background_ios.seance",
+      "experiment": "singing-ruler",
+      "device": "iPhone",
+      "label": "Steel ruler 20cm overhang",
+      "expected": {
+        "quantity": "E",
+        "reference": 200000000000,
+        "unit": "Pa",
+        "tolerance": 40000000000
+      }
+    }
+  ]
+}

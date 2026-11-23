@@ -46,16 +46,16 @@
 - [x] 5.3 `singing-ruler` (laptop mic banshee, predicted-frequency helper, spectrum pipeline)
   - _Requirements: 4.1, 4.2_
 
-- [ ] 6. Replay mode
-- [ ] 6.1 `scripts/sync-traces.ts` prebuild: validate + copy traces listed in `fixtures/traces/bundled.json`; fail build on error
+- [x] 6. Replay mode
+- [x] 6.1 `scripts/sync-traces.ts` prebuild: validate + copy traces listed in `fixtures/traces/bundled.json`; fail build on error
   - _Requirements: 6.1_
-- [ ] 6.2 Replay route (`?replay=<traceId>`) using the replay transport through the same runner; Revenant avatar + recorded label
+- [x] 6.2 Replay route (`?replay=<traceId>`) using the replay transport through the same runner; Revenant avatar + recorded label
   - _Requirements: 6.2, 6.3_
-- [ ] 6.3 `ReplayControls` (play/pause, 1×/4×, skip to result) and "What if?" input edits
+- [x] 6.3 `ReplayControls` (play/pause, 1×/4×, skip to result) and "What if?" input edits
   - _Requirements: 6.4, 6.5_
-- [ ]* 6.4 Property test: replay ≡ direct `analyze()` (P-LAB-5)
+- [x]* 6.4 Property test: replay ≡ direct `analyze()` (P-LAB-5)
   - _Requirements: 6.5_
-- [ ] 6.5 Curate ≥ 6 bundled traces (2 per experiment, ≥ 2 phones, 1 cursed)
+- [x] 6.5 Curate ≥ 6 bundled traces (2 per experiment, ≥ 2 phones, 1 cursed)
   - _Requirements: 6.1, 6.6_
 
 - [x] 7. Export
@@ -66,8 +66,8 @@
 - [x]* 7.3 Property test: `.seance` round-trip (P-LAB-6)
   - _Requirements: 7.3_
 
-- [ ] 8. Accessibility and judge path
-- [ ] 8.1 Keyboard paths, visible focus, text equivalents for charts
+- [x] 8. Accessibility and judge path
+- [x] 8.1 Keyboard paths, visible focus, text equivalents for charts
   - _Requirements: 8.2, 8.3_
 - [ ] 8.2 Playwright E2E: landing → "No phone?" → Lab → replay pendulum → verdict < 60 s; possession Lab door → runner (deferred to K6)
   - _Requirements: 6.6, 9.1_
