@@ -36,20 +36,20 @@
 - [x] 4.4 OfflineAudioContext test: 4 voices + 4 loops at full volume peak < 0 dBFS
   - _Requirements: 6.3_
 
-- [ ] 5. Instrument
-- [ ] 5.1 `defineInstrument` banshee voice: `map()` pure, `apply()` via setTargetAtTime only, ≤ 60 Hz updates
+- [x] 5. Instrument
+- [x] 5.1 `defineInstrument` banshee voice: `map()` pure, `apply()` via setTargetAtTime only, ≤ 60 Hz updates
   - _Requirements: 3.4, 7.3_
-- [ ] 5.2 Gate from `control.touch`; drone mode (gain = 0.15 + 0.85·s); fallback to drone when no touch channel
+- [x] 5.2 Gate from `control.touch`; drone mode (gain = 0.15 + 0.85·s); fallback to drone when no touch channel
   - _Requirements: 5.1, 5.2_
 
-- [ ] 6. Stage
-- [ ] 6.1 `Singer` avatar per voice (mouth = envelope, glow/badge = mood, colour + name); Revenant singers with loop-progress ring
+- [x] 6. Stage
+- [x] 6.1 `Singer` avatar per voice (mouth = envelope, glow/badge = mood, colour + name); Revenant singers with loop-progress ring
   - _Requirements: 9.1, 9.2_
-- [ ] 6.2 Controls: scale, tempo, master volume, per-voice mute — keyboard accessible
+- [x] 6.2 Controls: scale, tempo, master volume, per-voice mute — keyboard accessible
   - _Requirements: 3.5, 9.3_
-- [ ] 6.3 Reduced motion: static avatars, numeric level, numeric beat counter
+- [x] 6.3 Reduced motion: static avatars, numeric level, numeric beat counter
   - _Requirements: 9.4_
-- [ ] 6.4 Laptop-only: recorded séance (bundled `demo` traces) + keyboard-played voice
+- [x] 6.4 Laptop-only: recorded séance (bundled `demo` traces) + keyboard-played voice
   - _Requirements: 9.5_
 
 - [ ] 7. Ghost Looper
