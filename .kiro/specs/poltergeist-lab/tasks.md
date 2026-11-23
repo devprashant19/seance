@@ -1,9 +1,9 @@
 # Implementation Plan — Poltergeist Lab
 
-- [ ] 1. Lab shell and registry
-- [ ] 1.1 `registry.ts` auto-discovering `src/experiments/*/index.ts`, validating id/channels/inputs, skipping invalid modules with a dev warning
+- [x] 1. Lab shell and registry
+- [x] 1.1 `registry.ts` auto-discovering `src/experiments/*/index.ts`, validating id/channels/inputs, skipping invalid modules with a dev warning
   - _Requirements: 1.1, 1.4_
-- [ ] 1.2 Experiment library page with cards (spooky + plain title, spirits needed, time, live/replay availability)
+- [x] 1.2 Experiment library page with cards (spooky + plain title, spirits needed, time, live/replay availability)
   - _Requirements: 1.2, 1.3_
 
 - [ ] 2. Runner
@@ -38,12 +38,12 @@
 - [x] 4.7 `OraclePanel` with avatar reaction (reduced-motion aware)
   - _Requirements: 5.5, 8.4_
 
-- [ ] 5. Experiments (each also has its own spec under `.kiro/specs/experiments/`)
-- [ ] 5.1 `pendulum-g` written by hand as the reference pattern (theory, analysis, uncertainty, notebook, card, property tests)
+- [x] 5. Experiments (each also has its own spec under `.kiro/specs/experiments/`)
+- [x] 5.1 `pendulum-g` written by hand as the reference pattern (theory, analysis, uncertainty, notebook, card, property tests)
   - _Requirements: 4.1, 4.2_
-- [ ] 5.2 `free-fall` scaffolded by hook H1 from its spec, then completed and validated
+- [x] 5.2 `free-fall` scaffolded by hook H1 from its spec, then completed and validated
   - _Requirements: 1.1, 4.1_
-- [ ] 5.3 `singing-ruler` (laptop mic banshee, predicted-frequency helper, spectrum pipeline)
+- [x] 5.3 `singing-ruler` (laptop mic banshee, predicted-frequency helper, spectrum pipeline)
   - _Requirements: 4.1, 4.2_
 
 - [ ] 6. Replay mode
