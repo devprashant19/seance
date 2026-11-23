@@ -6,14 +6,14 @@
 - [x] 1.2 Experiment library page with cards (spooky + plain title, spirits needed, time, live/replay availability)
   - _Requirements: 1.2, 1.3_
 
-- [ ] 2. Runner
-- [ ] 2.1 `ExperimentRunner` state machine SETUP → READY_CHECK → RECORDING → ANALYZING → RESULT (+ ERROR)
+- [x] 2. Runner
+- [x] 2.1 `ExperimentRunner` state machine SETUP → READY_CHECK → RECORDING → ANALYZING → RESULT (+ ERROR)
   - _Requirements: 2.1, 2.3, 2.5, 2.6_
-- [ ] 2.2 Safety notice panel gating Start
+- [x] 2.2 Safety notice panel gating Start
   - _Requirements: 2.2, 8.1_
-- [ ] 2.3 `LiveChart` (uPlot ring buffers, ≤ 30 Hz updates) + avatar with mood badge beside it
+- [x] 2.3 `LiveChart` (uPlot ring buffers, ≤ 30 Hz updates) + avatar with mood badge beside it
   - _Requirements: 2.4_
-- [ ] 2.4 Trace recording via `seance-core` `TraceRecorder` (channels, inputs, device, clock, calibration, health summary)
+- [x] 2.4 Trace recording via `seance-core` `TraceRecorder` (channels, inputs, device, clock, calibration, health summary)
   - _Requirements: 2.5, 9.2_
 
 - [x] 3. Inputs
@@ -58,12 +58,12 @@
 - [ ] 6.5 Curate ≥ 6 bundled traces (2 per experiment, ≥ 2 phones, 1 cursed)
   - _Requirements: 6.1, 6.6_
 
-- [ ] 7. Export
-- [ ] 7.1 Raw CSV and results CSV with SI units in headers
+- [x] 7. Export
+- [x] 7.1 Raw CSV and results CSV with SI units in headers
   - _Requirements: 7.1, 7.2_
-- [ ] 7.2 `.seance` download + dev-only "Save to fixtures" middleware
+- [x] 7.2 `.seance` download + dev-only "Save to fixtures" middleware
   - _Requirements: 7.3, 7.4_
-- [ ]* 7.3 Property test: `.seance` round-trip (P-LAB-6)
+- [x]* 7.3 Property test: `.seance` round-trip (P-LAB-6)
   - _Requirements: 7.3_
 
 - [ ] 8. Accessibility and judge path

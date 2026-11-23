@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Landing } from "./routes/Landing.js";
 import { Join } from "./routes/Join.js";
 import { Possession } from "./routes/Possession.js";
+import { Lab } from "./routes/Lab.js";
+import { LabRunner } from "./routes/LabRunner.js";
 
 export function App() {
   return (
@@ -10,6 +12,8 @@ export function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/join/:code" element={<Join />} />
         <Route path="/possession/:code" element={<Possession />} />
+        <Route path="/lab" element={<Lab />} />
+        <Route path="/lab/:id" element={<LabRunner />} />
       </Routes>
     </BrowserRouter>
   );
