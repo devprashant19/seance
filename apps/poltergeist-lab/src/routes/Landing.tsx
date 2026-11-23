@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { SpiritTrouble } from "seance-avatars";
 
 const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "ws://localhost:4000";
 const RETRY_DELAY_MS = 5000;
@@ -125,14 +126,11 @@ export function Landing() {
       <p style={{ color: "#888", marginBottom: 32, maxWidth: 400 }}>Scan the code with your phone to begin the haunting.</p>
 
       {error && !roomCode && (
-        <div style={{ marginBottom: 24, color: "#ff8866" }}>
-          <p>{error}</p>
-          {retryIn > 0 && <p style={{ fontSize: 14, color: "#999" }}>Retrying in {retryIn}s...</p>}
-          <button onClick={() => { window.location.href = "/?offline=1"; }} style={{
-            marginTop: 12, padding: "8px 20px", background: "transparent",
-            border: "1px solid #555", color: "#aaa", borderRadius: 6, cursor: "pointer",
-          }}>Continue in offline demo mode</button>
-        </div>
+        <SpiritTrouble
+          code="relay-unreachable-host"
+          onAction={connectRelay}
+          onSecondaryAction={() => { window.location.href = "/replay"; }}
+        />
       )}
 
       {roomCode && (
@@ -150,8 +148,18 @@ export function Landing() {
         </>
       )}
 
-      <a href="/replay" style={{ marginTop: 32, color: "#667", fontSize: 14, textDecoration: "none" }}>
-        No phone? Try Replay Mode &rarr;
+      <a
+        href="/replay"
+        style={{
+          marginTop: 32,
+          color: "#99aabb",
+          fontSize: 14,
+          textDecoration: "underline",
+          padding: "8px 16px",
+          display: "inline-block",
+        }}
+      >
+        No phone? Watch a recorded haunting &rarr;
       </a>
 
       <style>{`@keyframes pulse { 0%,100% { opacity:.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.05); } }`}</style>

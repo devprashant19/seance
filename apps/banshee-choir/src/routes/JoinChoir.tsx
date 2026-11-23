@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { SpiritTrouble, type SpiritTroubleCode } from "seance-avatars";
 
 const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "ws://localhost:4000";
 const BATCH_INTERVAL_MS = 50;
@@ -7,13 +8,18 @@ const BATCH_INTERVAL_MS = 50;
 export function JoinChoir() {
   const { code } = useParams<{ code: string }>();
   const [connected, setConnected] = useState(false);
+  const [trouble, setTrouble] = useState<SpiritTroubleCode | null>(null);
   const [singing, setSinging] = useState(false);
   const [pitchNote, setPitchNote] = useState("--");
   const wsRef = useRef<WebSocket | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
-  useEffect(() => {
-    if (!code) return;
+  const connectChoir = useCallback(() => {
+    if (!code) {
+      setTrouble("room-not-found");
+      return;
+    }
+    setTrouble(null);
     const ws = new WebSocket(RELAY_URL);
     wsRef.current = ws;
 
@@ -24,14 +30,28 @@ export function JoinChoir() {
     ws.addEventListener("message", (e) => {
       try {
         const msg = JSON.parse(e.data as string);
-        if (msg.type === "welcome") setConnected(true);
+        if (msg.type === "welcome") {
+          setConnected(true);
+          setTrouble(null);
+        }
       } catch { /* ignore */ }
     });
 
-    ws.addEventListener("close", () => setConnected(false));
+    ws.addEventListener("error", () => {
+      setConnected(false);
+      setTrouble("relay-unreachable-phone");
+    });
 
-    return () => { ws.close(); };
+    ws.addEventListener("close", () => {
+      setConnected(false);
+      setTrouble("relay-dropped");
+    });
   }, [code]);
+
+  useEffect(() => {
+    connectChoir();
+    return () => { wsRef.current?.close(); };
+  }, [connectChoir]);
 
   useEffect(() => {
     async function acquireWakeLock() {
@@ -76,7 +96,14 @@ export function JoinChoir() {
         Banshee Choir
       </h2>
 
-      {!connected && (
+      {trouble && (
+        <SpiritTrouble
+          code={trouble}
+          onAction={connectChoir}
+        />
+      )}
+
+      {!connected && !trouble && (
         <p style={{ color: "#889", marginBottom: 16 }}>Connecting to room {code}...</p>
       )}
 

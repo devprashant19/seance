@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { SpiritTrouble, type SpiritTroubleCode } from "seance-avatars";
 
 const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "ws://localhost:4000";
 const BATCH_INTERVAL_MS = 50;
 
-type ConnectionState = "connecting" | "connected" | "error" | "unsupported";
+type ConnectionState = "needs-gesture" | "connecting" | "connected" | "error" | "unsupported";
 
 interface SensorSample {
   readonly t: number;
@@ -26,7 +27,8 @@ function hasDeviceOrientation(): boolean {
 
 export function Join() {
   const { code } = useParams<{ code: string }>();
-  const [state, setState] = useState<ConnectionState>("connecting");
+  const [state, setState] = useState<ConnectionState>("needs-gesture");
+  const [troubleCode, setTroubleCode] = useState<SpiritTroubleCode>("relay-unreachable-phone");
   const [errorMsg, setErrorMsg] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
   const bufferRef = useRef<SensorSample[]>([]);
@@ -86,25 +88,42 @@ export function Join() {
     }
   }, []);
 
-  useEffect(() => {
+  const beginSeance = useCallback(async () => {
     if (!code) {
       setState("error");
-      setErrorMsg("No room code provided.");
+      setTroubleCode("room-not-found");
       return;
     }
 
     if (!isSecureContext()) {
-      setState("unsupported");
-      setErrorMsg("Secure context (HTTPS) required for sensor access.");
+      setState("error");
+      setTroubleCode("insecure-context");
       return;
     }
 
     if (!hasDeviceOrientation()) {
-      setState("unsupported");
-      setErrorMsg("DeviceOrientation API not available on this device.");
+      setState("error");
+      setTroubleCode("no-sensors");
       return;
     }
 
+    // iOS permission request in gesture handler
+    if (typeof (DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === "function") {
+      try {
+        const motionResp = await (DeviceMotionEvent as unknown as { requestPermission: () => Promise<string> }).requestPermission();
+        if (motionResp !== "granted") {
+          setState("error");
+          setTroubleCode("motion-denied");
+          return;
+        }
+      } catch {
+        setState("error");
+        setTroubleCode("motion-denied");
+        return;
+      }
+    }
+
+    setState("connecting");
     const ws = new WebSocket(RELAY_URL);
     wsRef.current = ws;
 
@@ -123,29 +142,35 @@ export function Join() {
           batchTimerRef.current = setInterval(flushBatch, BATCH_INTERVAL_MS);
         } else if (msg.type === "error") {
           setState("error");
-          setErrorMsg(msg.message ?? "Connection rejected by relay.");
+          if (msg.message?.includes("full")) {
+            setTroubleCode("room-full");
+          } else {
+            setTroubleCode("room-not-found");
+          }
         }
       } catch { /* ignore parse errors */ }
     });
 
     ws.addEventListener("error", () => {
       setState("error");
-      setErrorMsg("Cannot reach relay server.");
+      setTroubleCode("relay-unreachable-phone");
     });
 
     ws.addEventListener("close", () => {
       setState("error");
-      setErrorMsg("Disconnected from session.");
+      setTroubleCode("relay-dropped");
     });
+  }, [code, requestWakeLock, handleOrientation, handleMotion, flushBatch]);
 
+  useEffect(() => {
     return () => {
       window.removeEventListener("deviceorientation", handleOrientation);
       window.removeEventListener("devicemotion", handleMotion);
       if (batchTimerRef.current) clearInterval(batchTimerRef.current);
       releaseWakeLock();
-      ws.close();
+      wsRef.current?.close();
     };
-  }, [code, requestWakeLock, releaseWakeLock, handleOrientation, handleMotion, flushBatch]);
+  }, [releaseWakeLock, handleOrientation, handleMotion]);
 
   return (
     <main style={{
@@ -153,9 +178,40 @@ export function Join() {
       alignItems: "center", justifyContent: "center", padding: 16,
       textAlign: "center", background: "#0a0a1a",
     }}>
+      {state === "needs-gesture" && (
+        <div style={{ maxWidth: 320 }}>
+          <div style={{
+            width: 100, height: 100, borderRadius: "50%",
+            border: "2px solid rgba(120, 160, 255, 0.4)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 24px",
+          }}>
+            <span style={{ fontSize: 36 }}>🕯</span>
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 400, color: "#f0f4ff", marginBottom: 8 }}>
+            Summon Spirit
+          </h2>
+          <p style={{ color: "#889", fontSize: 14, marginBottom: 24, lineHeight: 1.5 }}>
+            Room <strong style={{ color: "#aaccff" }}>{code}</strong>. Tap below to awaken the vessel and link your phone sensors.
+          </p>
+          <button
+            type="button"
+            onClick={beginSeance}
+            style={{
+              width: "100%", minHeight: 48, padding: "12px 24px",
+              background: "#334477", border: "1px solid #5577bb",
+              color: "#fff", borderRadius: 8, cursor: "pointer",
+              fontSize: 16, fontWeight: 600,
+            }}
+          >
+            Begin the séance
+          </button>
+        </div>
+      )}
+
       {state === "connecting" && (
         <div>
-          <p style={{ fontSize: 20, marginBottom: 8 }}>Joining session...</p>
+          <p style={{ fontSize: 20, marginBottom: 8, color: "#d0d8ff" }}>Joining session...</p>
           <p style={{ color: "#888", fontSize: 14 }}>Room {code}</p>
         </div>
       )}
@@ -184,24 +240,19 @@ export function Join() {
       )}
 
       {state === "error" && (
-        <div>
-          <p style={{ fontSize: 20, marginBottom: 8, color: "#ff8866" }}>Connection Failed</p>
-          <p style={{ color: "#999", fontSize: 14 }}>{errorMsg}</p>
-          <button onClick={() => window.location.reload()} style={{
-            marginTop: 20, padding: "10px 24px", background: "#223355",
-            border: "1px solid #446", color: "#ccd", borderRadius: 6, cursor: "pointer",
-          }}>Try Again</button>
-        </div>
+        <SpiritTrouble
+          code={troubleCode}
+          onAction={beginSeance}
+          onSecondaryAction={() => { window.location.href = "/replay"; }}
+        />
       )}
 
       {state === "unsupported" && (
-        <div>
-          <p style={{ fontSize: 20, marginBottom: 8, color: "#ffaa44" }}>Not Supported</p>
-          <p style={{ color: "#999", fontSize: 14, maxWidth: 300 }}>{errorMsg}</p>
-          <p style={{ color: "#666", fontSize: 12, marginTop: 16 }}>
-            Try opening this link on a mobile device with HTTPS.
-          </p>
-        </div>
+        <SpiritTrouble
+          code="no-sensors"
+          onAction={() => window.location.reload()}
+          onSecondaryAction={() => { window.location.href = "/replay"; }}
+        />
       )}
 
       <style>{`@keyframes breathe { 0%,100% { transform:scale(1); opacity:.8; } 50% { transform:scale(1.08); opacity:1; } }`}</style>
