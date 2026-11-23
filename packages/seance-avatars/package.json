@@ -10,7 +10,12 @@
         "seance-core": "workspace:*",
         "three": "^0.170.0"
     },
+    "peerDependencies": {
+        "react": "^18.3.0 || ^19.0.0",
+        "react-dom": "^18.3.0 || ^19.0.0"
+    },
     "devDependencies": {
+        "@types/react": "^19.0.0",
         "@types/three": "^0.170.0"
     },
     "scripts":  {

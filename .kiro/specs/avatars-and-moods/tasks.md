@@ -31,42 +31,42 @@
 - [x] 3.4 Unit tests for hysteresis timing with fake timers
   - _Requirements: 3.2, 3.3_
 
-- [ ] 4. Badges, tooltips and copy
-- [ ] 4.1 `MoodBadge` with icon shape + label + colour; keyboard-focusable tooltip
+- [x] 4. Badges, tooltips and copy
+- [x] 4.1 `MoodBadge` with icon shape + label + colour; keyboard-focusable tooltip
   - _Requirements: 4.2, 4.4_
-- [ ] 4.2 Copy deck `{ spooky, plain }` for every mood and tutorial/door/failure string; test that every key has both
+- [x] 4.2 Copy deck `{ spooky, plain }` for every mood and tutorial/door/failure string; test that every key has both
   - _Requirements: 4.1_
-- [ ] 4.3 `aria-live` mood announcements, throttled to one per 5 s
+- [x] 4.3 `aria-live` mood announcements, throttled to one per 5 s
   - _Requirements: 4.3_
 
-- [ ] 5. Poltergeist 3D
-- [ ] 5.1 Cloth-sheet mesh, hem-wobble vertex shader, fresnel rim, lantern core with one point light
+- [x] 5. Poltergeist 3D
+- [x] 5.1 Cloth-sheet mesh, hem-wobble vertex shader, fresnel rim, lantern core with one point light
   - _Requirements: 1.1, 3.4, 9.4_
-- [ ] 5.2 Bind orientation via refs inside `useFrame`; no per-sample React state
+- [x] 5.2 Bind orientation via refs inside `useFrame`; no per-sample React state
   - _Requirements: 1.1, 8.2_
-- [ ] 5.3 Shake response (high-passed |accel| → spring-damped jitter, rattling plates)
+- [x] 5.3 Shake response (high-passed |accel| → spring-damped jitter, rattling plates)
   - _Requirements: 6.4_
-- [ ] 5.4 Mood uniforms: glow, hue, wobble speed, twitch, tremble, sparks (restless only), fading opacity + reconnect pulse
+- [x] 5.4 Mood uniforms: glow, hue, wobble speed, twitch, tremble, sparks (restless only), fading opacity + reconnect pulse
   - _Requirements: 3.4, 3.6_
 - [ ]* 5.5 Ectoplasm trail (pre-allocated ribbon, 48 points, fades in 0.8 s; visual stretch)
   - _Requirements: 8.2_
-- [ ] 5.6 Mouse-drag and arrow-key tilt when no live spirit is present
+- [x] 5.6 Mouse-drag and arrow-key tilt when no live spirit is present
   - _Requirements: 5.3, 6.7_
 
-- [ ] 6. Reduced motion and fallbacks
-- [ ] 6.1 `useReducedMotion` (media query OR Calm-mode toggle persisted in localStorage with try/catch)
+- [x] 6. Reduced motion and fallbacks
+- [x] 6.1 `useReducedMotion` (media query OR Calm-mode toggle persisted in localStorage with try/catch)
   - _Requirements: 5.1_
-- [ ] 6.2 `PoltergeistFlat` SVG: roll-only rotation at ≤ 10 Hz + numeric readouts
+- [x] 6.2 `PoltergeistFlat` SVG: roll-only rotation at ≤ 10 Hz + numeric readouts
   - _Requirements: 5.2, 5.4_
-- [ ] 6.3 Frame-time guard: disable trail/sparks, then switch to 2D with a toast
+- [x] 6.3 Frame-time guard: disable trail/sparks, then switch to 2D with a toast
   - _Requirements: 8.3_
-- [ ] 6.4 Pause rendering when the tab is hidden
+- [x] 6.4 Pause rendering when the tab is hidden
   - _Requirements: 8.4_
 
-- [ ] 7. Revenant and placeholders
-- [ ] 7.1 `Revenant` wrapper (45% opacity, desaturated, timestamp + device label)
+- [x] 7. Revenant and placeholders
+- [x] 7.1 `Revenant` wrapper (45% opacity, desaturated, timestamp + device label)
   - _Requirements: 9.1_
-- [ ] 7.2 Placeholder SVGs for banshee, watcher, golem, wisp, organist; neutral orb for unknown kinds
+- [x] 7.2 Placeholder SVGs for banshee, watcher, golem, wisp, organist; neutral orb for unknown kinds
   - _Requirements: 9.2, 9.3_
 
 - [ ] 8. Landing route (poltergeist-lab)
