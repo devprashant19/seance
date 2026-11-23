@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "seance": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "seance-mcp@0.1.0", "--offline", "--fixtures", "fixtures/traces"],
+      "env": {}
+    }
+  }
+}

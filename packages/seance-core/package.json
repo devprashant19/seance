@@ -3,18 +3,53 @@
     "version":  "0.0.0",
     "private":  true,
     "type":  "module",
-    "exports":  {
-                    ".":  "./src/index.ts",
-                    "./testing":  "./src/testing/arbitraries.ts",
-                    "./transports/mock":  "./src/transports/mock.ts",
-                    "./transports/contract":  "./src/transports/contract.ts",
-                    "./transports/replay":  "./src/transports/replay.ts",
-                    "./dsp":  "./src/dsp/index.ts",
-                    "./transports/local":  "./src/transports/local.ts",
-                    "./transports/phone-bridge":  "./src/transports/phone-bridge/index.ts"
-                },
-    "scripts":  {
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests"
-                }
+    "main": "./dist/index.js",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        },
+        "./testing": {
+            "types": "./src/testing/arbitraries.ts",
+            "import": "./dist/testing/arbitraries.js",
+            "default": "./dist/testing/arbitraries.js"
+        },
+        "./transports/mock": {
+            "types": "./src/transports/mock.ts",
+            "import": "./dist/transports/mock.js",
+            "default": "./dist/transports/mock.js"
+        },
+        "./transports/contract": {
+            "types": "./src/transports/contract.ts",
+            "import": "./dist/transports/contract.js",
+            "default": "./dist/transports/contract.js"
+        },
+        "./transports/replay": {
+            "types": "./src/transports/replay.ts",
+            "import": "./dist/transports/replay.js",
+            "default": "./dist/transports/replay.js"
+        },
+        "./dsp": {
+            "types": "./src/dsp/index.ts",
+            "import": "./dist/dsp/index.js",
+            "default": "./dist/dsp/index.js"
+        },
+        "./transports/local": {
+            "types": "./src/transports/local.ts",
+            "import": "./dist/transports/local.js",
+            "default": "./dist/transports/local.js"
+        },
+        "./transports/phone-bridge": {
+            "types": "./src/transports/phone-bridge/index.ts",
+            "import": "./dist/transports/phone-bridge/index.js",
+            "default": "./dist/transports/phone-bridge/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests"
+    }
 }

@@ -6,5 +6,6 @@ export default defineConfig({
   test: {
     projects: ['packages/*', 'apps/*'],
     passWithNoTests: true,
+    exclude: ['**/node_modules/**', '**/dist/**'],
   },
 });

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "seance",
+  "version": "0.1.0",
+  "description": "Give any web project hardware superpowers: stream phone sensors (motion, orientation, microphone) into the browser with a typed SDK, and let Kiro read live sensor streams, record traces and run physics experiments through the bundled seance MCP server.",
+  "author": { "name": "REPLACE_WITH_YOUR_NAME_OR_TEAM" },
+  "keywords": [
+    "seance",
+    "sensor",
+    "sensors",
+    "accelerometer",
+    "gyroscope",
+    "devicemotion",
+    "deviceorientation",
+    "microphone",
+    "hardware",
+    "physics",
+    "experiment",
+    "measurement",
+    "uncertainty",
+    "trace"
+  ],
+  "homepage": "https://github.com/REPLACE_WITH_YOUR_GITHUB/seance",
+  "repository": "https://github.com/REPLACE_WITH_YOUR_GITHUB/seance",
+  "license": "MIT"
+}
