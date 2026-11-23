@@ -20,16 +20,49 @@ Kiroween 2026 · **Skeleton Crew** · MIT
 | `.kiro/` | Specs, steering, hooks, custom agents and MCP config used to build all of the above |
 | `power/` | The Séance Kiro Power |
 
-## Develop
+## Try It
+
+| App | URL |
+|-----|-----|
+| Poltergeist Lab | _deploy pending_ |
+| Banshee Choir | _deploy pending_ |
+| Relay | _deploy pending_ |
+
+### Quick Start (local)
 
 ```bash
 corepack enable
 pnpm install
-pnpm test
-pnpm dev:relay   # terminal 1
-pnpm dev:lab     # terminal 2 → open the HTTPS LAN URL on your laptop, scan the QR with your phone
+
+# Start the relay (terminal 1)
+pnpm -F seance-relay run build && node packages/seance-relay/dist/main.js
+
+# Start the lab (terminal 2)
+pnpm -F poltergeist-lab run dev
+
+# Start the choir (terminal 3)
+pnpm -F banshee-choir run dev
+```
+
+Open the Lab URL on your laptop and scan the QR code with your phone.
+
+### Offline Mode
+
+No phone? Use the replay mode:
+1. Open Poltergeist Lab
+2. Click "Watch a recorded haunting"
+3. Pick a bundled trace (pendulum, free fall, singing ruler, or spin-find-chip)
+
+## Develop
+
+```bash
+pnpm test          # run all tests
+pnpm dev:relay     # relay server
+pnpm dev:lab       # poltergeist lab dev server
 ```
 
 ## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 MIT, see `LICENSE`.

@@ -1,16 +1,22 @@
 {
-    "name":  "seance-relay",
-    "version":  "0.0.0",
-    "private":  true,
-    "type":  "module",
+    "name": "seance-relay",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
     "dependencies": {
-        "seance-core": "workspace:*"
+        "seance-core": "workspace:*",
+        "ws": "^8.23.0"
     },
-    "exports":  {
-                    ".":  "./src/index.ts"
-                },
-    "scripts":  {
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests"
-                }
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "start": "node dist/main.js",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.18.2"
+    }
 }

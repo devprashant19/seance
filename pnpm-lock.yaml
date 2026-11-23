@@ -148,6 +148,13 @@ importers:
       seance-core:
         specifier: workspace:*
         version: link:../seance-core
+      ws:
+        specifier: ^8.23.0
+        version: 8.23.0
+    devDependencies:
+      '@types/ws':
+        specifier: ^8.18.2
+        version: 8.18.2
 
   tools/sensor-probe:
     devDependencies:
