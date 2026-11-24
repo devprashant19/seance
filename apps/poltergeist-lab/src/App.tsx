@@ -34,6 +34,9 @@ const GateRoute = lazy(() =>
 const CircleRoute = lazy(() =>
   import("./routes/CircleRoute.js").then((m) => ({ default: m.CircleRoute }))
 );
+const SkepticRoute = lazy(() =>
+  import("./routes/SkepticRoute.js").then((m) => ({ default: m.SkepticRoute }))
+);
 
 function RouteFallback() {
   return (
@@ -59,6 +62,7 @@ export function App() {
           <Route path="/array" element={<ArrayRoute />} />
           <Route path="/gate" element={<GateRoute />} />
           <Route path="/circle" element={<CircleRoute />} />
+          <Route path="/skeptic" element={<SkepticRoute />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

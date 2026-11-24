@@ -58,4 +58,25 @@ export {
   type GateRpmResult,
 } from "./photogate.js";
 
+export {
+  filterInfrasoundBand,
+  computeRmsEnergy,
+  analyzeVibrationBand,
+  type VibrationBandReport,
+} from "./band.js";
+
+export {
+  computeRowLuminances,
+  analyzeRollingShutterFlicker,
+  type RollingShutterFlickerReport,
+} from "./spectrum-image.js";
+
+export {
+  validateClaimText,
+  assertValidClaimText,
+  FORBIDDEN_CLAIM_PATTERNS,
+  type ClaimValidationResult,
+} from "./claim-guard.js";
+
+
 

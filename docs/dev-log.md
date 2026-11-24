@@ -262,3 +262,27 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - Added `packages/seance-core/test/circle.property.test.ts` verifying permutation invariance, weighted uncertainty bounds, and outlier detection.
    - `pnpm typecheck`: 0 errors.
    - `pnpm test`: 48 passed (all 48 test files), 346 passed (346/346 tests).
+
+---
+
+## 2026-11-24 · Session 10: Phase U8 — Skeptic's Séance (Environmental Audits & Claim Guard)
+
+### Objectives
+- Build Halloween showpiece and critical-thinking module exploring physical causes behind eerie phenomena.
+- Implement 1–20 Hz infrasound and floor vibration band analysis (HVAC/traffic structural resonance).
+- Implement rolling-shutter spatial FFT for mains/PWM light flicker detection (explicitly qualitative).
+- Implement automated Claim Guard blocking forbidden supernatural, medical diagnostic, and structural safety claims.
+- Build Haunting Report and `/skeptic` route.
+
+### Actions Taken
+1. **Core Environmental DSP**:
+   - `packages/seance-core/src/dsp/band.ts`: Cascaded highpass (1 Hz) and lowpass (20 Hz) biquad filtering for structural vibration and RMS energy ratio calculations.
+   - `packages/seance-core/src/dsp/spectrum-image.ts`: Row-luminance extraction and spatial FFT for detecting rolling-shutter mains flicker banding (50/60 Hz PWM). Tagged with invariant `qualitative: true`.
+   - `packages/seance-core/src/dsp/claim-guard.ts`: `validateClaimText` and `assertValidClaimText` enforcing ethical ground rules against paranormal/medical claims.
+2. **Skeptic Interface & Haunting Report**:
+   - `apps/poltergeist-lab/src/routes/SkepticRoute.tsx`: 3-stage environmental audit (infrasound, light flicker, relative acoustic noise floor), scientific synthesis referencing Tandy & Lawrence (1998) 18.98 Hz eyeball resonance, and live ClaimGuard validation badge.
+   - Linked `/skeptic` in `App.tsx` and `Landing.tsx`.
+3. **Verification**:
+   - Added `packages/seance-core/test/skeptic.property.test.ts` verifying out-of-band attenuation (> 12 dB for DC and 45 Hz), claim guard enforcement, and spatial flicker detection.
+   - `pnpm typecheck`: 0 errors.
+   - `pnpm test`: 49 passed (all 49 test files), 349 passed (349/349 tests).

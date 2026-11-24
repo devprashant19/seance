@@ -223,6 +223,20 @@ export function Landing() {
           🕯️ Séance Circle (classroom board) &rarr;
         </a>
         <a
+          href="/skeptic"
+          style={{
+            color: "#f6ad55",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #9c4221",
+            borderRadius: 6,
+            background: "rgba(221,107,32,0.1)",
+          }}
+        >
+          🔍 Skeptic's Séance (environmental audit) &rarr;
+        </a>
+        <a
           href="/replay"
           style={{
             color: "#99aabb",
