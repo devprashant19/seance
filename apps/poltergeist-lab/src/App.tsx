@@ -1,22 +1,46 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Landing } from "./routes/Landing.js";
-import { Join } from "./routes/Join.js";
-import { Possession } from "./routes/Possession.js";
-import { Lab } from "./routes/Lab.js";
-import { LabRunner } from "./routes/LabRunner.js";
-import { ReplayController } from "./replay/index.js";
+const Landing = lazy(() =>
+  import("./routes/Landing.js").then((m) => ({ default: m.Landing }))
+);
+const Join = lazy(() =>
+  import("./routes/Join.js").then((m) => ({ default: m.Join }))
+);
+
+const Possession = lazy(() =>
+  import("./routes/Possession.js").then((m) => ({ default: m.Possession }))
+);
+const Lab = lazy(() =>
+  import("./routes/Lab.js").then((m) => ({ default: m.Lab }))
+);
+const LabRunner = lazy(() =>
+  import("./routes/LabRunner.js").then((m) => ({ default: m.LabRunner }))
+);
+const ReplayController = lazy(() =>
+  import("./replay/index.js").then((m) => ({ default: m.ReplayController }))
+);
+
+function RouteFallback() {
+  return (
+    <div style={{ padding: "2rem", color: "#888", textAlign: "center" }}>
+      Summoning...
+    </div>
+  );
+}
 
 export function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/join/:code" element={<Join />} />
-        <Route path="/possession/:code" element={<Possession />} />
-        <Route path="/lab" element={<Lab />} />
-        <Route path="/lab/:id" element={<LabRunner />} />
-        <Route path="/replay" element={<ReplayController />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/join/:code" element={<Join />} />
+          <Route path="/possession/:code" element={<Possession />} />
+          <Route path="/lab" element={<Lab />} />
+          <Route path="/lab/:id" element={<LabRunner />} />
+          <Route path="/replay" element={<ReplayController />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

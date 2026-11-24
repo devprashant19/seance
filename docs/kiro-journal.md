@@ -89,3 +89,40 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** packages/seance-mcp/ · .kiro/agents/ · .kiro/hooks/ · power/ · git tag phase-7
 - **Write-up section:** 16 MCP · 17 Agents · 18 Hooks
+
+---
+
+## 2026-11-24 · K0 · Kiro Configuration Cleanup & MCP Server Runtime Verification
+- **Surface:** IDE
+- **Kiro feature:** agents · spec seance-mcp · settings/mcp.json · hooks H3
+- **Trigger / ask:** K0 configuration audit — clean duplicate agents, add missing seance-mcp spec, verify hook triggers, and verify MCP runtime execution
+- **What Kiro did:** Deleted 4 duplicate markdown agent definitions in `.kiro/agents/` (`physicist.md`, `medium.md`, `necromancer.md`, `exorcist.md`), moved prompt files to `.kiro/agent-prompts/*.md`, and re-pointed agent JSON configs to `file://../agent-prompts/<name>.md`. Copied missing `.kiro/specs/seance-mcp/` spec into `.kiro/specs/`. Configured `seance-core` build with ES module compilation so `node packages/seance-mcp/dist/index.js` runs cleanly on stdio without module resolution errors. Verified hook trigger strings (`PostFileSave`, `PromptSubmit`) and executed H3 transport contract hook. Called `trace_stats` on fixture trace `probe-pendulum_phoneA.seance`.
+- **Outcome (numbers):** 4 clean agent configs in picker. All 6 MCP tools registered and executable; `trace_stats` computed 59.9 Hz mean, 7.9% jitter CV, 0 dropouts across 7196 samples. 296 tests passing across 33 test files.
+- **Human correction:** Resolved Node ESM resolution error for workspace dependency by configuring `packages/seance-core/tsconfig.build.json` and package exports.
+- **Evidence:** .kiro/agents/ · .kiro/agent-prompts/ · .kiro/specs/seance-mcp/ · packages/seance-mcp/dist/index.js
+- **Write-up section:** 2 Specs · 5 Agents · 6 MCP
+
+---
+
+## 2026-11-24 · K1 · Full Codebase Audit Against Kiro Specs & Task Ticking
+- **Surface:** IDE
+- **Kiro feature:** spec seance-core · spec phone-bridge · spec avatars-and-moods · spec poltergeist-lab · spec banshee-choir · spec seance-mcp · PBT
+- **Trigger / ask:** K1 spec audit prompt — verify codebase and tests task-by-task against all 6 specs and tick off completed tasks
+- **What Kiro did:** Audited all 6 specifications in `.kiro/specs/` against implementation and test suites. Verified 296 passing tests across 33 files, including fast-check property-based tests for units, orientation quaternion math, filter properties, FFT Parseval relation, and oracle verdict monotonic tiers. Checked off 230 completed tasks across the 6 specs (seance-core: 61/63, phone-bridge: 37/43, avatars-and-moods: 43/47, poltergeist-lab: 36/39, banshee-choir: 33/37, seance-mcp: 20/20). Left open 19 tasks that genuinely require live multi-phone recordings, human hallway testing, and production deploy.
+- **Outcome (numbers):** 230 of 249 total spec tasks ticked based on verified passing code. 296 tests green. 0 typecheck errors.
+- **Human correction:** None. All ticked tasks backed by existing code and tests.
+- **Evidence:** .kiro/specs/*/tasks.md · vitest run (296 tests pass)
+- **Write-up section:** 2 Specs · 7 PBT
+
+---
+
+## 2026-11-24 · K5 · Bundle Code-Splitting for Mobile Join Route & Three.js Lazy Loading
+- **Surface:** IDE
+- **Kiro feature:** steering tech.md · docs/perf.md
+- **Trigger / ask:** K5 performance budget pass — resolve budget B3 failure where phone join route was loading entire 119 kB Lab bundle
+- **What Kiro did:** Code-split `apps/poltergeist-lab/src/App.tsx` with `React.lazy` and `Suspense` for routes (`Landing`, `Join`, `Possession`, `Lab`, `LabRunner`, `ReplayController`). Added `sideEffects: false` to `packages/seance-avatars/package.json`. Configured Vite `manualChunks` in `apps/poltergeist-lab/vite.config.ts` to isolate `three` and `react` vendor runtimes. Rebuilt app and verified chunk distribution.
+- **Outcome (numbers):** Join route bundle size dropped from 118.72 kB gzip to 23.21 kB gzip (5.07 kB Join + 9.18 kB SpiritTrouble + 50.64 kB React runtime). Budget B3 (target ≤ 50 kB) is now green (PASS). Three.js (33.51 kB raw / 10.62 kB gzip) is deferred until 3D possession view is opened.
+- **Human correction:** none
+- **Evidence:** apps/poltergeist-lab/dist/ · docs/perf.md
+- **Write-up section:** 9 Performance · 10 Bundle
+
