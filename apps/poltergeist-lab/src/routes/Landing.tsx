@@ -181,6 +181,20 @@ export function Landing() {
           📱 WraithBench (device passport) &rarr;
         </a>
         <a
+          href="/array"
+          style={{
+            color: "#63b3ed",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #2b6cb0",
+            borderRadius: 6,
+            background: "rgba(40,100,200,0.1)",
+          }}
+        >
+          🌌 Spirit Array (multi-device) &rarr;
+        </a>
+        <a
           href="/replay"
           style={{
             color: "#99aabb",

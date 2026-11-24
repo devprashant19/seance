@@ -10,4 +10,6 @@ export { sensorPassport, type SensorPassportInput } from "./sensor-passport.js";
 export { compareDeviceProfiles, type CompareDeviceProfilesInput } from "./compare-device-profiles.js";
 export { extractEventWindowTool, type ExtractEventWindowInput, type ExtractEventWindowResult } from "./extract-event-window.js";
 export { instructTool, type InstructInput, type InstructResult } from "./instruct.js";
+export { arrayModes, type ArrayModesInput } from "./array-modes.js";
+export { checkSyncSkew, type CheckSyncSkewInput } from "./check-sync-skew.js";
 

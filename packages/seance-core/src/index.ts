@@ -76,6 +76,8 @@ export {
 export * from "./dsp/index.js";
 export * from "./passport/index.js";
 export * from "./events/index.js";
+export * from "./array/index.js";
+
 
 export type {
   InstrumentDef,

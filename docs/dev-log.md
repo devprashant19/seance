@@ -179,3 +179,30 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
 4. **Verification**:
    - `pnpm typecheck`: 0 errors.
    - `pnpm test`: 45 passed (all 45 files), 335 passed (335/335 tests).
+
+---
+
+## 2026-11-24 · Session 7: Phase U5 — Spirit Array (Coupled Pendulums & Board Modes)
+
+### Objectives
+- Implement multi-spirit orchestration for synchronized multi-phone experiments.
+- Enforce physical clock sync skew bounds ($\Delta t_{skew} \ge \frac{1}{2}\min(RTT)$) and phase uncertainty scaling ($\phi_{err} = 360 \cdot f_0 \cdot \Delta t_{skew}$).
+- Implement multi-channel modal FFT decomposition and coupled beat envelope extraction.
+- Register coupled pendulums and board resonance experiments in Poltergeist Lab.
+- Add MCP tools `array_modes` and `check_sync_skew`.
+
+### Actions Taken
+1. **Array Synchronization & Skew Bounds**:
+   - `packages/seance-core/src/array/sync-quality.ts`: Computes strict synchronization bounds from clock sync ping samples and evaluates phase measurement validity.
+   - `packages/seance-core/src/array/array-spirit.ts`: Manages multi-member spirit groups, common rate interpolation, and graceful member dropout handling.
+2. **Modal Analysis & Coupled Beats**:
+   - `packages/seance-core/src/dsp/modal.ts`: Hann-windowed multi-channel peak frequency detection, direct Fourier phase decomposition with skew uncertainty, and coupled pendulum beat period extraction ($T_{beat} = 1 / |f_2 - f_1|$).
+3. **Experiments & Lab Interface**:
+   - Registered `coupled-pendulums` and `board-modes` in `apps/poltergeist-lab/src/experiments/` and `src/lab/registry.ts`.
+   - Added `/array` route in `apps/poltergeist-lab/src/routes/ArrayRoute.tsx` with spirit status indicators, live multi-trace canvas, and modal frequency readouts with uncertainties.
+4. **MCP Tools**:
+   - Created and registered `array_modes` and `check_sync_skew` in `packages/seance-mcp`.
+5. **Verification**:
+   - Added `packages/seance-core/test/array.property.test.ts` verifying sync skew lower bounds, phase uncertainty bounds, and coupled beat frequencies.
+   - `pnpm typecheck`: 0 errors across 9 workspace packages.
+   - `pnpm test`: 46 passed (all 46 test files), 339 passed (339/339 tests).

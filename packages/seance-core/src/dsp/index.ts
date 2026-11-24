@@ -34,3 +34,12 @@ export type {
   TraceAuditReport,
 } from "./robust.js";
 
+export {
+  analyzeModalFrequencies,
+  analyzeCoupledBeats,
+  type ModalChannelResult,
+  type ModalAnalysisResult,
+  type CoupledBeatsResult,
+} from "./modal.js";
+
+

@@ -4,12 +4,16 @@ import { spinFindChip } from "../experiments/spin-find-chip/index.js";
 import { pendulumG } from "../experiments/pendulum-g/index.js";
 import { freeFall } from "../experiments/free-fall/index.js";
 import { singingRuler } from "../experiments/singing-ruler/index.js";
+import { coupledPendulums } from "../experiments/coupled-pendulums/index.js";
+import { boardModes } from "../experiments/board-modes/index.js";
 
 const DEFAULT_EXPERIMENTS: readonly ExperimentDefinition[] = [
   spinFindChip,
   pendulumG,
   freeFall,
   singingRuler,
+  coupledPendulums,
+  boardModes,
 ];
 
 // Ensure all default lab experiments are registered in core PluginRegistry

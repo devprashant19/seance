@@ -11,6 +11,8 @@ import { sensorPassport } from "./tools/sensor-passport.js";
 import { compareDeviceProfiles } from "./tools/compare-device-profiles.js";
 import { extractEventWindowTool } from "./tools/extract-event-window.js";
 import { instructTool } from "./tools/instruct.js";
+import { arrayModes } from "./tools/array-modes.js";
+import { checkSyncSkew } from "./tools/check-sync-skew.js";
 import { z } from "zod";
 
 export function createSeanceMcpServer(): McpServer {
@@ -211,6 +213,39 @@ export function createSeanceMcpServer(): McpServer {
     async ({ spiritId, text, step }) => {
       try {
         const result = instructTool({ spiritId, text, step });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "array_modes",
+    "Compute shared normal modes, relative amplitudes, and phase uncertainties across multi-channel spirit array traces",
+    {
+      tracePath: z.string().describe("Path to a multi-channel .seance trace file"),
+      skewMs: z.number().optional().describe("Optional estimated clock skew in ms (default 5.0)"),
+    },
+    async ({ tracePath, skewMs }) => {
+      try {
+        const result = arrayModes({ tracePath, skewMs });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "check_sync_skew",
+    "Calculate lower-bound clock synchronization uncertainty from measured ping RTT samples",
+    {
+      rttSamplesMs: z.array(z.number()).optional().describe("Array of measured round-trip times in ms"),
+    },
+    async ({ rttSamplesMs }) => {
+      try {
+        const result = checkSyncSkew({ rttSamplesMs });
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       } catch (err) {
         return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
