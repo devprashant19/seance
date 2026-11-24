@@ -42,4 +42,20 @@ export {
   type CoupledBeatsResult,
 } from "./modal.js";
 
+export {
+  computeRoiSignal,
+  calibrateBaseline,
+  timingUncertaintyS,
+  detectCrossings,
+  computeGatePeriod,
+  computeGateSpeed,
+  computeGateRpm,
+  type NormalizedRoi,
+  type CrossingEvent,
+  type BaselineCalibration,
+  type GatePeriodResult,
+  type GateSpeedResult,
+  type GateRpmResult,
+} from "./photogate.js";
+
 

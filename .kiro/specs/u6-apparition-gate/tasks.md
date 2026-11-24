@@ -1,0 +1,22 @@
+# Implementation Tasks: Phase U6 — Apparition Gate
+
+- [ ] 1. Channel & Core DSP Modules
+  - [ ] 1.1 Register channel `camera.gate` in `packages/seance-core/src/channels.ts`
+  - [ ] 1.2 Implement photogate math and signal processing in `packages/seance-core/src/dsp/photogate.ts`
+  - [ ] 1.3 Implement Camera Spirit in `packages/seance-core/src/transports/camera.ts`
+  - [ ] 1.4 Export photogate and camera modules in `packages/seance-core/src/index.ts`
+- [ ] 2. Property-Based Testing
+  - [ ] 2.1 Test timing uncertainty lower bound ($1 / (\text{fps} \cdot \sqrt{12})$)
+  - [ ] 2.2 Test synthetic crossing sequence period recovery across 24–60 fps
+  - [ ] 2.3 Test Nyquist aliasing detection for $f > \text{fps} / 2$
+  - [ ] 2.4 Test speed and uncertainty propagation formula
+- [ ] 3. Poltergeist Lab Integration
+  - [ ] 3.1 Implement experiment `gate-period` in `apps/poltergeist-lab/src/experiments/gate-period/`
+  - [ ] 3.2 Implement experiment `gate-speed` in `apps/poltergeist-lab/src/experiments/gate-speed/`
+  - [ ] 3.3 Implement experiment `gate-rpm` in `apps/poltergeist-lab/src/experiments/gate-rpm/`
+  - [ ] 3.4 Register gate experiments in `apps/poltergeist-lab/src/lab/registry.ts`
+  - [ ] 3.5 Build `/gate` route in `apps/poltergeist-lab/src/routes/GateRoute.tsx`
+  - [ ] 3.6 Wire `/gate` in `App.tsx` and `Landing.tsx`
+- [ ] 4. Verification & Dev Log
+  - [ ] 4.1 Run `pnpm typecheck` and `pnpm test`
+  - [ ] 4.2 Document in `docs/dev-log.md`

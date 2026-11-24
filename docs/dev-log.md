@@ -206,3 +206,30 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - Added `packages/seance-core/test/array.property.test.ts` verifying sync skew lower bounds, phase uncertainty bounds, and coupled beat frequencies.
    - `pnpm typecheck`: 0 errors across 9 workspace packages.
    - `pnpm test`: 46 passed (all 46 test files), 339 passed (339/339 tests).
+
+---
+
+## 2026-11-24 · Session 8: Phase U6 — Apparition Gate (Webcam Photogate & Tachometer)
+
+### Objectives
+- Implement contactless optical photogate and stroboscopic tachometer running laptop-only.
+- Implement sub-frame crossing interpolation with hysteresis and timing uncertainty lower bound ($\sigma_t \ge 1 / (\text{fps} \cdot \sqrt{12})$).
+- Implement period, linear speed ($v = d / \Delta t$ with Gaussian error propagation), and optical RPM with Nyquist aliasing detection.
+- Add Camera Spirit (`CameraGateSpirit`) streaming downsampled ROI brightness delta channels.
+- Register experiments `gate-period`, `gate-speed`, `gate-rpm` and build `/gate` route.
+
+### Actions Taken
+1. **Core Photogate DSP**:
+   - `packages/seance-core/src/dsp/photogate.ts`: `computeRoiSignal`, `calibrateBaseline`, `timingUncertaintyS`, `detectCrossings`, `computeGatePeriod`, `computeGateSpeed`, and `computeGateRpm`.
+   - Invariant: timing uncertainty strictly satisfies single-frame quantization limit; speed uncertainty satisfies Gaussian propagation; RPM detects stroboscopic aliasing when $f_{true} > \text{fps} / 2$.
+2. **Camera Transport**:
+   - `packages/seance-core/src/transports/camera.ts`: `CameraGateSpirit` capturing webcam video frames via `getUserMedia`, downsampling to 64x48 canvas, tracking two ROIs, and streaming to channel `camera.gate`.
+   - Registered `camera.gate` in `packages/seance-core/src/channels.ts`.
+3. **Experiments & UI**:
+   - Registered `gate-period`, `gate-speed`, and `gate-rpm` in `apps/poltergeist-lab/src/experiments/` and `src/lab/registry.ts`.
+   - Implemented `apps/poltergeist-lab/src/routes/GateRoute.tsx` with live ROI markers, baseline calibration, and real-time physical readouts.
+   - Linked `/gate` in `App.tsx` and `Landing.tsx`.
+4. **Verification**:
+   - Added `packages/seance-core/test/photogate.property.test.ts` with 4 property suites verifying uncertainty bounds, period recovery, aliasing flags, and error propagation.
+   - `pnpm typecheck`: 0 errors across all monorepo packages.
+   - `pnpm test`: 47 passed (all 47 test files), 343 passed (343/343 tests).

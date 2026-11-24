@@ -195,6 +195,20 @@ export function Landing() {
           🌌 Spirit Array (multi-device) &rarr;
         </a>
         <a
+          href="/gate"
+          style={{
+            color: "#68d391",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #276749",
+            borderRadius: 6,
+            background: "rgba(56,161,105,0.1)",
+          }}
+        >
+          📷 Apparition Gate (camera photogate) &rarr;
+        </a>
+        <a
           href="/replay"
           style={{
             color: "#99aabb",

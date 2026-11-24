@@ -6,6 +6,9 @@ import { freeFall } from "../experiments/free-fall/index.js";
 import { singingRuler } from "../experiments/singing-ruler/index.js";
 import { coupledPendulums } from "../experiments/coupled-pendulums/index.js";
 import { boardModes } from "../experiments/board-modes/index.js";
+import { gatePeriod } from "../experiments/gate-period/index.js";
+import { gateSpeed } from "../experiments/gate-speed/index.js";
+import { gateRpm } from "../experiments/gate-rpm/index.js";
 
 const DEFAULT_EXPERIMENTS: readonly ExperimentDefinition[] = [
   spinFindChip,
@@ -14,6 +17,9 @@ const DEFAULT_EXPERIMENTS: readonly ExperimentDefinition[] = [
   singingRuler,
   coupledPendulums,
   boardModes,
+  gatePeriod,
+  gateSpeed,
+  gateRpm,
 ];
 
 // Ensure all default lab experiments are registered in core PluginRegistry

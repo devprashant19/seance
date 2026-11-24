@@ -93,3 +93,5 @@ export {
 } from "./plugin.js";
 
 export { createLocalSpirit } from "./transports/local.js";
+export { CameraGateSpirit, type CameraGateSpiritOptions } from "./transports/camera.js";
+

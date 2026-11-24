@@ -9,6 +9,8 @@ export type ChannelId =
   | "audio.spectrum"
   | "control.touch"
   | "camera.blob"
+  | "camera.gate"
+  | "camera.rows"
   | `serial.${string}`
   | `midi.${string}`
   | `ble.${string}`;
@@ -27,6 +29,8 @@ export const CHANNELS: Record<string, ChannelDef> = {
   "audio.spectrum": { unit: "dBFS", axes: [] },
   "control.touch": { unit: "1", axes: ["x", "y", "down"] },
   "camera.blob": { unit: "px", axes: ["x", "y", "area"] },
+  "camera.gate": { unit: "1", axes: ["roi1", "roi2"] },
+  "camera.rows": { unit: "1", axes: [] },
 };
 
 export function isKnownChannel(id: string): id is ChannelId {
