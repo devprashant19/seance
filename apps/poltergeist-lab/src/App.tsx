@@ -19,6 +19,9 @@ const LabRunner = lazy(() =>
 const ReplayController = lazy(() =>
   import("./replay/index.js").then((m) => ({ default: m.ReplayController }))
 );
+const GhostEar = lazy(() =>
+  import("./accessibility/ghost-ear/GhostEarRoute.js").then((m) => ({ default: m.GhostEarRoute }))
+);
 
 function RouteFallback() {
   return (
@@ -39,6 +42,7 @@ export function App() {
           <Route path="/lab" element={<Lab />} />
           <Route path="/lab/:id" element={<LabRunner />} />
           <Route path="/replay" element={<ReplayController />} />
+          <Route path="/hear" element={<GhostEar />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

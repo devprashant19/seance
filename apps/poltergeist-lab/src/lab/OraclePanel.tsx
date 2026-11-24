@@ -1,4 +1,5 @@
 import type { Verdict } from "../oracle/types.js";
+import { speakSentence } from "seance-sonify";
 
 const TIER_STYLES: Record<string, { bg: string; border: string; glow: string }> = {
   approves: { bg: "#0a1f0a", border: "#2a5a2a", glow: "0 0 20px rgba(50,200,80,0.2)" },
@@ -51,6 +52,28 @@ export function OraclePanel({ verdict }: { verdict: Verdict }) {
           </ul>
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={() => {
+          speakSentence(`${verdict.spooky}. ${verdict.plain}. Error ${verdict.percentError.toFixed(1)} percent. Confidence: ${verdict.confidence}.`, { urgent: true });
+        }}
+        style={{
+          marginTop: 16,
+          padding: "8px 16px",
+          background: "#1c2b3a",
+          border: "1px solid #3a5070",
+          borderRadius: 6,
+          color: "#b0d0ff",
+          cursor: "pointer",
+          fontSize: 13,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+        <span>🔊</span> Hear this result
+      </button>
     </div>
   );
 }

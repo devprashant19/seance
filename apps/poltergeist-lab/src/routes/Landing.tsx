@@ -151,19 +151,34 @@ export function Landing() {
         </>
       )}
 
-      <a
-        href="/replay"
-        style={{
-          marginTop: 32,
-          color: "#99aabb",
-          fontSize: 14,
-          textDecoration: "underline",
-          padding: "8px 16px",
-          display: "inline-block",
-        }}
-      >
-        No phone? Watch a recorded haunting &rarr;
-      </a>
+      <div style={{ marginTop: 28, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+        <a
+          href="/hear"
+          style={{
+            color: "#88bbff",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #335588",
+            borderRadius: 6,
+            background: "rgba(50,100,200,0.1)",
+          }}
+        >
+          🎧 Ghost Ear (accessible mode) &rarr;
+        </a>
+        <a
+          href="/replay"
+          style={{
+            color: "#99aabb",
+            fontSize: 14,
+            textDecoration: "underline",
+            padding: "8px 16px",
+            display: "inline-block",
+          }}
+        >
+          No phone? Watch a recorded haunting &rarr;
+        </a>
+      </div>
 
       <style>{`@keyframes pulse { 0%,100% { opacity:.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.05); } }`}</style>
     </main>

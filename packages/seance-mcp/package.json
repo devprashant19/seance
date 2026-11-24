@@ -12,6 +12,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.0",
     "seance-core": "workspace:*",
+    "seance-sonify": "workspace:*",
     "ws": "^8.23.0",
     "zod": "^4.6.7"
   },

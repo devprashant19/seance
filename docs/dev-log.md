@@ -62,3 +62,36 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - `pnpm test`: 33 passed (all 33 files), 298 passed (298/298 tests).
 
 ---
+
+## 2026-11-24 · Session 3: Phase U1 — seance-sonify & Ghost Ear MVP
+
+### Objectives
+- Implement `packages/seance-sonify` with audio-first mathematical mappings, earcons, limiter, and speech synthesis.
+- Integrate Ghost Ear accessible route (`/hear`) in Poltergeist Lab with keyboard navigation, live sonification, and scrub-by-tilt.
+- Add MCP sonification audit tools `accessible_result` and `audit_sonification`.
+
+### Actions Taken
+1. **Created `packages/seance-sonify`**:
+   - `src/mapping.ts`: Logarithmic pitch mapping (220–1320 Hz), stereo pan, uncertainty tremolo (up to 0.45 depth at 6 Hz), and mood-driven textures.
+   - `src/earcons.ts`: Distinct acoustic landmarks (zero-crossing clicks, dual-chime peaks/troughs, dropout thuds, result triads).
+   - `src/speech.ts`: Deterministic formatting rounding value and uncertainty to matching precision with full unit expansion.
+   - `src/limiter.ts`: Dynamics compressor + master gain stage ensuring output peak never exceeds 0.5 (-6 dBFS).
+   - `src/scrub.ts`: Orientation roll angle / keyboard scrub to sample index mapping with ±1.5° dead zone and EMA filter.
+   - `src/engine.ts`: WebAudio synthesis graph managing dual oscillators, tremolo LFO, noise buffer, earcons, and master limiter.
+2. **Property-Based Testing (fast-check)**:
+   - Verified Property 1 (Monotonic Pitch), Property 2 (Frequency Bounds [220, 1320] Hz), Property 3 (Tremolo Monotonicity), Property 4 (Zero-Crossing Integrity), Property 5 (Result Sentence Determinism), Property 6 (Limiter Output Clamp ≤ 0.5), and Property 7 (Scrub Index Range).
+3. **Poltergeist Lab Accessible Mode (`/hear`)**:
+   - Built `apps/poltergeist-lab/src/accessibility/ghost-ear/`: `GhostEarRoute.tsx`, `useGhostEar.ts`, `keyboard.ts`, `announcer.tsx`.
+   - Wired keyboard navigation (`Space`, `R`, `P`, `Left/Right`, `H`, `Esc`) with screen reader live region mirroring (`aria-live="polite"`).
+   - Registered `/hear` route in `App.tsx` and added Ghost Ear entry point on Landing page.
+   - Added "Hear this result" audio button to `OraclePanel.tsx`.
+4. **MCP Sonification Tools**:
+   - Added `accessible_result` and `audit_sonification` tools in `packages/seance-mcp/src/tools/`.
+   - Registered tools in MCP server and added test suite `packages/seance-mcp/test/mcp-sonify.test.ts`.
+5. **CI Workflow**:
+   - Added `pnpm --filter seance-sonify build` before test execution in `.github/workflows/ci.yml`.
+6. **Verification**:
+   - `pnpm typecheck`: 0 errors across all 9 workspace projects.
+   - `pnpm test`: 39 passed (all 39 files), 310 passed (310/310 tests).
+
+---

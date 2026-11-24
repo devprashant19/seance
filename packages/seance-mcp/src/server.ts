@@ -5,6 +5,8 @@ import { recordTrace } from "./tools/record-trace.js";
 import { readStream } from "./tools/read-stream.js";
 import { runExperiment } from "./tools/run-experiment.js";
 import { compareTraces } from "./tools/compare-traces.js";
+import { accessibleResult } from "./tools/accessible-result.js";
+import { auditSonification } from "./tools/audit-sonification.js";
 import { z } from "zod";
 
 export function createSeanceMcpServer(): McpServer {
@@ -103,6 +105,39 @@ export function createSeanceMcpServer(): McpServer {
     async ({ traceA, traceB }) => {
       try {
         const result = compareTraces({ traceA, traceB });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "accessible_result",
+    "Extract landmark events, compute physical result with uncertainty, and generate accessible spoken sentence from a .seance trace",
+    {
+      tracePath: z.string().describe("Path to a .seance trace file"),
+      experimentId: z.string().describe("Experiment identifier (e.g. pendulum-g)"),
+    },
+    async ({ tracePath, experimentId }) => {
+      try {
+        const result = accessibleResult({ tracePath, experimentId });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "audit_sonification",
+    "Audit auditory parameters of a trace: pitch dynamic range, clipping events, and earcon collision rates",
+    {
+      tracePath: z.string().describe("Path to a .seance trace file"),
+    },
+    async ({ tracePath }) => {
+      try {
+        const result = auditSonification({ tracePath });
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       } catch (err) {
         return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };

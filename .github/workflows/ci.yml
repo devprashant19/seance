@@ -23,6 +23,7 @@ jobs:
       - run: pnpm typecheck
       # Build packages whose exports, binaries, or tests require compiled dist/ (gitignored)
       - run: pnpm --filter seance-core build
+      - run: pnpm --filter seance-sonify build
       - run: pnpm --filter seance-mcp build
       - run: pnpm --filter create-seance-app build
       - run: pnpm --filter seance-relay build

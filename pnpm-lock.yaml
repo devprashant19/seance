@@ -75,6 +75,9 @@ importers:
       seance-core:
         specifier: workspace:*
         version: link:../../packages/seance-core
+      seance-sonify:
+        specifier: workspace:*
+        version: link:../../packages/seance-sonify
     devDependencies:
       '@types/react':
         specifier: ^19.0.0
@@ -132,6 +135,9 @@ importers:
       seance-core:
         specifier: workspace:*
         version: link:../seance-core
+      seance-sonify:
+        specifier: workspace:*
+        version: link:../seance-sonify
       ws:
         specifier: ^8.23.0
         version: 8.23.0
@@ -155,6 +161,16 @@ importers:
       '@types/ws':
         specifier: ^8.18.2
         version: 8.18.2
+
+  packages/seance-sonify:
+    dependencies:
+      seance-core:
+        specifier: workspace:*
+        version: link:../seance-core
+    devDependencies:
+      fast-check:
+        specifier: ^3.23.0
+        version: 3.23.2
 
   tools/sensor-probe:
     devDependencies:

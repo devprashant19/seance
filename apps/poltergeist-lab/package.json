@@ -8,7 +8,8 @@
         "react-dom": "^19.0.0",
         "react-router-dom": "^7.0.0",
         "seance-avatars": "workspace:*",
-        "seance-core": "workspace:*"
+        "seance-core": "workspace:*",
+        "seance-sonify": "workspace:*"
     },
     "devDependencies": {
         "@types/react": "^19.0.0",
