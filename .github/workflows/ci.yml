@@ -21,6 +21,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
+      # Build packages whose exports, binaries, or tests require compiled dist/ (gitignored)
+      - run: pnpm --filter seance-core build
+      - run: pnpm --filter seance-mcp build
+      - run: pnpm --filter create-seance-app build
+      - run: pnpm --filter seance-relay build
       - run: pnpm test
       # Property-based tests: pin the seed in CI output so failures can be replayed locally.
       # fast-check prints the seed and path on failure; copy them into the test's fc.assert options to reproduce.

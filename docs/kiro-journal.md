@@ -9,7 +9,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 <!-- First entry goes below: the Phase 0 check of hook trigger strings against the Kiro UI. -->
 
 ## 2026-11-22 · P1 · Sensor Reality Benchmarks & Probe Verification
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering product.md · steering tech.md
 - **Trigger / ask:** Phase 1 build prompt — scaffold sensor probe, capture motion data, export .seance v1 traces
 - **What Kiro did:** Scaffolded `tools/sensor-probe/` (Vite + TS, 6 files), implemented permission flow with iOS requestPermission, preallocated Float64Array buffers for GC-free 200 Hz capture, .seance v1 exporter with share/download, Web Audio mic panel with parabolic peak interpolation, webcam colour tracker. Wrote `analyze.ts` (timing stats, noise/bias, pendulum zero-crossing, free-fall detection). Generated 10 synthetic fixture traces.
@@ -21,7 +21,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-23 · P2 · Skeleton Core Library and Property Verification
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering units.md · steering transports.md · steering testing.md · hook H3 · hook H4
 - **Trigger / ask:** Phase 2 build prompt — implement seance-core: units, Spirit lifecycle, DSP, trace, replay, plugin API
 - **What Kiro did:** Built `packages/seance-core/` across 7 commits: branded `Quantity<U>` type system with conversion pairs, `BaseSpirit` state machine (idle→summoning→present⇄fading→banished), `MockSpirit` with seeded PRNG, `runSpiritContract` (7 assertions), `GhostTrace` v1 with `TraceRecorder`/`ReplaySpirit`, `MoodMachine` with hysteresis, full DSP toolkit (timing, resample, biquad filters, real FFT with parabolic peak, zero-crossings, free-fall, damping, fit, uncertainty), `PluginRegistry` with `defineExperiment`/`defineInstrument`, `LocalSpirit` mic transport with Node stub fallback. Aligned trace schema to fixture format, verified all 10 Phase 1 fixtures decode, pendulum replay reproduces T=1.56s (±0.02s of 1.58s), g≈9.8 m/s².
@@ -33,7 +33,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-23 · P3 · Phone Bridge Protocol, Relay Server, and Transport
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering transports.md · hook H3 · hook H4
 - **Trigger / ask:** Phase 3 build prompt — implement phone bridge across 5 commits: protocol, relay server, clock sync, host/phone transports, phone client
 - **What Kiro did:** Built phone bridge across seance-core and seance-relay packages in 5 commits: (1) discriminated-union protocol envelope with columnar batch encoding/decoding and type guards, (2) seance-relay WebSocket room server with RoomManager (4-char codes, 8-peer cap, 10-min host grace, 4-hour hard expiry), Router with host/peer/observer role enforcement, TokenBucket rate limiter (60/s burst 120), 64KB frame guard, /healthz, origin checking, (3) NTP-style ClockSync with median RTT filtering and high-RTT outlier rejection, ReconnectManager with exponential backoff and jitter, (4) HostTransport for host-side peer tracking and batch decoding, PhoneSpirit extending BaseSpirit for phone peers, FakeRelay test harness, (5) PhoneClient with auto-reconnect and clock sync, latency benchmarks proving <1ms encode/decode, 1000-batch zero-drop routing, <64KB payload for 1s 6-axis 60Hz data.
@@ -45,7 +45,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-23 · P4 · Possession Experience — Avatars, Moods, and Lab Scaffold
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering avatars.md · spec avatars-and-moods · hook H3 · hook H4
 - **Trigger / ask:** Phase 4 build prompt — orientation math, mood visuals, 3D poltergeist, reduced-motion SVG, mood badges, Poltergeist Lab scaffold with possession route
 - **What Kiro did:** Built possession experience across seance-avatars and poltergeist-lab in 5 commits: (1) orientation quaternion math — Z-X'-Y'' Tait-Bryan with −90° screen correction, reference-pose capture via sign-aligned quaternion mean, heading normaliser, ghost rotation composition, slerp smoothing with 35° clamp, property tests via fast-check, (2) mood visual state machine mapping Mood → glow/opacity/hue/floatFreq/lanternScale with rate-based attenuation, plus mood copy table with spooky/plain/action lines, (3) Poltergeist3D Three.js avatar with LatheGeometry bell body (~1.5k tris), emissive lantern sphere, eye meshes with blink animation, mood-driven opacity/hue/glow/float/wobble; PoltergeistFlat reduced-motion SVG fallback; SpiritPlaceholder SVGs for 5 spirit types; RevenantWrapper; MoodBadge with geometric mood shapes; MoodTooltip with throttled aria-live, (4) Poltergeist Lab React app scaffold (Vite 6 + React 19 + react-router-dom 7) with Landing page (relay connection, inline QR code, room code, copy link, offline fallback, atmospheric summoning circle) and Join route (secure-context check, DeviceOrientation/DeviceMotion capture, 50ms batch interval, wake lock), (5) Possession route with tutorial state machine (tilt → shake → hold-still → doors), Three.js quaternion-to-euler ghost rotation, mood badge, disconnect overlay, mouse-drag fallback, door navigation.
@@ -57,7 +57,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-24 · P5 · Poltergeist Lab MVP — Oracle, Experiments, Runner, Replay
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering physics.md · spec poltergeist-lab · spec experiments · hook H1 · hook H2
 - **Trigger / ask:** Phase 5 build prompt — verdict engine, three MVP experiments, experiment runner UI, offline replay, bundled traces
 - **What Kiro did:** Built Poltergeist Lab MVP across 4 commits: (1) Physics Oracle verdict engine — z-score normalized difference `z=|x-xref|/√(ux²+uref²)`, 4-tier verdict (approves ≤1, veil 1-2, disagree 2-3, cursed >3 or low confidence), confidence model (major diagnostics / high jitter / high dropout → low), dominant-term finder via variance shares, spooky+plain cause generator with ranked diagnostics. (2) Three MVP experiments via `defineExperiment` contract — **pendulum-g**: 50Hz resample, dominant-axis auto-detect, zero-crossing median half-period, finite-amplitude + effective-length corrections, δg/g propagation; **free-fall**: low-g window detection (<2.0 m/s² for >100ms), sub-sample edge interpolation, δh/h=2δt/t uncertainty; **singing-ruler**: spectral peak with parabolic interpolation, cantilever frequency formula, 3-term uncertainty (h³, L⁴, f²). (3) ExperimentRunner React FSM (SETUP→READY_CHECK→RECORDING→ANALYZING→RESULT+ERROR) with InputsForm (unit-aware validation), LiveChart (canvas auto-scaling real-time), OraclePanel (tier-coloured verdict with causes), UncertaintyBudget (variance-share bars with dominant star), ExportMenu (raw CSV, summary CSV, .seance v1 JSON). (4) Offline ReplayController with trace manifest, selector dropdown, play/pause/speed 1×/4×, skip-to-verdict, Revenant badge; prebuild sync script copying 6 fixture traces to public/traces/; `/replay` route and Landing "Try Replay Mode" link.
@@ -69,7 +69,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-24 · P6 · Banshee Choir MVP, Web Audio Synthesis, and Ghost Looper
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** steering audio.md · spec banshee-choir
 - **Trigger / ask:** Phase 6 build prompt — web audio engine, scale snapping, voice synth, ghost looper, app scaffold, keyboard demo
 - **What Kiro did:** Built Banshee Choir across 4 commits: (1) Web Audio synthesis — 3 scale modes (graveyard/crypt/fog) with 0.15 hysteresis deadband, tilt-to-pitch/roll-to-cutoff/shake-to-tremolo mapping, dual detuned oscillators (saw+tri, +7 cents), 5.5 Hz vibrato LFO, dual-bandpass formant filters (oo/ah/ee presets), master bus with -3 dB limiter at 20:1. (2) Banshee voice instrument mapping sensor frames to voice params (orientation → pitch/cutoff, accel → tremolo, touch → gate, drone mode), Stage layout with scale/volume/drone controls, Singer SVG with mouth animation and vocal ripples. (3) Ghost Looper — BarClock synced to AudioContext, MotionRecorder with bar-boundary quantization storing control curves not audio, LoopScheduler with 4 concurrent loops and lookahead timer, RevenantSinger with progress ring. (4) App scaffold (Vite 6 + React 19 on port 5174), ChoirHome with keyboard piano (A-K notes, Space sing), JoinChoir mobile touch-and-hold controller with wake lock.
@@ -81,7 +81,7 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 ---
 
 ## 2026-11-24 · P7 · MCP Server, Custom Agents, and Developer Hooks
-- **Surface:** IDE
+- **Surface:** not recorded
 - **Kiro feature:** MCP server · custom agents · hooks H5-H8 · settings/mcp.json
 - **Trigger / ask:** Phase 7 build prompt — MCP tools, Kiro agents, developer automation hooks, power bundle
 - **What Kiro did:** Built Kiro Superpowers across 4 commits: (1) MCP stdio server with 3 tools (trace_stats, list_spirits, record_trace) using @modelcontextprotocol/sdk, zod v4 schemas, StdioServerTransport, stderr-only logging. Handles both array and object-map channel formats via decodeTrace. (2) 3 advanced MCP tools — read_stream (live WebSocket observer with decimation), run_experiment (pendulum-g/free-fall/singing-ruler pipelines with uncertainty), compare_traces (timing diff + channel RMS). Updated mcp.json autoApprove list. (3) 4 custom Kiro agents — Physicist (experiment validation), Medium (live session facilitation), Necromancer (trace resurrection), Exorcist (system debugging). (4) Hooks H5-H8 — public API guard (downstream typecheck), mood docs sync, trace schema validation, a11y sweep — with 3 helper scripts.
@@ -125,4 +125,17 @@ This file is the raw material for the Kiro write-up, the blog post and the demo 
 - **Human correction:** none
 - **Evidence:** apps/poltergeist-lab/dist/ · docs/perf.md
 - **Write-up section:** 9 Performance · 10 Bundle
+
+---
+
+## 2026-11-24 · CI & Bundle Audit · CI Build Step, Realistic Join Route Measurement & Journal Surface Audit
+- **Surface:** IDE
+- **Kiro feature:** .github/workflows/ci.yml · docs/perf.md · docs/kiro-journal.md
+- **Trigger / ask:** Fix CI failing due to unbuilt seance-core exports, measure realistic join route download in docs/perf.md, correct B3 budget status and propose entry chunk reduction, set unconfirmed journal surfaces to "not recorded"
+- **What Kiro did:** Added package build steps (`pnpm --filter seance-core build`, `seance-mcp`, `create-seance-app`, `seance-relay`) before `pnpm test` in `.github/workflows/ci.yml`. Verified failure by deleting `packages/*/dist` and running commands, proving node resolution breaks without build. Audited production bundle chunk distribution for `/join/:code`: measured total initial download (index shell 67.09 kB + react chunk 17.82 kB + Join route 2.11 kB + SpiritTrouble 3.28 kB + HTML 0.50 kB = 90.80 kB gzip), updated B3 to FAIL (target ≤ 50 kB gzip), and documented architectural proposals to decouple the mobile join page from the desktop SPA/React-DOM shell into a lightweight standalone entry point. Audited historical entries P1–P7 in `docs/kiro-journal.md` and set their surfaces to "not recorded".
+- **Outcome (numbers):** CI build pipeline verified green with zero pre-existing dist folders. B3 corrected from false PASS (23.21 kB) to realistic FAIL (90.80 kB gzip). P1–P7 surfaces corrected to "not recorded".
+- **Human correction:** Teammate audit of CI workflow and realistic network payload.
+- **Evidence:** .github/workflows/ci.yml · docs/perf.md · docs/kiro-journal.md
+- **Write-up section:** 9 Performance · 18 Hooks · 19 CI
+
 
