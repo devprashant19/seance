@@ -18,3 +18,6 @@ export type { MoodBadgeProps, MoodTooltipProps } from "./components/MoodBadge.js
 
 export { SpiritTrouble, type SpiritTroubleProps } from "./components/SpiritTrouble.js";
 export { TROUBLE_CATALOG, type SpiritTroubleCode, type TroubleInfo } from "./components/trouble.js";
+
+export * from "./drum/index.js";
+

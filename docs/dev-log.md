@@ -157,3 +157,25 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - Added test suite `apps/poltergeist-lab/test/ghost-ear.test.ts`.
    - `pnpm typecheck`: 0 errors across all workspace packages.
    - `pnpm test`: 44 passed (all 44 files), 330 passed (330/330 tests).
+
+---
+
+## 2026-11-24 · Session 6: Phase U4 — Smoked-Drum Seismograph Recorder
+
+### Objectives
+- Implement tactile ink-on-smoked-paper seismograph drum in `packages/seance-avatars`.
+- Build fixed-capacity circular buffers, min/max extremum-preserving envelope downsampling, and torn-paper gap indicators.
+- Create 60 fps `<canvas>` component (`SmokedDrum.tsx`) with reduced-motion support and SVG scroll export.
+
+### Actions Taken
+1. **Ring Buffer & Envelope Downsampling**:
+   - `packages/seance-avatars/src/drum/ring-buffer.ts`: Fixed-capacity circular storage retaining latest $C$ samples chronologically without unbounded reallocation.
+   - `packages/seance-avatars/src/drum/envelope.ts`: Pure min/max downsampler preserving local extrema per pixel bucket and flagging gaps ($\Delta t > 3 \cdot \text{median}(\Delta t)$).
+2. **SVG & Canvas Seismograph**:
+   - `packages/seance-avatars/src/drum/export.ts`: Deterministic SVG exporter generating smoked paper scrolls with dark grid styling and ink curves.
+   - `packages/seance-avatars/src/drum/SmokedDrum.tsx`: HTML5 canvas seismograph rendering multiple channels with independent ink tints, time grid lines, and torn-paper gap indicators.
+3. **Property Verification**:
+   - Added `packages/seance-avatars/test/drum.property.test.ts` verifying capacity bounds, extremum preservation, zoom scaling, and gap discontinuities.
+4. **Verification**:
+   - `pnpm typecheck`: 0 errors.
+   - `pnpm test`: 45 passed (all 45 files), 335 passed (335/335 tests).
