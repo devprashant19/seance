@@ -78,6 +78,7 @@ export * from "./dsp/index.js";
 export type {
   InstrumentDef,
   ExperimentDef,
+  InputSpec,
 } from "./plugin.js";
 
 export {

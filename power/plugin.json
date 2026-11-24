@@ -3,7 +3,7 @@
   "name": "seance",
   "version": "0.1.0",
   "description": "Give any web project hardware superpowers: stream phone sensors (motion, orientation, microphone) into the browser with a typed SDK, and let Kiro read live sensor streams, record traces and run physics experiments through the bundled seance MCP server.",
-  "author": { "name": "REPLACE_WITH_YOUR_NAME_OR_TEAM" },
+  "author": { "name": "Skeleton Crew" },
   "keywords": [
     "seance",
     "sensor",
@@ -20,7 +20,7 @@
     "uncertainty",
     "trace"
   ],
-  "homepage": "https://github.com/REPLACE_WITH_YOUR_GITHUB/seance",
-  "repository": "https://github.com/REPLACE_WITH_YOUR_GITHUB/seance",
+  "homepage": "https://github.com/devprashant19/seance",
+  "repository": "https://github.com/devprashant19/seance",
   "license": "MIT"
 }

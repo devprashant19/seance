@@ -1,8 +1,11 @@
+import { defineExperiment, type InputSpec, type ExperimentDef } from "seance-core";
 import { analyzePendulum } from "./analysis.js";
 import { pendulumUncertainty } from "./uncertainty.js";
 import type { ExperimentResult } from "../../oracle/types.js";
 
-export interface ExperimentDefinition {
+export type { InputSpec };
+
+export interface LabExperimentDefinition extends ExperimentDef {
   readonly id: string;
   readonly name: string;
   readonly spooky: string;
@@ -16,17 +19,9 @@ export interface ExperimentDefinition {
   ) => ExperimentResult;
 }
 
-export interface InputSpec {
-  readonly key: string;
-  readonly label: string;
-  readonly unit: string;
-  readonly defaultValue: number;
-  readonly defaultUncertainty: number;
-  readonly min: number;
-  readonly max: number;
-}
+export type ExperimentDefinition = LabExperimentDefinition;
 
-export const pendulumG: ExperimentDefinition = {
+export const pendulumG: LabExperimentDefinition = defineExperiment({
   id: "pendulum-g",
   name: "The Swinging Spirit",
   spooky: "Let the spirit swing and reveal the pull of the Earth.",
@@ -61,7 +56,7 @@ export const pendulumG: ExperimentDefinition = {
       quantity: "g",
     };
   },
-};
+});
 
 export { analyzePendulum } from "./analysis.js";
 export { pendulumUncertainty } from "./uncertainty.js";

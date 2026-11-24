@@ -1,9 +1,10 @@
+import { defineExperiment } from "seance-core";
 import { analyzeFreeFall } from "./analysis.js";
 import { freeFallUncertainty } from "./uncertainty.js";
 import type { ExperimentDefinition } from "../pendulum-g/index.js";
 import type { ExperimentResult } from "../../oracle/types.js";
 
-export const freeFall: ExperimentDefinition = {
+export const freeFall: ExperimentDefinition = defineExperiment({
   id: "free-fall",
   name: "The Drop of Doom",
   spooky: "Release the spirit and let gravity reveal itself.",
@@ -41,7 +42,7 @@ export const freeFall: ExperimentDefinition = {
       quantity: "h",
     };
   },
-};
+});
 
 export { analyzeFreeFall } from "./analysis.js";
 export { freeFallUncertainty } from "./uncertainty.js";

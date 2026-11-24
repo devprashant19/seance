@@ -91,7 +91,7 @@ export function Landing() {
     return () => clearInterval(t);
   }, [retryIn, connectRelay]);
 
-  const joinUrl = roomCode ? `${window.location.origin}/join/${roomCode}` : "";
+  const joinUrl = roomCode ? `${window.location.origin}/join.html?code=${roomCode}` : "";
 
   const handleCopy = useCallback(async () => {
     if (!joinUrl) return;
@@ -122,7 +122,10 @@ export function Landing() {
         </svg>
       </div>
 
-      <h1 style={{ fontSize: 28, fontWeight: 300, marginBottom: 8, letterSpacing: 2 }}>Poltergeist Lab</h1>
+      <h1 style={{ fontSize: 28, fontWeight: 300, marginBottom: 4, letterSpacing: 2 }}>Poltergeist Lab</h1>
+      <p style={{ color: "#7799cc", fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>
+        Séance: Ghost Ear Lab
+      </p>
       <p style={{ color: "#888", marginBottom: 32, maxWidth: 400 }}>Scan the code with your phone to begin the haunting.</p>
 
       {error && !roomCode && (

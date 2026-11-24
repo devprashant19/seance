@@ -9,19 +9,39 @@ export interface InstrumentDef {
   createSpirit(config: Record<string, unknown>): Spirit | Promise<Spirit>;
 }
 
+export interface InputSpec {
+  readonly key: string;
+  readonly label: string;
+  readonly unit: string;
+  readonly defaultValue: number;
+  readonly defaultUncertainty?: number;
+  readonly min: number;
+  readonly max: number;
+}
+
 export interface ExperimentDef {
+  readonly id?: string;
   readonly name: string;
   readonly description?: string;
-  readonly instruments: readonly string[];
+  readonly spooky?: string;
+  readonly plain?: string;
+  readonly instruments?: readonly string[];
+  readonly channels?: readonly (ChannelId | string)[];
+  readonly inputs?: readonly InputSpec[];
+  readonly safetyNote?: string;
   readonly durationMs?: number;
   readonly parameters?: Record<string, unknown>;
+  readonly analyze?: (
+    channels: Record<string, readonly { t: number; v: readonly number[] }[]>,
+    inputs: Record<string, number>,
+  ) => any;
 }
 
 export function defineInstrument(def: InstrumentDef): InstrumentDef {
   return Object.freeze({ ...def });
 }
 
-export function defineExperiment(def: ExperimentDef): ExperimentDef {
+export function defineExperiment<T extends ExperimentDef = ExperimentDef>(def: T): T {
   return Object.freeze({ ...def });
 }
 
@@ -37,33 +57,39 @@ export class PluginRegistry {
   }
 
   registerExperiment(experiment: ExperimentDef): void {
-    if (this._experiments.has(experiment.name)) {
-      throw new Error(`Experiment already registered: ${experiment.name}`);
+    const key = experiment.id ?? experiment.name;
+    if (this._experiments.has(key) || this._experiments.has(experiment.name)) {
+      throw new Error(`Experiment already registered: ${key}`);
     }
-    for (const instName of experiment.instruments) {
-      if (!this._instruments.has(instName)) {
-        throw new Error(
-          `Experiment "${experiment.name}" requires unregistered instrument: ${instName}`,
-        );
+    if (experiment.instruments) {
+      for (const instName of experiment.instruments) {
+        if (!this._instruments.has(instName)) {
+          throw new Error(
+            `Experiment "${experiment.name}" requires unregistered instrument: ${instName}`,
+          );
+        }
       }
     }
-    this._experiments.set(experiment.name, experiment);
+    this._experiments.set(key, experiment);
+    if (experiment.id && experiment.name !== experiment.id) {
+      this._experiments.set(experiment.name, experiment);
+    }
   }
 
   getInstrument(name: string): InstrumentDef | undefined {
     return this._instruments.get(name);
   }
 
-  getExperiment(name: string): ExperimentDef | undefined {
-    return this._experiments.get(name);
-  }
-
   listInstruments(): readonly InstrumentDef[] {
     return [...this._instruments.values()];
   }
 
+  getExperiment(nameOrId: string): ExperimentDef | undefined {
+    return this._experiments.get(nameOrId);
+  }
+
   listExperiments(): readonly ExperimentDef[] {
-    return [...this._experiments.values()];
+    return Array.from(new Set(this._experiments.values()));
   }
 
   clear(): void {

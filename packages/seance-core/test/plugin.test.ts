@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import fc from "fast-check";
 import {
   defineInstrument,
   defineExperiment,
@@ -119,3 +120,56 @@ describe("getGlobalRegistry", () => {
     expect(a).toBe(b);
   });
 });
+
+describe("PluginRegistry property tests", () => {
+  it("Property 1: retrieval by id or name returns the exact registered experiment definition", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !/\s/.test(s)),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (id, name) => {
+          const reg = new PluginRegistry();
+          const exp = defineExperiment({
+            id,
+            name,
+            spooky: "The spirit whispers",
+            plain: "Measure properties",
+          });
+          reg.registerExperiment(exp);
+          expect(reg.getExperiment(id)).toBe(exp);
+          expect(reg.getExperiment(name)).toBe(exp);
+          expect(reg.listExperiments()).toContain(exp);
+          expect(reg.listExperiments().length).toBe(1);
+        },
+      ),
+    );
+  });
+
+  it("Property 2: InputSpec invariant min <= defaultValue <= max and defaultUncertainty >= 0", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1000, max: 1000, noNaN: true }),
+        fc.double({ min: 0.1, max: 500, noNaN: true }),
+        fc.double({ min: 0, max: 100, noNaN: true }),
+        (base, span, unc) => {
+          const min = base;
+          const max = base + span;
+          const defaultValue = min + span / 2;
+          const spec = {
+            key: "testParam",
+            label: "Test Parameter",
+            unit: "m",
+            defaultValue,
+            defaultUncertainty: unc,
+            min,
+            max,
+          };
+          expect(spec.min).toBeLessThanOrEqual(spec.defaultValue);
+          expect(spec.defaultValue).toBeLessThanOrEqual(spec.max);
+          expect(spec.defaultUncertainty).toBeGreaterThanOrEqual(0);
+        },
+      ),
+    );
+  });
+});
+

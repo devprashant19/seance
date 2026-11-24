@@ -1,4 +1,4 @@
-# Séance 👻
+# Séance: Ghost Ear Lab 👻
 
 **Turn any phone into a laboratory instrument in five seconds. No install, no hardware. And Kiro can read the live sensor data while it writes the code.**
 
@@ -60,6 +60,12 @@ pnpm test          # run all tests
 pnpm dev:relay     # relay server
 pnpm dev:lab       # poltergeist lab dev server
 ```
+
+## Contributors
+
+Built by the **Skeleton Crew** for Kiroween 2026:
+- Core architecture, sensor physics, and audio synthesis: Skeleton Crew Team
+- Inspired by hands-on physics education and accessible laboratory tools
 
 ## License
 

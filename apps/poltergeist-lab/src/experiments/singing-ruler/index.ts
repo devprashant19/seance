@@ -1,3 +1,4 @@
+import { defineExperiment } from "seance-core";
 import { analyzeSingingRuler } from "./analysis.js";
 import { singingRulerUncertainty } from "./uncertainty.js";
 import type { ExperimentDefinition } from "../pendulum-g/index.js";
@@ -6,7 +7,7 @@ import type { ExperimentResult } from "../../oracle/types.js";
 const STEEL_E_REF = 200e9;
 const STEEL_DENSITY = 7850;
 
-export const singingRuler: ExperimentDefinition = {
+export const singingRuler: ExperimentDefinition = defineExperiment({
   id: "singing-ruler",
   name: "Hear the Stiffness",
   spooky: "Let the spirit sing and reveal what the ruler is made of.",
@@ -66,7 +67,7 @@ export const singingRuler: ExperimentDefinition = {
       quantity: "E",
     };
   },
-};
+});
 
 export { analyzeSingingRuler } from "./analysis.js";
 export { singingRulerUncertainty } from "./uncertainty.js";

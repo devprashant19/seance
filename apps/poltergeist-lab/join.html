@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join Séance — Mobile Sensor Client</title>
+    <meta name="description" content="Connect your phone as an instrument in the Séance physics lab." />
+    <meta name="theme-color" content="#0a0a1a" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #0a0a1a;
+        color: #ddd;
+        font-family: system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        text-align: center;
+      }
+      .circle {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 2px solid rgba(100,140,255,0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        animation: pulse 3s infinite ease-in-out;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.05); opacity: 1; }
+      }
+      .code-display {
+        font-size: 36px;
+        font-family: monospace;
+        letter-spacing: 6px;
+        color: #aabbff;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 14px 32px;
+        background: #2a3a5c;
+        color: #eef;
+        border: 1px solid #4a6a9c;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.15s ease;
+      }
+      .btn:active { background: #3a4a7c; }
+      .status {
+        margin-top: 16px;
+        color: #8899bb;
+        font-size: 14px;
+        max-width: 320px;
+      }
+      .trouble {
+        max-width: 340px;
+        padding: 16px;
+        border-radius: 8px;
+        background: rgba(255,100,100,0.1);
+        border: 1px solid rgba(255,100,100,0.3);
+        color: #ffaaaa;
+        margin-top: 20px;
+        text-align: left;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="join-app">
+      <div class="circle">
+        <svg viewBox="0 0 100 100" width="70" height="70">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(100,140,255,0.6)" stroke-width="2"/>
+          <text x="50" y="54" text-anchor="middle" fill="#aabbff" font-size="9" font-family="sans-serif">SÉANCE</text>
+        </svg>
+      </div>
+      <h1 style="font-size: 22px; font-weight: 400; margin-bottom: 4px;">Possession Link</h1>
+      <p style="color: #7788aa; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;">Séance: Ghost Ear Lab</p>
+      <div id="room-code-label" class="code-display">----</div>
+      <div id="action-container">
+        <button id="begin-btn" class="btn">Begin Séance</button>
+      </div>
+      <p id="status-text" class="status">Tap Begin to channel phone sensors to the lab.</p>
+      <div id="trouble-box" class="trouble" style="display: none;"></div>
+    </div>
+    <script type="module" src="/src/join-standalone.ts"></script>
+  </body>
+</html>

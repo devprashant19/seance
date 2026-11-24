@@ -1,9 +1,10 @@
+import { defineExperiment } from "seance-core";
 import { analyzeSpinFindChip } from "./analysis.js";
 import { spinUncertainty } from "./uncertainty.js";
 import type { ExperimentDefinition } from "../pendulum-g/index.js";
 import type { ExperimentResult } from "../../oracle/types.js";
 
-export const spinFindChip: ExperimentDefinition = {
+export const spinFindChip: ExperimentDefinition = defineExperiment({
   id: "spin-find-chip",
   name: "Where Does the Spirit Live?",
   spooky: "The spirit hides inside your phone. Spin to find its seat.",
@@ -33,7 +34,7 @@ export const spinFindChip: ExperimentDefinition = {
       quantity: "|r|",
     };
   },
-};
+});
 
 export { analyzeSpinFindChip } from "./analysis.js";
 export { spinUncertainty } from "./uncertainty.js";
