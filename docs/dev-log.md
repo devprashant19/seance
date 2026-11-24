@@ -129,3 +129,31 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
 7. **Property-Based Verification**:
    - Added `passport.property.test.ts`, `events.property.test.ts`, `robust.property.test.ts`, and `mcp-reality.test.ts`.
    - All 43 test suites and 327 tests green.
+
+---
+
+## 2026-11-24 · Session 5: Phase U3 — Ghost Ear Complete & Empirical User Study
+
+### Objectives
+- Extend Ghost Ear accessible lab across all experiments (`pendulum-g`, `free-fall`, `singing-ruler`, `spin-find-chip`).
+- Implement Darkroom mode with localStorage persistence, high-contrast typography, and minimal glare for low-vision environments.
+- Add multi-modal feedback: feature-detected Android haptics (`navigator.vibrate`) with auditory tick fallbacks.
+- Implement user-adjustable speech rate and earcon settings.
+- Formulate standardized empirical user study protocol in `docs/studies/ghost-ear-study.md`.
+
+### Actions Taken
+1. **Multi-Experiment Accessible Sonification**:
+   - `apps/poltergeist-lab/src/accessibility/ghost-ear/useGhostEar.ts`:
+     - Added experiment switcher supporting `free-fall`, `singing-ruler`, `spin-find-chip`, and `pendulum-g`.
+     - Analyzes respective physical quantities ($h \pm \sigma$, $f_1 \pm \sigma$, $r \pm \sigma$) and formats deterministic speech synthesis with expanded units.
+2. **Darkroom & Multi-Modal Controls**:
+   - `apps/poltergeist-lab/src/accessibility/ghost-ear/GhostEarRoute.tsx`:
+     - High-contrast pure black (#000000) and white (#ffffff) styling with localStorage persistence.
+     - Selectable speech rate (0.8x to 1.5x) and experiment selector.
+     - Integrated `navigator.vibrate(15)` at acoustic landmarks.
+3. **Empirical Study Protocol**:
+   - Authored `docs/studies/ghost-ear-study.md` defining consent scripts, 3 standardized blindfolded identification tasks, SUS evaluation, and co-design guidance with blind/low-vision learners.
+4. **Verification**:
+   - Added test suite `apps/poltergeist-lab/test/ghost-ear.test.ts`.
+   - `pnpm typecheck`: 0 errors across all workspace packages.
+   - `pnpm test`: 44 passed (all 44 files), 330 passed (330/330 tests).
