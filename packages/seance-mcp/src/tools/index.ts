@@ -6,3 +6,8 @@ export { runExperiment, type RunExperimentInput, type RunExperimentResult } from
 export { compareTraces, type CompareTracesInput, type CompareTracesResult } from "./compare-traces.js";
 export { accessibleResult, type AccessibleResultInput, type AccessibleResultOutput } from "./accessible-result.js";
 export { auditSonification, type AuditSonificationInput, type AuditSonificationOutput } from "./audit-sonification.js";
+export { sensorPassport, type SensorPassportInput } from "./sensor-passport.js";
+export { compareDeviceProfiles, type CompareDeviceProfilesInput } from "./compare-device-profiles.js";
+export { extractEventWindowTool, type ExtractEventWindowInput, type ExtractEventWindowResult } from "./extract-event-window.js";
+export { instructTool, type InstructInput, type InstructResult } from "./instruct.js";
+

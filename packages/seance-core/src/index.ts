@@ -74,6 +74,8 @@ export {
 } from "./health.js";
 
 export * from "./dsp/index.js";
+export * from "./passport/index.js";
+export * from "./events/index.js";
 
 export type {
   InstrumentDef,

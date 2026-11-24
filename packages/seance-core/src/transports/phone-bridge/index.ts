@@ -5,6 +5,7 @@ export {
   isClientMessage,
   isServerMessage,
   validateProtocolMessage,
+  validateInstruct,
 } from "./protocol.js";
 
 export type {

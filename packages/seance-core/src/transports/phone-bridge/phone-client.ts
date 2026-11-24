@@ -17,6 +17,7 @@ export interface PhoneClientConfig {
 export interface PhoneClientEvents {
   onStateChange?: (state: PhoneClientState) => void;
   onMessage?: (msg: ServerMessage) => void;
+  onInstruct?: (instruction: { from: string; to: string; text: string; step?: number }) => void;
   onSyncReady?: () => void;
   onError?: (error: string) => void;
 }
@@ -148,6 +149,23 @@ export class PhoneClient {
         };
         (reply as { t3: number }).t3 = performance.now();
         this.send(reply);
+        break;
+      }
+
+      case "instruct": {
+        this._events.onInstruct?.({
+          from: msg.from,
+          to: msg.to,
+          text: msg.text,
+          step: msg.step,
+        });
+        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(msg.text);
+            window.speechSynthesis.speak(utter);
+          } catch {}
+        }
         break;
       }
 

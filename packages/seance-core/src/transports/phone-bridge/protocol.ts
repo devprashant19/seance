@@ -18,7 +18,8 @@ export type ClientMessage =
   | { type: "batch"; payload: BatchPayload }
   | { type: "sync-reply"; t0: number; t1: number; t2: number; t3: number }
   | { type: "peer-hidden" }
-  | { type: "peer-visible" };
+  | { type: "peer-visible" }
+  | { type: "instruct"; to: string; text: string; step?: number };
 
 export type ServerMessage =
   | { type: "welcome"; roomCode: string; peerId: string; resumeToken: string }
@@ -28,6 +29,7 @@ export type ServerMessage =
   | { type: "sync"; t0: number }
   | { type: "sync-reply"; peerId: string; t0: number; t1: number; t2: number; t3: number }
   | { type: "room-paused"; reason: string }
+  | { type: "instruct"; from: string; to: string; text: string; step?: number }
   | { type: "error"; code: string; message: string };
 
 export type ProtocolMessage = ClientMessage | ServerMessage;
@@ -36,9 +38,15 @@ export function isClientMessage(msg: unknown): msg is ClientMessage {
   if (typeof msg !== "object" || msg === null) return false;
   const m = msg as Record<string, unknown>;
   if (typeof m.type !== "string") return false;
-  return ["hello", "ready", "batch", "sync-reply", "peer-hidden", "peer-visible"].includes(
-    m.type,
-  );
+  return [
+    "hello",
+    "ready",
+    "batch",
+    "sync-reply",
+    "peer-hidden",
+    "peer-visible",
+    "instruct",
+  ].includes(m.type);
 }
 
 export function isServerMessage(msg: unknown): msg is ServerMessage {
@@ -53,8 +61,34 @@ export function isServerMessage(msg: unknown): msg is ServerMessage {
     "sync",
     "sync-reply",
     "room-paused",
+    "instruct",
     "error",
   ].includes(m.type);
+}
+
+export function validateInstruct(
+  msg: unknown,
+): { valid: boolean; reason?: string } {
+  if (typeof msg !== "object" || msg === null) {
+    return { valid: false, reason: "Message must be an object" };
+  }
+  const m = msg as Record<string, unknown>;
+  if (m.type !== "instruct") {
+    return { valid: false, reason: "Type must be instruct" };
+  }
+  if (typeof m.to !== "string" || m.to.trim().length === 0) {
+    return { valid: false, reason: "Target peer 'to' must be specified" };
+  }
+  if (typeof m.text !== "string") {
+    return { valid: false, reason: "Instruction text must be a string" };
+  }
+  if (m.text.length > 200) {
+    return {
+      valid: false,
+      reason: `Instruction text exceeds 200 character limit (${m.text.length} chars)`,
+    };
+  }
+  return { valid: true };
 }
 
 export function encodeBatch(

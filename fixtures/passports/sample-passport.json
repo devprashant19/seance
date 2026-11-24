@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "deviceId": "iPhone 15 Pro",
+  "model": "iPhone 15 Pro",
+  "platform": "ios",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15",
+  "timestamp": "2026-11-22T10:40:00Z",
+  "channels": {
+    "accel": {
+      "channelId": "accel",
+      "sampleCount": 1799,
+      "durationMs": 29997.31,
+      "fsHz": 59.84440454817787,
+      "medianDtMs": 16.709999999999127,
+      "jitterCvPercent": 7.897714060204567,
+      "dropoutCount": 0,
+      "stillWindowFound": false,
+      "axisMeans": [
+        -0.0023529699833240657,
+        0.0016243846581434121,
+        -0.005158583101723175
+      ]
+    },
+    "accelG": {
+      "channelId": "accelG",
+      "sampleCount": 1799,
+      "durationMs": 29997.31,
+      "fsHz": 59.84440454817787,
+      "medianDtMs": 16.709999999999127,
+      "jitterCvPercent": 7.897714060204567,
+      "dropoutCount": 0,
+      "stillWindowFound": true,
+      "noiseFloorSigma": [
+        0.07631323873912331,
+        0.07631323873912331,
+        0.07631323873912331
+      ],
+      "axisMeans": [
+        0.0056216931628682845,
+        -0.010767309616453566,
+        -9.702855327404125
+      ],
+      "gravityMagnitude": 9.703897322922215
+    },
+    "gyro": {
+      "channelId": "gyro",
+      "sampleCount": 1799,
+      "durationMs": 29997.31,
+      "fsHz": 59.84440454817787,
+      "medianDtMs": 16.709999999999127,
+      "jitterCvPercent": 7.897714060204567,
+      "dropoutCount": 0,
+      "stillWindowFound": false,
+      "axisMeans": [
+        0.001871948304613677,
+        0.000006030016675930979,
+        0.0001403579766536965
+      ],
+      "gyroBiasRadS": [
+        0.001871948304613677,
+        0.000006030016675930979,
+        0.0001403579766536965
+      ]
+    },
+    "rawIntervalMs": {
+      "channelId": "rawIntervalMs",
+      "sampleCount": 1799,
+      "durationMs": 29997.31,
+      "fsHz": 59.84440454817787,
+      "medianDtMs": 16.709999999999127,
+      "jitterCvPercent": 7.897714060204567,
+      "dropoutCount": 0,
+      "stillWindowFound": false,
+      "axisMeans": [
+        16.672901612006676
+      ]
+    }
+  },
+  "notes": "SYNTHETIC placeholder: generated data, not a real phone recording. Replace with a real tools/sensor-probe recording before citing any numbers. Pendulum: phone secured by lanyard, L=62cm pivot-to-phone-centre. Amplitude ~12deg."
+}

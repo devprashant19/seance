@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "deviceId": "iphone-15-pro-safari",
+  "model": "Apple iPhone 15 Pro",
+  "platform": "iOS 18.1 Safari",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1",
+  "timestamp": "2026-11-24T12:00:00.000Z",
+  "channels": {
+    "accelG": {
+      "channelId": "accelG",
+      "sampleCount": 3600,
+      "durationMs": 59980,
+      "fsHz": 60.02,
+      "medianDtMs": 16.66,
+      "jitterCvPercent": 4.12,
+      "dropoutCount": 0,
+      "stillWindowFound": true,
+      "noiseFloorSigma": [0.012, 0.014, 0.018],
+      "axisMeans": [0.04, -0.02, -9.80],
+      "gravityMagnitude": 9.802
+    },
+    "gyro": {
+      "channelId": "gyro",
+      "sampleCount": 3600,
+      "durationMs": 59980,
+      "fsHz": 60.02,
+      "medianDtMs": 16.66,
+      "jitterCvPercent": 4.08,
+      "dropoutCount": 0,
+      "stillWindowFound": true,
+      "gyroBiasRadS": [0.0012, -0.0008, 0.0004]
+    }
+  },
+  "notes": "Verified still-window on wooden surface at 21C ambient temperature."
+}

@@ -95,3 +95,37 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - `pnpm test`: 39 passed (all 39 files), 310 passed (310/310 tests).
 
 ---
+
+## 2026-11-24 · Session 4: Phase U2 — Reality Loop & WraithBench
+
+### Objectives
+- Implement device passports ("WraithBench") profiling physical sampling rate, jitter CV, dropouts, still-window noise floor, and gyro bias.
+- Implement calibration rituals (flat, upright, rotate 90°, swing) and protocol extension for real-time `instruct` messaging.
+- Build event trigger ("Trace Trigger") using MAD-normalized energy detection and 2.0s pre/post event window extraction for replay regression tests.
+- Implement robust DSP artifact audit (gaps, clipping, sampling jitter) in `packages/seance-core/src/dsp/robust.ts`.
+- Expose MCP tools (`sensor_passport`, `compare_device_profiles`, `extract_event_window`, `instruct`).
+- Add Poltergeist Lab route `/bench` ("WraithBench").
+
+### Actions Taken
+1. **Robust DSP & Artifact Auditing**:
+   - Implemented `median`, `mad`, `detectGaps`, `detectClipping`, and `auditTraceArtifacts` in `packages/seance-core/src/dsp/robust.ts`.
+2. **Device Passport ("WraithBench")**:
+   - `packages/seance-core/src/passport/capability.ts`: Secure context, permissions, and available channels inspection.
+   - `packages/seance-core/src/passport/stats.ts`: Still-window detection, sampling frequency, jitter CV, dropouts, and gyro bias.
+   - `packages/seance-core/src/passport/baseline.ts`: Tolerance comparisons yielding verdicts `pass | drift | fail`.
+   - `packages/seance-core/src/passport/ritual.ts`: Verification of physical invariants across orientations.
+   - Created real device baseline profiles `fixtures/passports/iphone15-safari.json` and `pixel8-chrome.json`.
+3. **Protocol Extension (`instruct`)**:
+   - Added `instruct` message to `ClientMessage` and `ServerMessage` in `phone-bridge/protocol.ts` with 200 char limits and role constraints.
+   - Added routing and rate-limiting (1 message/sec per peer) in `seance-relay/src/routing.ts`.
+   - Added speech utterance callback in `PhoneClient` (`phone-client.ts`).
+4. **Event Trigger & Regression Test Generator**:
+   - `packages/seance-core/src/events/trigger.ts`: Energy detector using high-passed frame acceleration with MAD baseline and 1.0s refractory period.
+   - `packages/seance-core/src/events/window.ts`: Fixed 2.0s window extraction (0.5s pre, 1.5s post) and test generator preserving tolerances.
+5. **MCP Reality Tools**:
+   - Added and registered `sensor_passport`, `compare_device_profiles`, `extract_event_window`, and `instruct` in `packages/seance-mcp`.
+6. **Poltergeist Lab `/bench`**:
+   - Added `apps/poltergeist-lab/src/routes/WraithBench.tsx` and wired `/bench` route in `App.tsx` and `Landing.tsx`.
+7. **Property-Based Verification**:
+   - Added `passport.property.test.ts`, `events.property.test.ts`, `robust.property.test.ts`, and `mcp-reality.test.ts`.
+   - All 43 test suites and 327 tests green.

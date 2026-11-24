@@ -1,0 +1,34 @@
+# Task List: U2 Reality Loop
+
+- [x] Write requirements spec and property invariants in `.kiro/specs/u2-reality-loop/requirements.md`
+- [x] Implement robust statistics module `packages/seance-core/src/dsp/robust.ts` (median, MAD, gaps, clipping)
+- [x] Implement device passport modules in `packages/seance-core/src/passport/`:
+  - [x] `capability.ts`: capability queries & platform inspection
+  - [x] `stats.ts`: sampling stats, jitterCV, still window detection, gyro bias
+  - [x] `baseline.ts`: baseline comparison with tolerance verdicts (`pass | drift | fail`)
+  - [x] `index.ts`: export passport API
+- [x] Implement calibration ritual in `packages/seance-core/src/passport/ritual.ts`:
+  - [x] Step invariant checkers (flat, upright, rotate 90°, swing)
+- [x] Implement protocol extension for `instruct`:
+  - [x] Update `packages/seance-core/src/transports/phone-bridge/protocol.ts` (types, validation)
+  - [x] Update `packages/seance-relay/src/routing.ts` & `limits.ts` (routing, rate limiting)
+  - [x] Update `phone-client.ts` (handle instruct & announce)
+- [x] Implement event trigger & windowing in `packages/seance-core/src/events/`:
+  - [x] `trigger.ts`: high-pass energy, MAD baseline, threshold detector, refractory tracking
+  - [x] `window.ts`: pre/post ring buffer window extraction (0.5s / 1.5s)
+  - [x] `index.ts`: export events API
+- [x] Implement MCP tools in `packages/seance-mcp/src/tools/`:
+  - [x] `sensor-passport.ts`
+  - [x] `compare-device-profiles.ts`
+  - [x] `extract-event-window.ts`
+  - [x] `instruct.ts`
+  - [x] Register tools in `packages/seance-mcp/src/server.ts`
+- [x] Implement Poltergeist Lab route `/bench` in `apps/poltergeist-lab/src/routes/WraithBench.tsx`
+- [x] Add property-based tests with `fast-check`:
+  - [x] `packages/seance-core/test/passport.property.test.ts`
+  - [x] `packages/seance-core/test/events.property.test.ts`
+  - [x] `packages/seance-core/test/robust.property.test.ts`
+  - [x] `packages/seance-mcp/test/mcp-reality.test.ts`
+- [x] Commit real/fixture passport files to `fixtures/passports/`
+- [x] Verify `pnpm typecheck`, `pnpm test`, and `pnpm build` across all packages
+- [x] Show git status, record dev log entry, and commit Phase U2

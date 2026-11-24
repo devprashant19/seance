@@ -4,6 +4,7 @@ import type {
   ServerMessage,
   Role,
 } from "seance-core/transports/phone-bridge";
+import { validateInstruct } from "seance-core/transports/phone-bridge";
 
 export interface Connection {
   readonly role: Role;
@@ -14,6 +15,7 @@ export interface Connection {
 export class Router {
   private readonly _connections = new Map<WebSocket, Connection>();
   private readonly _roomSockets = new Map<string, Set<WebSocket>>();
+  private readonly _lastInstructTimes = new Map<string, number>();
 
   register(ws: WebSocket, roomCode: string, conn: Connection): void {
     this._connections.set(ws, conn);
@@ -104,6 +106,31 @@ export class Router {
         } else {
           this.broadcastToRoom(roomCode, serverBatch, ws);
         }
+        return undefined;
+      }
+      case "instruct": {
+        if (conn.role !== "host" && conn.role !== "observer") {
+          return { type: "error", code: "FORBIDDEN", message: "Only host or observer can send instructions" };
+        }
+        const validation = validateInstruct(msg);
+        if (!validation.valid) {
+          return { type: "error", code: "INVALID_INSTRUCTION", message: validation.reason ?? "Invalid instruction" };
+        }
+        const now = Date.now();
+        const lastTime = this._lastInstructTimes.get(msg.to) ?? 0;
+        if (now - lastTime < 1000) {
+          return { type: "error", code: "RATE_LIMITED", message: "Instructions are rate limited to 1 per second per peer" };
+        }
+        this._lastInstructTimes.set(msg.to, now);
+
+        const serverInstruct: ServerMessage = {
+          type: "instruct",
+          from: conn.peerId ?? conn.role,
+          to: msg.to,
+          text: msg.text,
+          step: msg.step,
+        };
+        this.sendToPeer(roomCode, msg.to, serverInstruct);
         return undefined;
       }
       default:

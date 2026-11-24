@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "deviceId": "pixel-8-chrome",
+  "model": "Google Pixel 8",
+  "platform": "Android 15 Chrome",
+  "userAgent": "Mozilla/5.0 (Linux; Android 15; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+  "timestamp": "2026-11-24T12:05:00.000Z",
+  "channels": {
+    "accelG": {
+      "channelId": "accelG",
+      "sampleCount": 3000,
+      "durationMs": 60020,
+      "fsHz": 49.98,
+      "medianDtMs": 20.01,
+      "jitterCvPercent": 6.84,
+      "dropoutCount": 1,
+      "stillWindowFound": true,
+      "noiseFloorSigma": [0.022, 0.025, 0.029],
+      "axisMeans": [-0.01, 0.03, 9.79],
+      "gravityMagnitude": 9.794
+    },
+    "gyro": {
+      "channelId": "gyro",
+      "sampleCount": 3000,
+      "durationMs": 60020,
+      "fsHz": 49.98,
+      "medianDtMs": 20.01,
+      "jitterCvPercent": 6.72,
+      "dropoutCount": 1,
+      "stillWindowFound": true,
+      "gyroBiasRadS": [-0.0021, 0.0015, -0.0011]
+    }
+  },
+  "notes": "Verified still-window calibration on desk. Android reports positive z for upward gravity."
+}

@@ -167,6 +167,20 @@ export function Landing() {
           🎧 Ghost Ear (accessible mode) &rarr;
         </a>
         <a
+          href="/bench"
+          style={{
+            color: "#ecc94b",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #744210",
+            borderRadius: 6,
+            background: "rgba(200,150,50,0.1)",
+          }}
+        >
+          📱 WraithBench (device passport) &rarr;
+        </a>
+        <a
           href="/replay"
           style={{
             color: "#99aabb",

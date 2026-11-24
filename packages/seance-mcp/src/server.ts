@@ -7,6 +7,10 @@ import { runExperiment } from "./tools/run-experiment.js";
 import { compareTraces } from "./tools/compare-traces.js";
 import { accessibleResult } from "./tools/accessible-result.js";
 import { auditSonification } from "./tools/audit-sonification.js";
+import { sensorPassport } from "./tools/sensor-passport.js";
+import { compareDeviceProfiles } from "./tools/compare-device-profiles.js";
+import { extractEventWindowTool } from "./tools/extract-event-window.js";
+import { instructTool } from "./tools/instruct.js";
 import { z } from "zod";
 
 export function createSeanceMcpServer(): McpServer {
@@ -138,6 +142,75 @@ export function createSeanceMcpServer(): McpServer {
     async ({ tracePath }) => {
       try {
         const result = auditSonification({ tracePath });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "sensor_passport",
+    "Inspect physical sensor performance (sampling frequency, jitter, dropouts, still-window noise floor, gyro bias) from a .seance trace",
+    {
+      tracePath: z.string().describe("Path to a .seance trace file"),
+    },
+    async ({ tracePath }) => {
+      try {
+        const result = sensorPassport({ tracePath });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "compare_device_profiles",
+    "Compare a measured device passport against a device baseline tolerance profile",
+    {
+      samplePassportPath: z.string().describe("Path to the measured device passport JSON"),
+      baselinePath: z.string().describe("Path to the device baseline profile JSON"),
+    },
+    async ({ samplePassportPath, baselinePath }) => {
+      try {
+        const result = compareDeviceProfiles({ samplePassportPath, baselinePath });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "extract_event_window",
+    "Extract a 2.0s event window (0.5s pre, 1.5s post) around a physical transient event and generate a replay test template",
+    {
+      tracePath: z.string().describe("Path to a .seance trace file"),
+      tMs: z.number().optional().describe("Trigger timestamp in ms (auto-detected if omitted)"),
+      outputPath: z.string().optional().describe("Optional destination path for extracted .seance event file"),
+    },
+    async ({ tracePath, tMs, outputPath }) => {
+      try {
+        const result = extractEventWindowTool({ tracePath, tMs, outputPath });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+      }
+    },
+  );
+
+  server.tool(
+    "instruct",
+    "Send a real-time calibration/ritual instruction to a connected spirit phone via relay",
+    {
+      spiritId: z.string().describe("Target spirit peer identifier"),
+      text: z.string().max(200).describe("Instruction message (<= 200 chars)"),
+      step: z.number().optional().describe("Optional ritual step number"),
+    },
+    async ({ spiritId, text, step }) => {
+      try {
+        const result = instructTool({ spiritId, text, step });
         return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       } catch (err) {
         return { content: [{ type: "text", text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };

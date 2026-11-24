@@ -22,6 +22,9 @@ const ReplayController = lazy(() =>
 const GhostEar = lazy(() =>
   import("./accessibility/ghost-ear/GhostEarRoute.js").then((m) => ({ default: m.GhostEarRoute }))
 );
+const WraithBench = lazy(() =>
+  import("./routes/WraithBench.js").then((m) => ({ default: m.WraithBench }))
+);
 
 function RouteFallback() {
   return (
@@ -43,6 +46,7 @@ export function App() {
           <Route path="/lab/:id" element={<LabRunner />} />
           <Route path="/replay" element={<ReplayController />} />
           <Route path="/hear" element={<GhostEar />} />
+          <Route path="/bench" element={<WraithBench />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

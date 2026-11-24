@@ -19,3 +19,18 @@ export type { LinearFit } from "./fit.js";
 
 export { meanWithUncertainty, propagateAdd, propagateMultiply } from "./uncertainty.js";
 export type { UncertainValue } from "./uncertainty.js";
+
+export {
+  median,
+  mad,
+  detectGaps,
+  detectClipping,
+  auditTraceArtifacts,
+} from "./robust.js";
+export type {
+  GapArtifact,
+  ClippingArtifact,
+  ChannelAudit,
+  TraceAuditReport,
+} from "./robust.js";
+

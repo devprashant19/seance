@@ -1,0 +1,17 @@
+{
+  "deviceModel": "iPhone 15 Pro",
+  "tolerances": {
+    "gyro": {
+      "minFsHz": 10,
+      "maxJitterCvPercent": 50,
+      "maxDropouts": 5
+    }
+  },
+  "baselineStats": {
+    "gyro": {
+      "fsHz": 59.84440454817787,
+      "jitterCvPercent": 7.897714060204567,
+      "dropoutCount": 0
+    }
+  }
+}
