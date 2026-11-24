@@ -209,6 +209,20 @@ export function Landing() {
           📷 Apparition Gate (camera photogate) &rarr;
         </a>
         <a
+          href="/circle"
+          style={{
+            color: "#b794f4",
+            fontSize: 14,
+            textDecoration: "none",
+            padding: "8px 16px",
+            border: "1px solid #553c9a",
+            borderRadius: 6,
+            background: "rgba(128,90,213,0.1)",
+          }}
+        >
+          🕯️ Séance Circle (classroom board) &rarr;
+        </a>
+        <a
           href="/replay"
           style={{
             color: "#99aabb",

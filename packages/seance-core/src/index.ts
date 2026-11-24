@@ -77,6 +77,7 @@ export * from "./dsp/index.js";
 export * from "./passport/index.js";
 export * from "./events/index.js";
 export * from "./array/index.js";
+export * from "./circle/index.js";
 
 
 export type {

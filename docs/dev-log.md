@@ -233,3 +233,32 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - Added `packages/seance-core/test/photogate.property.test.ts` with 4 property suites verifying uncertainty bounds, period recovery, aliasing flags, and error propagation.
    - `pnpm typecheck`: 0 errors across all monorepo packages.
    - `pnpm test`: 47 passed (all 47 test files), 343 passed (343/343 tests).
+
+---
+
+## 2026-11-24 · Session 9: Phase U7 — Séance Circle (Classroom Mode)
+
+### Objectives
+- Enable a single smartphone or station phones to serve a full science classroom with collaborative team slots.
+- Implement class statistics (median, MAD, sample standard deviation, inverse-variance weighted mean and uncertainty).
+- Enforce non-censored outlier detection ($|x - \text{median}| > 3 \cdot \text{MAD}$).
+- Provide RFC 4180 CSV and executable Jupyter Notebook (`.ipynb`) exports.
+- Author 40-minute turnkey lesson scripts with student role allocations.
+
+### Actions Taken
+1. **Classroom Aggregation & Outliers**:
+   - `packages/seance-core/src/circle/stats.ts`: Implemented `computeClassStats` with inverse-variance weights $w_i = 1/\sigma_i^2$, weighted uncertainty $\sigma_w = 1/\sqrt{\sum w_i}$, and 3·MAD outlier flags.
+   - Invariants: Class statistics are strictly invariant to team entry order (permutations); weighted uncertainty is bounded above by the minimum individual uncertainty ($\sigma_w \le \min_i \sigma_i$).
+2. **Classroom Export Engine**:
+   - `packages/seance-core/src/circle/export.ts`: Deterministic CSV and Jupyter Notebook generation including Python cells with numpy/matplotlib error bar plotting.
+3. **Turnkey Lesson Scripts**:
+   - `docs/lessons/pendulum-g-40min.md`: Pendulum oscillation and gravity determination with role assignments (Conjuror, Sensor Warden, Scribe, Skeptic).
+   - `docs/lessons/free-fall-40min.md`: Kinematics of free fall and impact timing.
+   - `docs/lessons/singing-ruler-40min.md`: Cantilever elasticity and Young's modulus via acoustic Fourier peak analysis.
+4. **Classroom Results Board UI**:
+   - `apps/poltergeist-lab/src/routes/CircleRoute.tsx`: Classroom results board with team error bar dot plot, summary cards, outlier badges, team entry form, and CSV/Notebook downloads.
+   - Linked `/circle` in `App.tsx` and `Landing.tsx`.
+5. **Verification**:
+   - Added `packages/seance-core/test/circle.property.test.ts` verifying permutation invariance, weighted uncertainty bounds, and outlier detection.
+   - `pnpm typecheck`: 0 errors.
+   - `pnpm test`: 48 passed (all 48 test files), 346 passed (346/346 tests).

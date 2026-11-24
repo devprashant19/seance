@@ -1,0 +1,21 @@
+# Implementation Tasks: Phase U7 — Séance Circle
+
+- [ ] 1. Core Classroom Statistics & Export
+  - [ ] 1.1 Implement classroom aggregation statistics in `packages/seance-core/src/circle/stats.ts`
+  - [ ] 1.2 Implement CSV and Jupyter notebook generator in `packages/seance-core/src/circle/export.ts`
+  - [ ] 1.3 Export circle module in `packages/seance-core/src/circle/index.ts` and `src/index.ts`
+- [ ] 2. Property-Based Testing
+  - [ ] 2.1 Test permutation invariance of class summary statistics
+  - [ ] 2.2 Test weighted uncertainty inequality ($\sigma_w \le \min_i \sigma_i$)
+  - [ ] 2.3 Test outlier detection flags for $|x - \text{median}| > 3 \cdot \text{MAD}$
+  - [ ] 2.4 Test team immutability
+- [ ] 3. Turnkey Lesson Scripts
+  - [ ] 3.1 Write `docs/lessons/pendulum-g-40min.md`
+  - [ ] 3.2 Write `docs/lessons/free-fall-40min.md`
+  - [ ] 3.3 Write `docs/lessons/singing-ruler-40min.md`
+- [ ] 4. Poltergeist Lab Classroom Interface
+  - [ ] 4.1 Implement `apps/poltergeist-lab/src/routes/CircleRoute.tsx` with dot plot, error bars, summary statistics, outlier flags, and export downloads
+  - [ ] 4.2 Wire `/circle` into `App.tsx` and `Landing.tsx`
+- [ ] 5. Verification & Dev Log
+  - [ ] 5.1 Run `pnpm typecheck` and `pnpm test`
+  - [ ] 5.2 Document in `docs/dev-log.md`

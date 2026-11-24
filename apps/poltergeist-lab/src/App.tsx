@@ -31,6 +31,9 @@ const ArrayRoute = lazy(() =>
 const GateRoute = lazy(() =>
   import("./routes/GateRoute.js").then((m) => ({ default: m.GateRoute }))
 );
+const CircleRoute = lazy(() =>
+  import("./routes/CircleRoute.js").then((m) => ({ default: m.CircleRoute }))
+);
 
 function RouteFallback() {
   return (
@@ -55,6 +58,7 @@ export function App() {
           <Route path="/bench" element={<WraithBench />} />
           <Route path="/array" element={<ArrayRoute />} />
           <Route path="/gate" element={<GateRoute />} />
+          <Route path="/circle" element={<CircleRoute />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
