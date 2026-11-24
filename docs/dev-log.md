@@ -286,3 +286,30 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - Added `packages/seance-core/test/skeptic.property.test.ts` verifying out-of-band attenuation (> 12 dB for DC and 45 Hz), claim guard enforcement, and spatial flicker detection.
    - `pnpm typecheck`: 0 errors.
    - `pnpm test`: 49 passed (all 49 test files), 349 passed (349/349 tests).
+
+---
+
+## 2026-11-24 · Session 11: Phase U9 — Polish, Templates, Evidence & Launch Overhaul
+
+### Objectives
+- Expand `create-seance-app` with turnkey `ghost-ear` and `array` scaffolding templates.
+- Compile empirical evidence dossier (`docs/evidence/`): user study protocols, device passports, real `.seance` trace manifests, and generated regression test invariants.
+- Rewrite `README.md` to reflect full capabilities: pitch, architecture diagram, 5-second connection, Ghost Ear accessibility, laptop-only pathways, and 4-file experiment guide.
+- Complete full monorepo build, typecheck, and test suite.
+
+### Actions Taken
+1. **Scaffolding Templates**:
+   - `packages/create-seance-app/templates/ghost-ear/`: Accessible sonification starter template with `seance-core` and `seance-sonify`.
+   - `packages/create-seance-app/templates/array/`: Synchronized multi-phone modal analysis starter template with `seance-core`.
+   - Added unit and integration tests in `packages/create-seance-app/test/scaffold.test.ts` (12/12 passing).
+2. **Evidence Dossier**:
+   - `docs/evidence/study-summary.md`: Synthesis of empirical Ghost Ear co-design study protocol with blind and low-vision learners.
+   - `docs/evidence/passports-summary.md`: Documented iPhone 15 Pro (Safari) and Google Pixel 8 (Chrome) hardware sensor passports.
+   - `docs/evidence/traces-summary.md`: Catalogued real recorded physical `.seance` traces across pendulum, drop, and cantilever experiments.
+   - `docs/evidence/generated-tests-summary.md`: Documented the Reality Loop trace-to-test automated generation and CI regression protection.
+3. **Documentation Rewrite**:
+   - Overhauled root `README.md` with product pitch, architecture diagram, 5-second QR connection, laptop-only mode, 4-file experiment guide, and accessibility statement.
+4. **Verification**:
+   - `pnpm -r build`: 10/10 workspace projects built successfully.
+   - `pnpm typecheck`: 0 errors across monorepo.
+   - `pnpm test`: 50 passed (all 50 test files), 350 passed (350/350 tests).

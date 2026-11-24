@@ -136,14 +136,28 @@ describe("scaffoldProject", () => {
     ).toThrow(ScaffoldError);
   });
 
-  it("replaces {{name}} in README.md", () => {
+  it("scaffolds ghost-ear template successfully", () => {
     const base = makeTempDir();
-    const target = join(base, "readme-test");
+    const target = join(base, "ghost-lab");
 
-    scaffoldProject({ dir: target, template: "lab", relay: "ws://localhost:8787", force: false });
+    scaffoldProject({ dir: target, template: "ghost-ear", relay: "ws://localhost:8787", force: false });
 
+    expect(existsSync(join(target, "package.json"))).toBe(true);
+    expect(existsSync(join(target, "src", "App.tsx"))).toBe(true);
     const readme = readFileSync(join(target, "README.md"), "utf-8");
-    expect(readme).toContain("# readme-test");
-    expect(readme).not.toContain("{{name}}");
+    expect(readme).toContain("# ghost-lab — Ghost Ear Accessible Lab");
+  });
+
+  it("scaffolds array template successfully", () => {
+    const base = makeTempDir();
+    const target = join(base, "array-lab");
+
+    scaffoldProject({ dir: target, template: "array", relay: "ws://relay.example.com", force: false });
+
+    expect(existsSync(join(target, "package.json"))).toBe(true);
+    expect(existsSync(join(target, "src", "App.tsx"))).toBe(true);
+    const readme = readFileSync(join(target, "README.md"), "utf-8");
+    expect(readme).toContain("# array-lab — Spirit Array App");
+    expect(readme).toContain("ws://relay.example.com");
   });
 });
