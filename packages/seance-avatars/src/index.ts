@@ -21,3 +21,5 @@ export { TROUBLE_CATALOG, type SpiritTroubleCode, type TroubleInfo } from "./com
 
 export * from "./drum/index.js";
 
+export { QrCode, qrMatrix, type QrCodeProps } from "./components/QrCode.js";
+

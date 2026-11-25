@@ -1,13 +1,14 @@
 {
-    "name":  "seance-avatars",
-    "version":  "0.0.0",
-    "private":  true,
+    "name": "seance-avatars",
+    "version": "0.0.0",
+    "private": true,
     "type": "module",
     "sideEffects": false,
     "exports": {
-                    ".":  "./src/index.ts"
-                },
+        ".": "./src/index.ts"
+    },
     "dependencies": {
+        "qrcode": "^1.5.4",
         "seance-core": "workspace:*",
         "three": "^0.170.0"
     },
@@ -16,11 +17,12 @@
         "react-dom": "^18.3.0 || ^19.0.0"
     },
     "devDependencies": {
+        "@types/qrcode": "^1.5.6",
         "@types/react": "^19.0.0",
         "@types/three": "^0.170.0"
     },
-    "scripts":  {
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests"
-                }
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests"
+    }
 }
