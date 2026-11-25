@@ -152,14 +152,16 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
     if (!closeRef.current) connect(false);
   }, [connect]);
 
-  useEffect(
-    () => () => {
+  // If this tab already runs a séance, stay connected on every page (not only pages that use the
+  // phone), so phones always know what the laptop is showing.
+  useEffect(() => {
+    if (loadHostSession()) connect(false);
+    return () => {
       if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
       closeRef.current?.();
       closeRef.current = null;
-    },
-    [],
-  );
+    };
+  }, [connect]);
 
   const subscribe = useCallback((listener: BatchListener) => {
     listenersRef.current.add(listener);

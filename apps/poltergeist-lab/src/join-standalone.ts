@@ -436,6 +436,8 @@ function init() {
           setStatus(String(msg["text"] ?? ""));
           break;
         case "room-paused":
+          // The laptop left (switching app/page): leave the Choir controls and release any held note.
+          applyMode("other");
           setStatus("The laptop is switching pages… stay here, you'll reconnect automatically.");
           break;
         case "room-resumed":
