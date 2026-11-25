@@ -1,3 +1,1 @@
-export { Stage } from "./Stage.js";
-export { Singer } from "./Singer.js";
-export { RevenantSinger } from "./RevenantSinger.js";
+export { Stage, type SingerView } from "./Stage.js";

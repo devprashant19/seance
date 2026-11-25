@@ -1,12 +1,20 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { SpiritTrouble, type SpiritTroubleCode } from "seance-avatars";
+import { SpiritTrouble, Ghost, playerNeon, type SpiritTroubleCode } from "seance-avatars";
 import {
   encodeBatch,
   PROTOCOL_VERSION,
   buildPhoneChannels,
   motionSample,
   orientationSample,
+  sanitizeName,
+  MAX_NAME_LENGTH,
+  INSTRUMENTS,
+  DEFAULT_INSTRUMENT,
+  INSTRUMENT_COOLDOWN_MS,
+  isInstrumentId,
+  instrumentInfo,
+  type InstrumentId,
   type MotionSample,
   type OrientationSample,
   type TouchSample,
@@ -15,6 +23,8 @@ import { relayUrl } from "../relay-url.js";
 
 const BATCH_INTERVAL_MS = 50;
 const CAPABILITIES = ["accelG", "accel", "gyro", "orientation", "control.touch"];
+const NAME_KEY = "seance-player-name";
+const INSTRUMENT_KEY = "seance-player-instrument";
 
 type PermissionFn = (() => Promise<string>) | undefined;
 
@@ -34,14 +44,40 @@ async function requestSensorPermissions(): Promise<boolean> {
   }
 }
 
+function readStored(key: string): string {
+  try {
+    return localStorage.getItem(key) ?? "";
+  } catch {
+    return "";
+  }
+}
+function writeStored(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* private mode: fine, just not remembered */
+  }
+}
+
 export function JoinChoir() {
   const { code: rawCode } = useParams<{ code: string }>();
   const code = (rawCode ?? "").toUpperCase();
-  const [phase, setPhase] = useState<"idle" | "connecting" | "singing-ready">("idle");
+  const [phase, setPhase] = useState<"name" | "connecting" | "singing">("name");
   const [trouble, setTrouble] = useState<SpiritTroubleCode | null>(null);
+  const [nameInput, setNameInput] = useState(() => readStored(NAME_KEY));
+  const [name, setName] = useState("");
+  const [instrument, setInstrument] = useState<InstrumentId>(() => {
+    const saved = readStored(INSTRUMENT_KEY);
+    return isInstrumentId(saved) ? saved : DEFAULT_INSTRUMENT;
+  });
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
   const [touching, setTouching] = useState(false);
   const [tilt, setTilt] = useState(0.5); // 0 = low, 1 = high (display only)
-  const [hostAway, setHostAway] = useState(false); // laptop switching pages: keep streaming, it comes back
+  const [hostAway, setHostAway] = useState(false);
+  const [colorIndex] = useState(() => Math.floor(Math.random() * 9));
+  const [dizzy, setDizzy] = useState(0);
+  const dizzyUntilRef = useRef(0);
 
   const wsRef = useRef<WebSocket | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -49,6 +85,14 @@ export function JoinChoir() {
   const orientRef = useRef<OrientationSample[]>([]);
   const touchRef = useRef<TouchSample[]>([]);
   const seqRef = useRef(0);
+  const profileRef = useRef({ name: "", instrument });
+
+  const sendReady = useCallback(() => {
+    const ws = wsRef.current;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    const p = profileRef.current;
+    ws.send(JSON.stringify({ type: "ready", capabilities: CAPABILITIES, name: p.name, instrument: p.instrument }));
+  }, []);
 
   const flush = useCallback(() => {
     const ws = wsRef.current;
@@ -63,13 +107,20 @@ export function JoinChoir() {
   }, []);
 
   useEffect(() => {
-    if (phase !== "singing-ready") return;
+    if (phase !== "singing") return;
     const onMotion = (e: DeviceMotionEvent) => {
       motionRef.current.push(motionSample(e.timeStamp || performance.now(), e.accelerationIncludingGravity, e.acceleration, e.rotationRate));
+      // Shake the phone: your ghost gets dizzy (here and on the laptop stage).
+      const a = e.acceleration;
+      const now = Date.now();
+      if (a && a.x != null && a.y != null && a.z != null && now > dizzyUntilRef.current && Math.hypot(a.x, a.y, a.z) > 14) {
+        dizzyUntilRef.current = now + 3200;
+        setDizzy((n) => n + 1);
+        if ("vibrate" in navigator) navigator.vibrate([40, 60, 40]);
+      }
     };
     const onOrient = (e: DeviceOrientationEvent) => {
       orientRef.current.push(orientationSample(e.timeStamp || performance.now(), e.alpha, e.beta, e.gamma));
-      // Same mapping the laptop uses (beta −45°…+45° → low…high), shown so singers can aim.
       const beta = Math.max(-45, Math.min(45, e.beta ?? 0));
       setTilt((beta + 45) / 90);
     };
@@ -83,12 +134,21 @@ export function JoinChoir() {
     };
   }, [phase, flush]);
 
+  // Tick the cooldown countdown.
+  useEffect(() => {
+    if (cooldownUntil <= now) return;
+    const t = setTimeout(() => setNow(Date.now()), 250);
+    return () => clearTimeout(t);
+  }, [cooldownUntil, now]);
+
   useEffect(() => () => {
     wsRef.current?.close();
     void wakeLockRef.current?.release().catch(() => {});
   }, []);
 
   const begin = useCallback(async () => {
+    const clean = sanitizeName(nameInput);
+    if (!clean) return;
     if (!code) {
       setTrouble("room-not-found");
       return;
@@ -101,6 +161,10 @@ export function JoinChoir() {
       setTrouble("motion-denied");
       return;
     }
+    writeStored(NAME_KEY, clean);
+    writeStored(INSTRUMENT_KEY, instrument);
+    setName(clean);
+    profileRef.current = { name: clean, instrument };
     setTrouble(null);
     setPhase("connecting");
     try {
@@ -123,8 +187,8 @@ export function JoinChoir() {
         return;
       }
       if (msg.type === "welcome") {
-        ws.send(JSON.stringify({ type: "ready", capabilities: CAPABILITIES }));
-        setPhase("singing-ready");
+        sendReady();
+        setPhase("singing");
       } else if (msg.type === "room-paused") {
         setHostAway(true);
       } else if (msg.type === "room-resumed") {
@@ -134,17 +198,32 @@ export function JoinChoir() {
         ws.send(JSON.stringify({ type: "sync-reply", t0: msg["t0"], t1, t2: performance.now(), t3: 0 }));
       } else if (msg.type === "error") {
         setTrouble(msg["code"] === "ROOM_NOT_FOUND" ? "room-not-found" : "relay-unreachable-phone");
-        setPhase("idle");
+        setPhase("name");
       }
     });
     ws.addEventListener("error", () => {
       setTrouble("relay-unreachable-phone");
-      setPhase("idle");
+      setPhase("name");
     });
     ws.addEventListener("close", () => {
-      setPhase((p) => (p === "singing-ready" ? "idle" : p));
+      setPhase((p) => (p === "singing" ? "name" : p));
     });
-  }, [code]);
+  }, [code, nameInput, instrument, sendReady]);
+
+  const pickInstrument = useCallback((id: InstrumentId) => {
+    if (id === instrument) return;
+    if (phase === "singing") {
+      const t = Date.now();
+      if (t < cooldownUntil) return;
+      setCooldownUntil(t + INSTRUMENT_COOLDOWN_MS);
+      setNow(t);
+      profileRef.current = { ...profileRef.current, instrument: id };
+      sendReady();
+      if ("vibrate" in navigator) navigator.vibrate(15);
+    }
+    setInstrument(id);
+    writeStored(INSTRUMENT_KEY, id);
+  }, [instrument, phase, cooldownUntil, sendReady]);
 
   const pushTouch = useCallback((e: React.PointerEvent, down: boolean) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -154,63 +233,129 @@ export function JoinChoir() {
     flush(); // send touches immediately so the voice starts/stops without delay
   }, [flush]);
 
+  const cooling = phase === "singing" && cooldownUntil > now;
+  const secondsLeft = Math.ceil((cooldownUntil - now) / 1000);
+  const validName = Boolean(sanitizeName(nameInput));
+
   return (
-    <main style={{
-      minHeight: "100vh", display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center", padding: 16,
-      background: "radial-gradient(ellipse at center, #12122a 0%, #0a0a1a 70%)",
-      touchAction: "none", userSelect: "none",
-    }}>
-      <h2 style={{ fontSize: 20, fontWeight: 300, marginBottom: 8, letterSpacing: 1 }}>Banshee Choir</h2>
-      <p style={{ color: "#778", marginBottom: 16 }}>Room {code || "?"}</p>
+    <main className="sx-page" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, userSelect: phase === "singing" ? "none" : "auto" }}>
+      <p className="sx-kicker">Banshee Choir</p>
+      <p className="sx-muted" style={{ margin: 0 }}>
+        Room <span className="sx-code" style={{ fontSize: 14 }}>{code || "?"}</span>
+      </p>
 
       {trouble && <SpiritTrouble code={trouble} onAction={() => void begin()} />}
 
-      {phase === "idle" && !trouble && (
-        <button
-          onClick={() => void begin()}
-          style={{
-            padding: "18px 32px", fontSize: 18, borderRadius: 12, cursor: "pointer",
-            background: "linear-gradient(135deg, #223 0%, #335 100%)", border: "1px solid #557", color: "#cde",
+      {phase === "name" && (
+        <form
+          className="sx-box"
+          style={{ width: "min(92vw, 380px)", padding: 20, display: "flex", flexDirection: "column", gap: 14 }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void begin();
           }}
         >
-          Join the choir
-        </button>
+          <h1 style={{ fontSize: 16, margin: 0, textAlign: "center" }}>Who&apos;s singing?</h1>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span className="sx-muted" style={{ fontSize: 14 }}>Your name (shown above your ghost)</span>
+            <input
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              maxLength={MAX_NAME_LENGTH + 4}
+              placeholder="PLAYER 1"
+              autoComplete="nickname"
+              enterKeyHint="go"
+              style={{ padding: "12px 14px", fontSize: 20, textAlign: "center", letterSpacing: 2, textTransform: "uppercase" }}
+            />
+          </label>
+          <InstrumentPicker value={instrument} onPick={pickInstrument} />
+          <button type="submit" className="sx-btn" disabled={!validName}>
+            Join the choir
+          </button>
+        </form>
       )}
 
-      {hostAway && phase === "singing-ready" && (
-        <p role="status" style={{ color: "#ca8", fontSize: 13 }}>The laptop is switching pages… stay here, it reconnects automatically.</p>
-      )}
-      {phase === "connecting" && <p style={{ color: "#889" }}>Joining room {code}…</p>}
+      {phase === "connecting" && <p className="sx-glow-cyan sx-pulse">Joining room {code}…</p>}
 
-      {phase === "singing-ready" && (
+      {phase === "singing" && (
         <>
-          <p style={{ color: "#889", fontSize: 13, marginBottom: 16, textAlign: "center" }}>
-            Touch and hold to sing. Tilt forward/back to change the note. Shake for tremolo.
-          </p>
+          {hostAway && (
+            <p role="status" className="sx-status-wait" style={{ fontSize: 14, margin: 0 }}>
+              The laptop is switching pages… stay here, it reconnects automatically.
+            </p>
+          )}
+          <Ghost
+            name={name}
+            color={playerNeon(colorIndex)}
+            mouth={touching ? 0.9 : 0}
+            dizzy={dizzy}
+            height={210}
+            width="min(92vw, 380px)"
+            interactive={false}
+            label={`Your ghost, ${name}`}
+          />
           <div
             role="button"
             aria-label="Hold to sing"
             aria-pressed={touching}
-            onPointerDown={(e) => { setTouching(true); pushTouch(e, true); if ("vibrate" in navigator) navigator.vibrate(10); }}
+            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); setTouching(true); pushTouch(e, true); if ("vibrate" in navigator) navigator.vibrate(10); }}
             onPointerUp={(e) => { setTouching(false); pushTouch(e, false); }}
             onPointerCancel={(e) => { setTouching(false); pushTouch(e, false); }}
-            onPointerLeave={(e) => { if (touching) { setTouching(false); pushTouch(e, false); } }}
+            className={touching ? "sx-box sx-box--pink" : "sx-box"}
             style={{
-              width: "min(80vw, 320px)", height: "min(55vh, 380px)",
-              borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
-              background: touching ? "radial-gradient(circle, #334488 0%, #1a1a3a 70%)" : "radial-gradient(circle, #1a1a2e 0%, #111122 70%)",
-              border: `2px solid ${touching ? "#5577cc" : "#223"}`, transition: "background 0.15s, border-color 0.15s",
+              width: "min(92vw, 380px)", height: "min(30vh, 220px)", touchAction: "none",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+              background: touching ? "radial-gradient(circle, rgba(255,0,255,0.35) 0%, rgba(16,6,30,0.9) 75%)" : undefined,
             }}
           >
-            <span style={{ fontSize: 48, opacity: touching ? 1 : 0.3 }}>{touching ? "~" : "o"}</span>
+            <span style={{ fontSize: 34 }}>{instrumentInfo(instrument).emoji}</span>
+            <span style={{ fontFamily: "var(--sx-font-pixel)", fontSize: 11 }}>{touching ? "SINGING…" : "HOLD TO SING"}</span>
           </div>
-          <div aria-label="Pitch from tilt" style={{ width: "min(80vw, 320px)", height: 8, marginTop: 16, background: "#1a1a2e", borderRadius: 4 }}>
-            <div style={{ width: `${Math.round(tilt * 100)}%`, height: "100%", background: "#6688ff", borderRadius: 4 }} />
+          <div aria-label="Pitch from tilt" style={{ width: "min(92vw, 380px)", height: 8, background: "#1a0a2e", border: "1px solid var(--sx-line)" }}>
+            <div style={{ width: `${Math.round(tilt * 100)}%`, height: "100%", background: "linear-gradient(90deg, var(--sx-cyan), var(--sx-pink))" }} />
           </div>
-          <p style={{ fontSize: 12, color: "#667", marginTop: 6 }}>Pitch (tilt)</p>
+          <p className="sx-muted" style={{ fontSize: 13, margin: 0, textAlign: "center" }}>
+            Tilt forward/back = note · roll = brightness · shake = tremolo (and a dizzy ghost 🌀)
+          </p>
+          <div style={{ width: "min(92vw, 380px)" }}>
+            <p className="sx-muted" style={{ fontSize: 13, margin: "4px 0 6px" }}>
+              {cooling ? `Instrument changed — next switch in ${secondsLeft}s` : "Switch instrument any time (10 s cooldown)"}
+            </p>
+            <InstrumentPicker value={instrument} onPick={pickInstrument} disabled={cooling} />
+          </div>
         </>
       )}
     </main>
+  );
+}
+
+function InstrumentPicker({ value, onPick, disabled = false }: { value: InstrumentId; onPick: (id: InstrumentId) => void; disabled?: boolean }) {
+  return (
+    <div role="radiogroup" aria-label="Instrument" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+      {INSTRUMENTS.map((ins) => {
+        const active = ins.id === value;
+        return (
+          <button
+            key={ins.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            disabled={disabled && !active}
+            onClick={() => onPick(ins.id)}
+            className="sx-ghost-btn"
+            style={{
+              flexDirection: "column", alignItems: "flex-start", padding: "8px 10px", textAlign: "left",
+              borderColor: active ? "var(--sx-pink)" : undefined,
+              boxShadow: active ? "0 0 12px rgba(255,0,255,0.55)" : undefined,
+              color: active ? "#fff" : undefined,
+              opacity: disabled && !active ? 0.45 : 1,
+            }}
+          >
+            <span style={{ fontSize: 15 }}>{ins.emoji} {ins.label}</span>
+            <span style={{ fontSize: 11, color: "var(--sx-muted)", letterSpacing: 0 }}>{ins.hint}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

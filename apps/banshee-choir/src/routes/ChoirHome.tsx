@@ -1,34 +1,48 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { QrCode, SpiritTrouble } from "seance-avatars";
-import { openHost, loadHostSession, clearHostSession } from "seance-core/transports/phone-bridge";
-import { Stage } from "../stage/index.js";
-import { SCALES, createVoice, createMasterBus, type ScaleName, type Voice, type MasterBus } from "../audio/index.js";
+import { QrCode, SpiritTrouble, playerNeon } from "seance-avatars";
+import {
+  openHost,
+  loadHostSession,
+  clearHostSession,
+  InstrumentCooldown,
+  DEFAULT_INSTRUMENT,
+  type InstrumentId,
+} from "seance-core/transports/phone-bridge";
+import { Stage, type SingerView } from "../stage/index.js";
+import { SCALES, createInstrumentVoice, createMasterBus, type ScaleName, type Voice, type MasterBus, type InstrumentVoice } from "../audio/index.js";
 import { updateVoice, type BansheeState } from "../instrument/index.js";
 import { sensorFrameFromBatch } from "../live/frames.js";
+import { peakShake, SHAKE_THRESHOLD, DIZZY_HOLD_MS } from "../live/shake.js";
 import { relayUrl } from "../relay-url.js";
 
 const NOTE_KEYS = ["a", "s", "d", "f", "g", "h", "j", "k"];
 const KEYBOARD_ID = "keyboard";
 const RETRY_MS = 3000;
 
-/** A Voice that also remembers whether it's currently sounding (for the singer's mouth animation). */
+/** A voice that also remembers whether it's sounding (drives the ghost's mouth). */
 interface TrackedVoice {
-  voice: Voice;
+  voice: InstrumentVoice;
   gated: boolean;
   state: BansheeState;
-  name: string;
 }
 
-function track(voice: Voice, name: string, state: BansheeState): TrackedVoice {
-  const tracked: TrackedVoice = { voice, gated: false, state, name };
+function track(voice: InstrumentVoice, state: BansheeState): TrackedVoice {
+  const tracked: TrackedVoice = { voice, gated: false, state };
   const gateOn = voice.gateOn.bind(voice);
   const gateOff = voice.gateOff.bind(voice);
-  voice.gateOn = () => { tracked.gated = true; gateOn(); };
-  voice.gateOff = () => { tracked.gated = false; gateOff(); };
+  (voice as Voice).gateOn = () => { tracked.gated = true; gateOn(); };
+  (voice as Voice).gateOff = () => { tracked.gated = false; gateOff(); };
   return tracked;
 }
 
-interface SingerView { id: string; name: string; amplitude: number; muted: boolean; solo: boolean }
+/** Everyone in the room: phones (with the name and instrument they chose) plus the laptop keyboard. */
+interface Member {
+  name: string;
+  instrument: InstrumentId;
+  color: string;
+  /** Stereo slot. */
+  slot: number;
+}
 
 export function ChoirHome() {
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -41,11 +55,18 @@ export function ChoirHome() {
   const [muted, setMuted] = useState<ReadonlySet<string>>(new Set());
   const [solo, setSolo] = useState<string | null>(null);
   const [activeNote, setActiveNote] = useState<string | null>(null);
+  const [keyboardInstrument, setKeyboardInstrument] = useState<InstrumentId>("organ");
+  const [phoneCount, setPhoneCount] = useState(0);
+  const [toast, setToast] = useState<string | null>(null);
 
   const ctxRef = useRef<AudioContext | null>(null);
   const busRef = useRef<MasterBus | null>(null);
   const voicesRef = useRef(new Map<string, TrackedVoice>());
-  const peerNamesRef = useRef(new Map<string, string>());
+  const membersRef = useRef(new Map<string, Member>());
+  const cooldownRef = useRef(new InstrumentCooldown());
+  const slotRef = useRef(0);
+  /** Per singer: how many times they made their ghost dizzy, and when the current spin ends. */
+  const dizzyRef = useRef(new Map<string, { count: number; until: number }>());
   const settingsRef = useRef({ scaleName, droneMode, muted, solo });
   settingsRef.current = { scaleName, droneMode, muted, solo };
 
@@ -54,15 +75,22 @@ export function ChoirHome() {
     return s.muted.has(id) || (s.solo !== null && s.solo !== id);
   };
 
-  /** Create (once) the voice for a singer, if audio is unlocked. */
-  const ensureVoice = useCallback((id: string, name: string) => {
+  /** (Re)build the voice for a member with their current instrument, if audio is unlocked. */
+  const buildVoice = useCallback((id: string) => {
     const ctx = ctxRef.current;
     const bus = busRef.current;
-    if (!ctx || !bus || voicesRef.current.has(id)) return;
-    const index = voicesRef.current.size;
-    const voice = createVoice(ctx, bus.inputNode, index);
-    voice.setPan(((index % 5) - 2) / 3); // spread singers across the stereo field
-    voicesRef.current.set(id, track(voice, name, { scaleName: settingsRef.current.scaleName, droneMode: settingsRef.current.droneMode, currentNoteIndex: -1 }));
+    const m = membersRef.current.get(id);
+    if (!ctx || !bus || !m) return;
+    const old = voicesRef.current.get(id);
+    if (old && old.voice.instrument === m.instrument) return;
+    const state = old?.state ?? { scaleName: settingsRef.current.scaleName, droneMode: settingsRef.current.droneMode, currentNoteIndex: -1 };
+    if (old) {
+      old.voice.gateOff();
+      old.voice.destroy();
+    }
+    const voice = createInstrumentVoice(ctx, bus.inputNode, m.instrument, m.slot);
+    voice.setPan(((m.slot % 5) - 2) / 3); // spread singers across the stereo field
+    voicesRef.current.set(id, track(voice, state));
   }, []);
 
   const removeVoice = useCallback((id: string) => {
@@ -77,17 +105,37 @@ export function ChoirHome() {
   // --- Relay: this laptop hosts the room; every phone in it becomes a singer. ---
   // If this tab already runs a séance (started in the Poltergeist Lab on the same site), resume that
   // room with its host token: phones that joined there keep streaming and simply start singing.
-  const [phoneIds, setPhoneIds] = useState<readonly string[]>([]);
-  const addPeer = useCallback((peerId: string) => {
-    const name = peerNamesRef.current.get(peerId) ?? `Banshee ${peerNamesRef.current.size + 1}`;
-    peerNamesRef.current.set(peerId, name);
-    ensureVoice(peerId, name);
-    setPhoneIds((p) => (p.includes(peerId) ? p : [...p, peerId]));
-  }, [ensureVoice]);
+  const upsertPeer = useCallback((peerId: string, name: string | undefined, instrument: InstrumentId | undefined) => {
+    const members = membersRef.current;
+    const existing = members.get(peerId);
+    if (!existing) {
+      const phoneIndex = [...members.keys()].filter((k) => k !== KEYBOARD_ID).length;
+      members.set(peerId, {
+        name: name ?? `Banshee ${phoneIndex + 1}`,
+        instrument: instrument ?? DEFAULT_INSTRUMENT,
+        color: playerNeon(phoneIndex + 1),
+        slot: slotRef.current++,
+      });
+      cooldownRef.current.seed(peerId);
+      setPhoneCount((n) => n + 1);
+      buildVoice(peerId);
+      return;
+    }
+    if (name && name !== existing.name) existing.name = name;
+    if (instrument && instrument !== existing.instrument) {
+      // Players may switch once every 10 s; the phone shows the same countdown.
+      if (cooldownRef.current.trySwitch(peerId, Date.now())) {
+        existing.instrument = instrument;
+        buildVoice(peerId);
+        setToast(`${existing.name} switched to ${instrument}`);
+      }
+    }
+  }, [buildVoice]);
+
   const dropPeer = useCallback((peerId: string) => {
     removeVoice(peerId);
-    peerNamesRef.current.delete(peerId);
-    setPhoneIds((p) => p.filter((id) => id !== peerId));
+    if (membersRef.current.delete(peerId)) setPhoneCount((n) => Math.max(0, n - 1));
+    cooldownRef.current.forget(peerId);
   }, [removeVoice]);
 
   const [connectNonce, setConnectNonce] = useState(0);
@@ -103,9 +151,14 @@ export function ChoirHome() {
       relayUrl(),
       {
         onWelcome: (session) => setRoomCode(session.code),
-        onPeerJoined: addPeer,
+        onPeerJoined: (peerId, _caps, name, instrument) => upsertPeer(peerId, name, instrument),
         onPeerLeft: dropPeer,
         onBatch: (peerId, batch) => {
+          const now = Date.now();
+          const d = dizzyRef.current.get(peerId) ?? { count: 0, until: 0 };
+          if (now > d.until && peakShake(batch) > SHAKE_THRESHOLD) {
+            dizzyRef.current.set(peerId, { count: d.count + 1, until: now + DIZZY_HOLD_MS });
+          }
           const v = voicesRef.current.get(peerId);
           const frame = sensorFrameFromBatch(batch);
           if (!v || !frame) return;
@@ -130,9 +183,15 @@ export function ChoirHome() {
     return () => {
       if (retry) clearTimeout(retry);
       close();
-      for (const id of [...peerNamesRef.current.keys()]) dropPeer(id);
+      for (const id of [...membersRef.current.keys()]) if (id !== KEYBOARD_ID) dropPeer(id);
     };
-  }, [connectNonce, addPeer, dropPeer, reconnect]);
+  }, [connectNonce, upsertPeer, dropPeer, reconnect]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2500);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   // --- Audio: created inside the user's click (browser autoplay rules). ---
   const handleUnlock = useCallback(() => {
@@ -143,10 +202,20 @@ export function ChoirHome() {
     bus.setVolume(masterVolume);
     ctxRef.current = ctx;
     busRef.current = bus;
-    ensureVoice(KEYBOARD_ID, "You (keyboard)");
-    for (const [id, name] of peerNamesRef.current) ensureVoice(id, name);
+    membersRef.current.set(KEYBOARD_ID, { name: "You (keyboard)", instrument: keyboardInstrument, color: playerNeon(0), slot: slotRef.current++ });
+    for (const id of membersRef.current.keys()) buildVoice(id);
     setAudioUnlocked(true);
-  }, [ensureVoice, masterVolume]);
+  }, [buildVoice, masterVolume, keyboardInstrument]);
+
+  const onKeyboardInstrument = useCallback((id: InstrumentId) => {
+    setKeyboardInstrument(id);
+    const m = membersRef.current.get(KEYBOARD_ID);
+    if (m) {
+      m.instrument = id;
+      buildVoice(KEYBOARD_ID);
+      voicesRef.current.get(KEYBOARD_ID)?.voice.setFrequency(SCALES[settingsRef.current.scaleName][0]!);
+    }
+  }, [buildVoice]);
 
   useEffect(() => { busRef.current?.setVolume(masterVolume); }, [masterVolume]);
 
@@ -161,7 +230,7 @@ export function ChoirHome() {
     if (!audioUnlocked) return;
     const kb = () => voicesRef.current.get(KEYBOARD_ID);
     function onKeyDown(e: KeyboardEvent) {
-      if (e.repeat) return;
+      if (e.repeat || (e.target instanceof HTMLElement && e.target.closest("input, select, textarea"))) return;
       if (e.key === " ") {
         e.preventDefault();
         if (!isSilenced(KEYBOARD_ID)) kb()?.voice.gateOn();
@@ -190,75 +259,84 @@ export function ChoirHome() {
   useEffect(() => {
     const t = setInterval(() => {
       const s = settingsRef.current;
-      const ids = audioUnlocked ? [...voicesRef.current.keys()] : [...peerNamesRef.current.keys()];
       setSingers(
-        ids.map((id) => {
+        [...membersRef.current.entries()].map(([id, m]) => {
           const v = voicesRef.current.get(id);
           return {
             id,
-            name: v?.name ?? peerNamesRef.current.get(id) ?? id,
-            amplitude: v?.gated ? 0.7 : 0,
-            muted: s.muted.has(id),
+            name: m.name,
+            color: m.color,
+            instrument: m.instrument,
+            amplitude: v?.gated ? 0.8 : 0,
+            muted: s.muted.has(id) || (s.solo !== null && s.solo !== id),
             solo: s.solo === id,
+            isKeyboard: id === KEYBOARD_ID,
+            dizzy: dizzyRef.current.get(id)?.count ?? 0,
           };
         }),
       );
     }, 100);
     return () => clearInterval(t);
-  }, [audioUnlocked]);
+  }, []);
 
   const onMuteSinger = useCallback((id: string) => {
+    const willMute = !settingsRef.current.muted.has(id);
+    if (willMute) voicesRef.current.get(id)?.voice.gateOff();
     setMuted((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else {
-        next.add(id);
-        voicesRef.current.get(id)?.voice.gateOff();
-      }
+      if (willMute) next.add(id);
+      else next.delete(id);
       return next;
     });
   }, []);
 
   const onSoloSinger = useCallback((id: string) => {
-    setSolo((prev) => {
-      const next = prev === id ? null : id;
-      if (next) for (const [vid, v] of voicesRef.current) if (vid !== next) v.voice.gateOff();
-      return next;
-    });
+    const next = settingsRef.current.solo === id ? null : id;
+    if (next) for (const [vid, v] of voicesRef.current) if (vid !== next) v.voice.gateOff();
+    setSolo(next);
   }, []);
 
   const joinUrl = roomCode ? `${window.location.origin}${import.meta.env.BASE_URL}join/${roomCode}` : "";
-  const phoneCount = phoneIds.length;
 
   return (
-    <main style={{
-      minHeight: "100vh", display: "flex", flexDirection: "column",
-      alignItems: "center", padding: 16, position: "relative",
-      background: "radial-gradient(ellipse at center, #12122a 0%, #0a0a1a 70%)",
-    }}>
-      <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: 2, marginBottom: 8 }}>Banshee Choir</h1>
-      <p style={{ color: "#778", marginBottom: 20, textAlign: "center", maxWidth: 480 }}>
-        Every phone becomes a singing ghost: hold to sing, tilt to change the note, shake for tremolo.
-        No phone? Hold <kbd style={kbdStyle}>Space</kbd> and use the keyboard.
-      </p>
-
-      <a href="/" style={{ position: "absolute", top: 16, left: 16, color: "#88a", fontSize: 13, textDecoration: "none" }}>
+    <main className="sx-page" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <a href="/" className="sx-ghost-btn" style={{ position: "absolute", top: 16, left: 16 }}>
         &larr; Poltergeist Lab
       </a>
+
+      <p className="sx-kicker" style={{ marginTop: 40 }}>Séance · Multiplayer</p>
+      <h1 className="sx-glitch" style={{ fontSize: "clamp(18px, 4vw, 30px)", margin: "8px 0 10px", textAlign: "center" }}>
+        Banshee Choir
+      </h1>
+      <p className="sx-muted" style={{ marginTop: 0, marginBottom: 20, textAlign: "center", maxWidth: 560 }}>
+        Every phone becomes a singing ghost. Enter a name, pick an instrument, then hold to sing, tilt to change the
+        note and shake for tremolo. No phone? Hold <kbd>Space</kbd> and play <kbd>A</kbd>–<kbd>K</kbd>.
+      </p>
 
       {relayError && !roomCode && <SpiritTrouble code="relay-unreachable-host" onAction={() => reconnect()} />}
 
       {roomCode && (
-        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 20, flexWrap: "wrap", justifyContent: "center" }}>
-          <QrCode text={joinUrl} size={180} />
+        <div className="sx-box" style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 20, padding: 16, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="sx-qr">
+            <QrCode text={joinUrl} size={150} />
+          </div>
           <div style={{ textAlign: "left" }}>
-            <p style={{ fontSize: 13, color: "#889" }}>Scan to join the choir (phones already in the séance sing right away)</p>
-            <p style={{ fontSize: 36, fontFamily: "monospace", letterSpacing: 6, color: "#aabbff" }}>{roomCode}</p>
-            <p role="status" style={{ fontSize: 13, color: phoneCount > 0 ? "#6c9" : "#889" }}>
-              {phoneCount === 0 ? "No phones yet" : `${phoneCount} phone${phoneCount > 1 ? "s" : ""} singing`}
+            <p className="sx-muted" style={{ fontSize: 14, margin: 0 }}>Scan to join the choir</p>
+            <p className="sx-code" style={{ fontSize: 28, margin: "8px 0" }}>{roomCode}</p>
+            <p role="status" className={phoneCount > 0 ? "sx-status-live" : "sx-muted"} style={{ fontSize: 14, margin: 0 }}>
+              {phoneCount === 0 ? "No phones yet" : `${phoneCount} phone${phoneCount > 1 ? "s" : ""} in the choir`}
+            </p>
+            <p className="sx-muted" style={{ fontSize: 12, margin: "6px 0 0", maxWidth: 220 }}>
+              Phones already in the séance sing right away.
             </p>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <p role="status" className="sx-chip" style={{ marginBottom: 12 }}>
+          🎶 {toast}
+        </p>
       )}
 
       <Stage
@@ -267,6 +345,8 @@ export function ChoirHome() {
         masterVolume={masterVolume}
         droneMode={droneMode}
         audioUnlocked={audioUnlocked}
+        keyboardInstrument={keyboardInstrument}
+        onKeyboardInstrument={onKeyboardInstrument}
         onScaleChange={setScaleName}
         onVolumeChange={setMasterVolume}
         onDroneModeChange={setDroneMode}
@@ -276,21 +356,22 @@ export function ChoirHome() {
       />
 
       {audioUnlocked && (
-        <div style={{ marginTop: 24, textAlign: "center" }}>
-          <p style={{ fontSize: 12, color: "#667", marginBottom: 8 }}>
-            Hold <kbd style={kbdStyle}>Space</kbd> to sing. Press <kbd style={kbdStyle}>A</kbd>–<kbd style={kbdStyle}>K</kbd> to change note.
+        <div style={{ marginTop: 20, textAlign: "center" }}>
+          <p className="sx-muted" style={{ fontSize: 13, marginBottom: 8 }}>
+            Hold <kbd>Space</kbd> to sing. Press <kbd>A</kbd>–<kbd>K</kbd> to change note.
           </p>
           <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
             {NOTE_KEYS.map((k) => (
               <div
                 key={k}
                 style={{
-                  width: 40, height: 48, borderRadius: 4,
-                  border: `1px solid ${activeNote === k ? "#6688ff" : "#334"}`,
-                  background: activeNote === k ? "#223355" : "#111122",
+                  width: 40, height: 48,
+                  border: `1px solid ${activeNote === k ? "var(--sx-pink)" : "var(--sx-line)"}`,
+                  background: activeNote === k ? "rgba(255,0,255,0.25)" : "rgba(10,5,20,0.8)",
+                  boxShadow: activeNote === k ? "0 0 12px var(--sx-pink)" : "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: activeNote === k ? "#aaccff" : "#556",
-                  fontSize: 14, fontFamily: "monospace", textTransform: "uppercase",
+                  color: activeNote === k ? "#fff" : "var(--sx-dim)",
+                  fontSize: 12, fontFamily: "var(--sx-font-pixel)", textTransform: "uppercase",
                 }}
               >
                 {k}
@@ -302,8 +383,3 @@ export function ChoirHome() {
     </main>
   );
 }
-
-const kbdStyle: React.CSSProperties = {
-  padding: "2px 6px", background: "#223", border: "1px solid #445",
-  borderRadius: 3, fontFamily: "monospace", fontSize: 11,
-};
