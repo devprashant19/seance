@@ -90,3 +90,46 @@ export function spectrumPeaks(trace: UniformTrace, minHz: number, maxHz: number)
   peaks.sort((x, y) => y.magnitude - x.magnitude);
   return { peaks, noiseFloor, resolutionHz: 1 / Math.max(trace.durationS, 1e-6) };
 }
+
+/**
+ * Split a trace into the ringing after each tap: onsets are where the envelope jumps well above the
+ * quiet level; each segment runs to the next onset (max 2 s, min 0.4 s).
+ */
+export function tapSegments(trace: UniformTrace): UniformTrace[] {
+  const n = trace.values.length;
+  if (n < 8 || trace.fs <= 0) return [];
+  let mean = 0;
+  for (const v of trace.values) mean += v;
+  mean /= n;
+  const win = Math.max(1, Math.round(trace.fs * 0.05));
+  const env = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    let m = 0;
+    for (let j = Math.max(0, i - win); j <= i; j++) m = Math.max(m, Math.abs(trace.values[j]! - mean));
+    env[i] = m;
+  }
+  const sorted = Array.from(env).sort((a, b) => a - b);
+  const quiet = sorted[Math.floor(n * 0.2)]!;
+  const peak = sorted[n - 1]!;
+  const high = Math.max(quiet * 6, peak * 0.25);
+  const onsets: number[] = [];
+  let armed = true;
+  for (let i = 0; i < n; i++) {
+    if (armed && env[i]! > high) {
+      onsets.push(i);
+      armed = false;
+    } else if (!armed && env[i]! < high * 0.3) {
+      armed = true;
+    }
+  }
+  const maxLen = Math.round(trace.fs * 2), minLen = Math.round(trace.fs * 0.4);
+  const out: UniformTrace[] = [];
+  onsets.forEach((start, k) => {
+    const end = Math.min(onsets[k + 1] ?? n, start + maxLen, n);
+    if (end - start >= minLen) {
+      const values = trace.values.slice(start, end);
+      out.push({ values, fs: trace.fs, durationS: values.length / trace.fs });
+    }
+  });
+  return out;
+}

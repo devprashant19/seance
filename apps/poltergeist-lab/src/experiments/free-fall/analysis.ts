@@ -76,27 +76,14 @@ export function analyzeFreeFall(
     return { h: 0, fallTimeS: 0, startMs: 0, endMs: 0 };
   }
 
-  let startMs = accelSamples[bestStart]!.t;
-  if (bestStart > 0) {
-    startMs = interpolateEdge(
-      accelSamples[bestStart - 1]!.t,
-      accelMagnitude(accelSamples[bestStart - 1]!.v),
-      accelSamples[bestStart]!.t,
-      accelMagnitude(accelSamples[bestStart]!.v),
-      LOW_G_THRESHOLD,
-    );
-  }
-
-  let endMs = accelSamples[bestEnd]!.t;
-  if (bestEnd < accelSamples.length - 1) {
-    endMs = interpolateEdge(
-      accelSamples[bestEnd]!.t,
-      accelMagnitude(accelSamples[bestEnd]!.v),
-      accelSamples[bestEnd + 1]!.t,
-      accelMagnitude(accelSamples[bestEnd + 1]!.v),
-      LOW_G_THRESHOLD,
-    );
-  }
+  // Release and landing happen somewhere between the last "before" sample and the first "after"
+  // sample; the midpoint of that gap is the unbiased estimate (whatever the landing spike looks like).
+  const startMs = bestStart > 0
+    ? (accelSamples[bestStart - 1]!.t + accelSamples[bestStart]!.t) / 2
+    : accelSamples[bestStart]!.t;
+  const endMs = bestEnd < accelSamples.length - 1
+    ? (accelSamples[bestEnd]!.t + accelSamples[bestEnd + 1]!.t) / 2
+    : accelSamples[bestEnd]!.t;
 
   const fallTimeS = (endMs - startMs) / 1000;
   const h = heightFromFallTime(fallTimeS);

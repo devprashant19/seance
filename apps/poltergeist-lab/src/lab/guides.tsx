@@ -183,8 +183,8 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     steps: [
       "Open the Apparition Gate page (camera photogate) from the home page.",
       "Hang the pendulum so it swings through the camera's view.",
-      "Draw the gate box where the bob crosses.",
-      "Each crossing is timed; the period gives g.",
+      "Click the video where the bob passes at the bottom to put the gate there, then press Calibrate with the pendulum at rest out of the gate.",
+      "Let it swing: every second entry into the gate is one full period.",
     ],
     source: "camera",
     Illustration: () => (
@@ -204,7 +204,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     needs: ["Laptop webcam", "A toy car or rolling ball", "A ruler for the gap between zones"],
     steps: [
       "Open the Apparition Gate page from the home page.",
-      "Draw two gate boxes along the object's path; measure the distance between them.",
+      "Click the video twice to place Gate 1 and Gate 2 along the path; type in the real distance between them, then Calibrate.",
       "Roll the object through both gates.",
       "Speed = gap ÷ time between the two crossings.",
     ],
@@ -226,7 +226,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     needs: ["Laptop webcam", "A fan or spinning wheel (keep fingers clear)"],
     steps: [
       "Open the Apparition Gate page from the home page.",
-      "Point the camera at the spinning blades; draw a gate over the blade path.",
+      "Point the camera at the fan, click the video to put the gate over the blades' path, then Calibrate with the fan stopped.",
       "Enter the number of blades.",
       "Blade crossings per second give the RPM; the Oracle warns when the camera is too slow (aliasing).",
     ],

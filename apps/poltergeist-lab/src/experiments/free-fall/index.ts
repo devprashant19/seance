@@ -21,6 +21,11 @@ export const freeFall: ExperimentDefinition = defineExperiment({
     const deltaT = inputs["deltaT"] ?? 0.005;
 
     const result = analyzeFreeFall(accel);
+    if (!(result.fallTimeS > 0)) {
+      throw new Error(
+        "No free fall was detected (the phone never read close to 0 g for at least 0.1 s). Hold it still, press Begin, then let go cleanly over a cushion.",
+      );
+    }
 
     const sampleIntervalMs = accel.length > 1
       ? (accel[accel.length - 1]!.t - accel[0]!.t) / (accel.length - 1)

@@ -252,14 +252,18 @@ export function analyzeSpinFindChip(
   const estimates: SpinEstimate[] = [];
   let rejected = 0;
 
+  // Drop the first and last 0.1 s of every spin: there the smoothing/differentiation that gives the
+  // angular acceleration mixes in the moments before/after the spin (a flick start biased |r| ~3 %).
+  const EDGE = Math.round(0.1 * RATE);
   let segStart = 0;
-  for (const seg of segments) {
+  for (const whole of segments) {
+    const seg = whole.length > 2 * EDGE + 20 ? whole.slice(EDGE, whole.length - EDGE) : whole;
     const startIdx = alignedWithFiltered.indexOf(seg[0]!);
     if (isWobbling(seg)) { rejected++; continue; }
     if (isSaturated(seg)) { rejected++; continue; }
     const est = solveSpinLSQ(seg, alphas, startIdx >= 0 ? startIdx : segStart);
     estimates.push(est);
-    segStart += seg.length;
+    segStart += whole.length;
   }
 
   if (estimates.length === 0) return { ...empty, spinsRejected: rejected };

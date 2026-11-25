@@ -43,9 +43,10 @@ export const pendulumG: LabExperimentDefinition = defineExperiment({
 
     const result = analyzePendulum(gyro, { lengthM: L, phoneHeightM: hPhone });
 
-    const deltaT = result.periodS > 0
-      ? result.periodS / (result.cycleCount * 2 || 1) * 0.02
-      : 0.01;
+    if (!(result.periodS > 0)) {
+      throw new Error("No steady swing was found. Pull the phone a little to one side, let go, and let it swing freely for the whole recording.");
+    }
+    const deltaT = result.periodUncS;
 
     const unc = pendulumUncertainty(L, deltaL, result.periodS || 1, deltaT, result.g);
 

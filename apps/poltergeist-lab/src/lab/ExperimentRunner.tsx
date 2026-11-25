@@ -13,6 +13,8 @@ import { AskTheSpiritModal } from "../oracle/AskTheSpiritModal.js";
 import { computeTimingStats } from "seance-core";
 import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
 import { HowTo } from "./HowTo.js";
+import { GUIDES } from "./guides.js";
+import { Link } from "react-router-dom";
 import { toTimeSamples } from "seance-core/transports/phone-bridge";
 
 type LiveStatus = "connecting" | "waiting-phone" | "live" | "error";
@@ -29,6 +31,8 @@ interface ChannelBuffer {
 
 export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinition }) {
   const [state, setState] = useState<RunnerState>("SETUP");
+  /** Where this experiment's data comes from: only phone experiments can record here. */
+  const source = GUIDES[experiment.id]?.source ?? "phone";
   const [inputs, setInputs] = useState<Record<string, number>>({});
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [expResult, setExpResult] = useState<ExperimentResult | null>(null);
@@ -204,7 +208,18 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         <HowTo experimentId={experiment.id} compact={state === "READY_CHECK"} />
       )}
 
-      {state === "SETUP" && (
+      {state === "SETUP" && source === "camera" && (
+        <div className="sx-box" style={{ padding: 16, marginBottom: 16 }}>
+          <p style={{ marginBottom: 12 }}>This experiment uses the laptop camera, so it runs on the Apparition Gate page — not with the phone.</p>
+          <Link to="/gate" className="sx-btn sx-btn--cyan sx-btn--small">Open the Apparition Gate &rarr;</Link>
+        </div>
+      )}
+      {state === "SETUP" && source === "mic" && (
+        <div className="sx-box" style={{ padding: 16, marginBottom: 16 }}>
+          <p>Live microphone capture isn&apos;t connected to the Lab yet, so this experiment can&apos;t record right now.</p>
+        </div>
+      )}
+      {state === "SETUP" && source === "phone" && (
         <InputsForm specs={experiment.inputs} onSubmit={handleInputsSubmit} />
       )}
 
