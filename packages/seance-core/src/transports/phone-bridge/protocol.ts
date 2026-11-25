@@ -19,7 +19,17 @@ export type ClientMessage =
   | { type: "sync-reply"; t0: number; t1: number; t2: number; t3: number }
   | { type: "peer-hidden" }
   | { type: "peer-visible" }
-  | { type: "instruct"; to: string; text: string; step?: number };
+  | { type: "instruct"; to: string; text: string; step?: number }
+  /** Host only: which screen the laptop is showing, so phones can show the matching controls. */
+  | { type: "mode"; mode: HostMode };
+
+/** What the laptop is showing. Phones adapt their screen to it. */
+export const HOST_MODES = ["lobby", "possession", "lab", "choir", "other"] as const;
+export type HostMode = (typeof HOST_MODES)[number];
+
+export function isHostMode(value: unknown): value is HostMode {
+  return typeof value === "string" && (HOST_MODES as readonly string[]).includes(value);
+}
 
 export type ServerMessage =
   | { type: "welcome"; roomCode: string; peerId: string; resumeToken: string }
@@ -30,6 +40,7 @@ export type ServerMessage =
   | { type: "sync-reply"; peerId: string; t0: number; t1: number; t2: number; t3: number }
   | { type: "room-paused"; reason: string }
   | { type: "room-resumed" }
+  | { type: "mode"; mode: HostMode }
   | { type: "instruct"; from: string; to: string; text: string; step?: number }
   | { type: "error"; code: string; message: string };
 
@@ -65,6 +76,7 @@ export function isClientMessage(msg: unknown): msg is ClientMessage {
     "peer-hidden",
     "peer-visible",
     "instruct",
+    "mode",
   ].includes(m.type);
 }
 
@@ -81,6 +93,7 @@ export function isServerMessage(msg: unknown): msg is ServerMessage {
     "sync-reply",
     "room-paused",
     "room-resumed",
+    "mode",
     "instruct",
     "error",
   ].includes(m.type);

@@ -91,6 +91,32 @@ describe("relay: host resume + batch validation", () => {
     choir.ws.close();
   });
 
+  it("tells phones which screen the laptop shows (and late joiners too); phones can't set it", async () => {
+    const host = await client();
+    host.send({ type: "hello", version: PROTOCOL_VERSION, role: "host" });
+    await vi.waitFor(() => expect(find(host.msgs, "welcome")).toBeDefined());
+    const { roomCode } = find(host.msgs, "welcome") as unknown as { roomCode: string };
+
+    const early = await client();
+    early.send({ type: "hello", version: PROTOCOL_VERSION, role: "peer", roomCode });
+    await vi.waitFor(() => expect(find(early.msgs, "welcome")).toBeDefined());
+
+    host.send({ type: "mode", mode: "choir" });
+    await vi.waitFor(() => expect(find(early.msgs, "mode")?.["mode"]).toBe("choir"));
+
+    const late = await client();
+    late.send({ type: "hello", version: PROTOCOL_VERSION, role: "peer", roomCode });
+    await vi.waitFor(() => expect(find(late.msgs, "mode")?.["mode"]).toBe("choir"));
+
+    // A phone cannot change the mode, and unknown modes are ignored.
+    early.send({ type: "mode", mode: "lab" });
+    host.send({ type: "mode", mode: "disco" });
+    host.send({ type: "mode", mode: "lab" });
+    await vi.waitFor(() => expect(late.msgs.filter((m) => m.type === "mode").map((m) => m["mode"])).toEqual(["choir", "lab"]));
+
+    for (const c of [host, early, late]) c.ws.close();
+  });
+
   it("gives the host a non-empty secret token", async () => {
     const host = await client();
     host.send({ type: "hello", version: PROTOCOL_VERSION, role: "host" });

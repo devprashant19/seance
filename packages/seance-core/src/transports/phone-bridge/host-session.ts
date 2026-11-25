@@ -7,7 +7,7 @@
  *
  * Browser-only (uses WebSocket and sessionStorage when present); no React.
  */
-import { decodeBatch, sanitizeName, PROTOCOL_VERSION, type BatchPayload } from "./protocol.js";
+import { decodeBatch, sanitizeName, PROTOCOL_VERSION, type BatchPayload, type HostMode } from "./protocol.js";
 import { isInstrumentId, type InstrumentId } from "./instruments.js";
 
 const STORAGE_KEY = "seance-host-session";
@@ -71,11 +71,20 @@ export interface HostEvents {
   onClose?: () => void;
 }
 
+/** Closes the connection when called; `setMode` tells the room's phones what the laptop shows. */
+export type HostHandle = (() => void) & { setMode(mode: HostMode): void };
+
 /**
  * Open a host connection to `url`. With `resume`, re-attach to that room (needs its token);
- * without, create a room. Saves the session for later pages. Returns a function that closes it.
+ * without, create a room. Saves the session for later pages. `mode()` is sent to the phones as soon
+ * as the room is ready (and again on every `setMode`). Returns a handle that closes it when called.
  */
-export function openHost(url: string, rawEvents: HostEvents, resume?: HostSession | null): () => void {
+export function openHost(
+  url: string,
+  rawEvents: HostEvents,
+  resume?: HostSession | null,
+  mode?: () => HostMode | undefined,
+): HostHandle {
   // Once closed by the caller, swallow everything the socket emits afterwards. (React StrictMode
   // mounts effects twice in dev; closing a still-connecting socket fires "error", which must not be
   // mistaken for a relay failure and trigger retries or new rooms.)
@@ -94,11 +103,17 @@ export function openHost(url: string, rawEvents: HostEvents, resume?: HostSessio
   };
 
   let ws: WebSocket;
+  let ready = false;
+  let lastMode: HostMode | undefined;
+  const sendMode = (m: HostMode | undefined) => {
+    lastMode = m ?? lastMode;
+    if (ready && lastMode && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "mode", mode: lastMode }));
+  };
   try {
     ws = new WebSocket(url);
   } catch {
     ev.onError?.("RELAY_UNREACHABLE", "Cannot reach the séance server.");
-    return () => {};
+    return Object.assign(() => {}, { setMode: () => {} });
   }
 
   ws.addEventListener("open", () => {
@@ -122,6 +137,8 @@ export function openHost(url: string, rawEvents: HostEvents, resume?: HostSessio
       case "welcome": {
         const session = { code: String(msg["roomCode"]), token: String(msg["resumeToken"] ?? "") };
         if (session.token) saveHostSession(session);
+        ready = true;
+        sendMode(mode?.());
         ev.onWelcome?.(session, Boolean(resume));
         break;
       }
@@ -152,7 +169,7 @@ export function openHost(url: string, rawEvents: HostEvents, resume?: HostSessio
   ws.addEventListener("error", () => ev.onError?.("RELAY_UNREACHABLE", "Cannot reach the séance server."));
   ws.addEventListener("close", () => ev.onClose?.());
 
-  return () => {
+  const close = () => {
     disposed = true;
     try {
       ws.close();
@@ -160,4 +177,5 @@ export function openHost(url: string, rawEvents: HostEvents, resume?: HostSessio
       /* already closed */
     }
   };
+  return Object.assign(close, { setMode: (m: HostMode) => sendMode(m) });
 }

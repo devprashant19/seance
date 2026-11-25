@@ -42,10 +42,16 @@
       .ghost { height: 240px; padding: 0; }
       .ghost-fallback { height: 100%; display: flex; align-items: center; justify-content: center; font: 10px "Press Start 2P", monospace; color: var(--cyan); }
       .hello { font: 12px "Press Start 2P", monospace; color: var(--green); text-shadow: 0 0 8px rgba(0,255,153,0.6); line-height: 1.6; }
-      .pad { width: 100%; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: 11px "Press Start 2P", monospace;
-        color: var(--pink); border: 2px dashed rgba(255,0,255,0.55); background: rgba(255,0,255,0.07); touch-action: none; user-select: none; -webkit-user-select: none; }
-      .pad small { font: 13px Rajdhani, sans-serif; color: var(--muted); }
-      .pad.active { border-style: solid; background: rgba(255,0,255,0.3); box-shadow: 0 0 18px var(--pink); }
+      .pad { width: 100%; height: 170px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; padding: 3px;
+        border: 2px solid rgba(255,0,255,0.55); background: rgba(255,0,255,0.06); touch-action: none; user-select: none; -webkit-user-select: none; }
+      .pad.active { box-shadow: 0 0 18px var(--pink); }
+      .key { display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; font: 11px "Press Start 2P", monospace; color: var(--muted);
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,0,255,0.08)); border: 1px solid rgba(0,255,255,0.18); pointer-events: none; }
+      .key.on { color: #fff; background: linear-gradient(180deg, rgba(255,0,255,0.55), rgba(255,0,255,0.25)); border-color: var(--pink); box-shadow: 0 0 12px var(--pink); }
+      .panel { width: 100%; padding: 14px; text-align: left; font-size: 16px; line-height: 1.4; }
+      .panel strong { display: block; font: 11px "Press Start 2P", monospace; color: var(--cyan); margin-bottom: 8px; line-height: 1.6; }
+      details { width: 100%; text-align: left; color: var(--muted); }
+      summary { cursor: pointer; padding: 6px 0; }
       .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
       .ins { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 10px; text-align: left; cursor: pointer;
         font: 600 15px Rajdhani, sans-serif; color: var(--cyan); background: rgba(0,255,255,0.05); border: 1px solid var(--line); }
@@ -75,8 +81,24 @@
         <p id="hello" class="hello"></p>
         <div id="ghost-box" class="box ghost" role="img" aria-label="Your 3D ghost. Shake the phone to make it dizzy."></div>
         <p class="hint">Shake your phone to make the ghost dizzy 🌀</p>
-        <div id="sing-pad" class="pad" role="button" aria-label="Hold to sing in the Banshee Choir">🎤 HOLD TO SING<small>(when the laptop is on the Banshee Choir)</small></div>
-        <p id="instr-status" class="hint">Choir instrument — switch any time (10 s cooldown)</p>
+
+        <!-- Shown while the laptop is NOT on the Choir: what to do on the laptop's current page. -->
+        <div id="lab-panel" class="box panel" role="status">
+          <strong id="lab-title">CONNECTED</strong>
+          <span id="lab-text">Keep this page open. Your phone follows whatever the laptop shows.</span>
+        </div>
+        <details id="instr-later">
+          <summary>🎤 Choose your Banshee Choir instrument for later</summary>
+          <div id="instr-slot-later"></div>
+        </details>
+
+        <!-- Shown while the laptop is on the Banshee Choir. -->
+        <section id="choir-panel" hidden style="width: 100%; display: flex; flex-direction: column; gap: 10px">
+          <div class="box panel"><strong>🎤 BANSHEE CHOIR</strong>Touch a key to sing that note — slide across the keys to change notes. Shake for tremolo.</div>
+          <div id="sing-pad" class="pad" role="group" aria-label="Sing pad: 8 keys, A to K, like the laptop keyboard"></div>
+          <p id="instr-status" class="hint">Instrument — switch any time (10 s cooldown)</p>
+          <div id="instr-slot-choir"></div>
+        </section>
         <div id="instr-grid" class="grid" role="radiogroup" aria-label="Choir instrument"></div>
       </section>
 

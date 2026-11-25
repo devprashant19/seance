@@ -8,6 +8,8 @@ export {
   validateInstruct,
   sanitizeName,
   MAX_NAME_LENGTH,
+  HOST_MODES,
+  isHostMode,
 } from "./protocol.js";
 
 export type {
@@ -17,6 +19,7 @@ export type {
   ClientMessage,
   ServerMessage,
   ProtocolMessage,
+  HostMode,
 } from "./protocol.js";
 
 export { ClockSync } from "./clock-sync.js";
@@ -44,7 +47,7 @@ export {
 export type { MotionSample, OrientationSample, TouchSample, ChannelArrays } from "./phone-samples.js";
 
 export { openHost, saveHostSession, loadHostSession, clearHostSession } from "./host-session.js";
-export type { HostSession, HostEvents, DecodedBatch } from "./host-session.js";
+export type { HostSession, HostEvents, DecodedBatch, HostHandle } from "./host-session.js";
 
 export { FakeRelay } from "./fake-relay.js";
 export type { FakeClient } from "./fake-relay.js";

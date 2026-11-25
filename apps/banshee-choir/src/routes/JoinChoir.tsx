@@ -13,7 +13,9 @@ import {
   DEFAULT_INSTRUMENT,
   INSTRUMENT_COOLDOWN_MS,
   isInstrumentId,
+  isHostMode,
   instrumentInfo,
+  type HostMode,
   type InstrumentId,
   type MotionSample,
   type OrientationSample,
@@ -25,6 +27,8 @@ const BATCH_INTERVAL_MS = 50;
 const CAPABILITIES = ["accelG", "accel", "gyro", "orientation", "control.touch"];
 const NAME_KEY = "seance-player-name";
 const INSTRUMENT_KEY = "seance-player-instrument";
+/** Sing-pad keys: the same 8 notes as the laptop keyboard's A–K. */
+const KEY_LABELS = ["A", "S", "D", "F", "G", "H", "J", "K"];
 
 type PermissionFn = (() => Promise<string>) | undefined;
 
@@ -75,6 +79,9 @@ export function JoinChoir() {
   const [touching, setTouching] = useState(false);
   const [tilt, setTilt] = useState(0.5); // 0 = low, 1 = high (display only)
   const [hostAway, setHostAway] = useState(false);
+  const [hostMode, setHostMode] = useState<HostMode>("choir");
+  const [activeKey, setActiveKey] = useState(-1);
+  const padRef = useRef({ down: false, key: -1 });
   const [colorIndex] = useState(() => Math.floor(Math.random() * 9));
   const [dizzy, setDizzy] = useState(0);
   const dizzyUntilRef = useRef(0);
@@ -193,6 +200,8 @@ export function JoinChoir() {
         setHostAway(true);
       } else if (msg.type === "room-resumed") {
         setHostAway(false);
+      } else if (msg.type === "mode") {
+        if (isHostMode(msg["mode"])) setHostMode(msg["mode"]);
       } else if (msg.type === "sync") {
         const t1 = performance.now();
         ws.send(JSON.stringify({ type: "sync-reply", t0: msg["t0"], t1, t2: performance.now(), t3: 0 }));
@@ -225,12 +234,20 @@ export function JoinChoir() {
     writeStored(INSTRUMENT_KEY, id);
   }, [instrument, phase, cooldownUntil, sendReady]);
 
+  /** Touch the 8-key pad: the key under the finger is the note; sliding sideways changes it. */
   const pushTouch = useCallback((e: React.PointerEvent, down: boolean) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const x = Math.max(0, Math.min(0.9999, (e.clientX - rect.left) / rect.width));
     const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    const key = down ? Math.floor(x * KEY_LABELS.length) : -1;
+    const prev = padRef.current;
+    if (prev.down === down && prev.key === key) return; // only send changes
+    padRef.current = { down, key };
+    setTouching(down);
+    setActiveKey(key);
     touchRef.current.push({ t: e.timeStamp || performance.now(), x, y, down });
-    flush(); // send touches immediately so the voice starts/stops without delay
+    if (down && "vibrate" in navigator) navigator.vibrate(8);
+    flush(); // send immediately so notes start/stop/change without delay
   }, [flush]);
 
   const cooling = phase === "singing" && cooldownUntil > now;
@@ -294,28 +311,48 @@ export function JoinChoir() {
             interactive={false}
             label={`Your ghost, ${name}`}
           />
+          {hostMode !== "choir" && (
+            <p role="status" className="sx-box" style={{ padding: 12, fontSize: 15, width: "min(92vw, 380px)", margin: 0 }}>
+              The laptop left the Choir for the {hostMode === "lab" ? "Lab" : hostMode === "possession" ? "ghost view" : "lobby"}.
+              Stay here — you're still connected and will sing again when it comes back.
+            </p>
+          )}
+          <p className="sx-muted" style={{ fontSize: 14, margin: 0, textAlign: "center" }}>
+            {instrumentInfo(instrument).emoji} Touch a key to sing that note — slide across to change notes.
+          </p>
           <div
-            role="button"
-            aria-label="Hold to sing"
-            aria-pressed={touching}
-            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); setTouching(true); pushTouch(e, true); if ("vibrate" in navigator) navigator.vibrate(10); }}
-            onPointerUp={(e) => { setTouching(false); pushTouch(e, false); }}
-            onPointerCancel={(e) => { setTouching(false); pushTouch(e, false); }}
+            role="group"
+            aria-label="Sing pad: 8 keys, A to K, like the laptop keyboard"
+            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); pushTouch(e, true); }}
+            onPointerMove={(e) => { if (padRef.current.down) pushTouch(e, true); }}
+            onPointerUp={(e) => pushTouch(e, false)}
+            onPointerCancel={(e) => pushTouch(e, false)}
             className={touching ? "sx-box sx-box--pink" : "sx-box"}
             style={{
               width: "min(92vw, 380px)", height: "min(30vh, 220px)", touchAction: "none",
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
-              background: touching ? "radial-gradient(circle, rgba(255,0,255,0.35) 0%, rgba(16,6,30,0.9) 75%)" : undefined,
+              display: "grid", gridTemplateColumns: `repeat(${KEY_LABELS.length}, 1fr)`, gap: 3, padding: 3,
             }}
           >
-            <span style={{ fontSize: 34 }}>{instrumentInfo(instrument).emoji}</span>
-            <span style={{ fontFamily: "var(--sx-font-pixel)", fontSize: 11 }}>{touching ? "SINGING…" : "HOLD TO SING"}</span>
-          </div>
-          <div aria-label="Pitch from tilt" style={{ width: "min(92vw, 380px)", height: 8, background: "#1a0a2e", border: "1px solid var(--sx-line)" }}>
-            <div style={{ width: `${Math.round(tilt * 100)}%`, height: "100%", background: "linear-gradient(90deg, var(--sx-cyan), var(--sx-pink))" }} />
+            {KEY_LABELS.map((label, i) => (
+              <div
+                key={label}
+                style={{
+                  pointerEvents: "none", display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 8,
+                  fontFamily: "var(--sx-font-pixel)", fontSize: 11,
+                  color: activeKey === i ? "#fff" : "var(--sx-dim)",
+                  background: activeKey === i
+                    ? "linear-gradient(180deg, rgba(255,0,255,0.6), rgba(255,0,255,0.25))"
+                    : "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,0,255,0.08))",
+                  border: `1px solid ${activeKey === i ? "var(--sx-pink)" : "rgba(0,255,255,0.18)"}`,
+                  boxShadow: activeKey === i ? "0 0 12px var(--sx-pink)" : "none",
+                }}
+              >
+                {label}
+              </div>
+            ))}
           </div>
           <p className="sx-muted" style={{ fontSize: 13, margin: 0, textAlign: "center" }}>
-            Tilt forward/back = note · roll = brightness · shake = tremolo (and a dizzy ghost 🌀)
+            Roll the phone = brightness · shake = tremolo (and a dizzy ghost 🌀). In Drone mode, tilt picks the note.
           </p>
           <div style={{ width: "min(92vw, 380px)" }}>
             <p className="sx-muted" style={{ fontSize: 13, margin: "4px 0 6px" }}>

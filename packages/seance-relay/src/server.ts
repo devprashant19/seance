@@ -6,6 +6,7 @@ import {
   isClientMessage,
   sanitizeName,
   isInstrumentId,
+  isHostMode,
   type ServerMessage,
   type ClientMessage,
   type Role,
@@ -143,6 +144,7 @@ export function createRelay(config: RelayConfig = {}) {
         router.register(ws, roomCode, conn);
         socketRooms.set(ws, roomCode);
         sendJson(ws, { type: "welcome", roomCode, peerId: existing.peerId, resumeToken: existing.resumeToken });
+        if (room.hostMode) sendJson(ws, { type: "mode", mode: room.hostMode });
         router.sendToHost(roomCode, { type: "peer-joined", peerId: existing.peerId, capabilities: existing.capabilities, name: existing.name, instrument: existing.instrument });
         return;
       }
@@ -155,6 +157,7 @@ export function createRelay(config: RelayConfig = {}) {
       router.register(ws, roomCode, conn);
       socketRooms.set(ws, roomCode);
       sendJson(ws, { type: "welcome", roomCode, peerId: peer.peerId, resumeToken: peer.resumeToken });
+      if (room.hostMode) sendJson(ws, { type: "mode", mode: room.hostMode });
       router.sendToHost(roomCode, { type: "peer-joined", peerId: peer.peerId, capabilities: [] });
     } catch {
       sendJson(ws, { type: "error", code: "ROOM_FULL", message: "Room is full" });
@@ -202,6 +205,14 @@ export function createRelay(config: RelayConfig = {}) {
 
     const room = rooms.getRoom(roomCode);
     if (!room) return;
+
+    if (msg.type === "mode") {
+      const conn = router.getConnection(ws);
+      if (conn?.role !== "host" || !isHostMode(msg.mode)) return;
+      room.hostMode = msg.mode;
+      router.broadcastToRoom(roomCode, { type: "mode", mode: msg.mode }, ws);
+      return;
+    }
 
     if (msg.type === "ready") {
       const conn = router.getConnection(ws);

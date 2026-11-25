@@ -179,6 +179,7 @@ export function ChoirHome() {
         },
       },
       loadHostSession(),
+      () => "choir", // phones switch to their singing controls
     );
     return () => {
       if (retry) clearTimeout(retry);

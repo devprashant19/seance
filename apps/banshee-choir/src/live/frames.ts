@@ -13,7 +13,7 @@ function last(ch: { t: Float64Array; values: Float32Array[] } | undefined): numb
  * Latest phone state in a batch → the Banshee voice's SensorFrame.
  * - orientation (rad): beta drives pitch, gamma drives the filter
  * - accel (gravity removed, m/s²): shake drives tremolo (and the gate in drone mode)
- * - control.touch [x, y, down]: the touch pad opens/closes the voice
+ * - control.touch [x, y, down]: the touch pad opens/closes the voice; x picks one of 8 keys
  */
 export function sensorFrameFromBatch(batch: DecodedBatch): SensorFrame | null {
   const frame: { orientation?: SensorFrame["orientation"]; accel?: SensorFrame["accel"]; touch?: SensorFrame["touch"] } = {};
@@ -22,6 +22,6 @@ export function sensorFrameFromBatch(batch: DecodedBatch): SensorFrame | null {
   const a = last(batch.channels["accel"]);
   if (a) frame.accel = { x: a[0] ?? 0, y: a[1] ?? 0, z: a[2] ?? 0 };
   const touch = last(batch.channels["control.touch"]);
-  if (touch) frame.touch = { down: (touch[2] ?? 0) >= 0.5 };
+  if (touch) frame.touch = { down: (touch[2] ?? 0) >= 0.5, x: touch[0] ?? 0.5 };
   return frame.orientation || frame.accel || frame.touch ? (frame as SensorFrame) : null;
 }

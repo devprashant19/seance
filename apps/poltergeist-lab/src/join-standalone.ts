@@ -15,6 +15,8 @@ import {
   DEFAULT_INSTRUMENT,
   INSTRUMENT_COOLDOWN_MS,
   isInstrumentId,
+  isHostMode,
+  type HostMode,
   type InstrumentId,
   type MotionSample,
   type OrientationSample,
@@ -30,6 +32,16 @@ const INSTRUMENT_KEY = "seance-player-instrument";
 const SHAKE_MS2 = 14;
 const DIZZY_HOLD_MS = 3200;
 const GHOST_COLORS = ["#00ffff", "#ff00ff", "#ffff33", "#00ff99", "#ff7a00", "#bd00ff"];
+/** Sing-pad keys: the same 8 notes as the laptop keyboard's A–K. */
+const KEY_LABELS = ["A", "S", "D", "F", "G", "H", "J", "K"];
+
+/** What the phone tells the player while the laptop shows something other than the Choir. */
+const MODE_COPY: Record<Exclude<HostMode, "choir">, { title: string; text: string }> = {
+  lobby: { title: "👻 IN THE LOBBY", text: "The laptop shows the séance lobby. Shake your phone and watch the ghost get dizzy!" },
+  possession: { title: "👻 POSSESSING THE GHOST", text: "Tilt your phone to steer the ghost on the laptop. Follow its steps: tilt, shake, then hold still." },
+  lab: { title: "🧪 EXPERIMENTS", text: "The laptop is on the Lab. Follow the setup steps on the laptop screen; your phone streams its sensors." },
+  other: { title: "CONNECTED", text: "Keep this page open. Your phone follows whatever the laptop shows." },
+};
 
 interface GhostHandle {
   setLook(look: { mouth?: number; dizzy?: number }): void;
@@ -105,6 +117,21 @@ function init() {
   const singPad = $("sing-pad");
   const instrGrid = $("instr-grid");
   const instrStatus = $("instr-status");
+  const labPanel = $("lab-panel");
+  const labTitle = $("lab-title");
+  const labText = $("lab-text");
+  const instrLater = $<HTMLDetailsElement>("instr-later");
+  const choirPanel = $("choir-panel");
+  const slotLater = $("instr-slot-later");
+  const slotChoir = $("instr-slot-choir");
+
+  const keyEls = KEY_LABELS.map((label) => {
+    const k = document.createElement("div");
+    k.className = "key";
+    k.textContent = label;
+    return k;
+  });
+  singPad?.append(...keyEls);
   const url = relayUrl();
 
   if (codeLabel && code) codeLabel.textContent = code;
@@ -199,24 +226,61 @@ function init() {
     ws.send(JSON.stringify({ type: "ready", capabilities: CAPABILITIES, name: playerName, instrument }));
   }
 
-  // ---- Hold-to-sing pad (used when the laptop is on the Banshee Choir) ----
-  function touch(e: PointerEvent, down: boolean) {
+  // ---- Sing pad: 8 keys like the laptop's A–K. Touch to sing; slide to change notes. ----
+  let padDown = false;
+  let padKey = -1;
+  function padTouch(e: PointerEvent, down: boolean) {
     if (!streaming || !singPad) return;
     e.preventDefault();
     const r = singPad.getBoundingClientRect();
-    const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    const x = Math.min(0.9999, Math.max(0, (e.clientX - r.left) / r.width));
     const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+    const key = down ? Math.floor(x * KEY_LABELS.length) : -1;
+    const changed = down !== padDown || key !== padKey;
+    padDown = down;
+    padKey = key;
+    if (!changed) return;
     touchBuffer.push({ t: performance.now(), x, y, down });
+    keyEls.forEach((k, i) => k.classList.toggle("on", i === key));
     singPad.classList.toggle("active", down);
     ghost?.setLook({ mouth: down ? 0.9 : 0 });
-    flushBatch(); // gate changes should be heard immediately
+    if (down && "vibrate" in navigator) navigator.vibrate(8);
+    flushBatch(); // note changes should be heard immediately
   }
   singPad?.addEventListener("pointerdown", (e) => {
     singPad.setPointerCapture(e.pointerId);
-    touch(e, true);
+    padTouch(e, true);
   });
-  singPad?.addEventListener("pointerup", (e) => touch(e, false));
-  singPad?.addEventListener("pointercancel", (e) => touch(e, false));
+  singPad?.addEventListener("pointermove", (e) => {
+    if (padDown) padTouch(e, true);
+  });
+  singPad?.addEventListener("pointerup", (e) => padTouch(e, false));
+  singPad?.addEventListener("pointercancel", (e) => padTouch(e, false));
+
+  // ---- Follow the laptop: Choir controls only while the laptop is on the Choir ----
+  function applyMode(mode: HostMode) {
+    const choir = mode === "choir";
+    if (choirPanel) choirPanel.hidden = !choir;
+    if (labPanel) labPanel.hidden = choir;
+    if (instrLater) instrLater.hidden = choir;
+    if (instrGrid) (choir ? slotChoir : slotLater)?.append(instrGrid);
+    if (!choir) {
+      const copy = MODE_COPY[mode];
+      if (labTitle) labTitle.textContent = copy.title;
+      if (labText) labText.textContent = copy.text;
+      if (padDown && singPad) {
+        // Release a held note when the laptop leaves the Choir.
+        padDown = false;
+        padKey = -1;
+        touchBuffer.push({ t: performance.now(), x: 0.5, y: 0.5, down: false });
+        keyEls.forEach((k) => k.classList.remove("on"));
+        singPad.classList.remove("active");
+        ghost?.setLook({ mouth: 0 });
+        flushBatch();
+      }
+    }
+  }
+  applyMode("other");
 
   // ---- Instrument picker (10 s cooldown between switches) ----
   function renderInstruments() {
@@ -376,6 +440,9 @@ function init() {
           break;
         case "room-resumed":
           setStatus("👻 The laptop is back. Still streaming — keep this screen on.");
+          break;
+        case "mode":
+          if (isHostMode(msg["mode"])) applyMode(msg["mode"]);
           break;
         case "error":
           showTrouble("Relay error", String(msg["message"] ?? "Failed to join the room."));

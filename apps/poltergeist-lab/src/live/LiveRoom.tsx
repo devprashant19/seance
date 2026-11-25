@@ -7,11 +7,14 @@
  * same room with the saved host token.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import {
   openHost,
   loadHostSession,
   clearHostSession,
   type DecodedBatch,
+  type HostHandle,
+  type HostMode,
 } from "seance-core/transports/phone-bridge";
 import { relayUrl } from "../relay-url.js";
 
@@ -55,6 +58,14 @@ export interface LiveRoom {
 
 const Ctx = createContext<LiveRoom | null>(null);
 
+/** What the phones should show for the laptop's current page. */
+export function modeForPath(pathname: string): HostMode {
+  if (pathname.startsWith("/session")) return "lobby";
+  if (pathname.startsWith("/possession")) return "possession";
+  if (pathname.startsWith("/lab")) return "lab";
+  return "other";
+}
+
 export function LiveRoomProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<RoomStatus>("idle");
   const [code, setCode] = useState<string | null>(null);
@@ -63,7 +74,15 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
   const [lastJoinAt, setLastJoinAt] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const closeRef = useRef<(() => void) | null>(null);
+  const closeRef = useRef<HostHandle | null>(null);
+  const location = useLocation();
+  const mode = modeForPath(location.pathname);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+  // Tell the phones whenever the laptop changes page.
+  useEffect(() => {
+    closeRef.current?.setMode(mode);
+  }, [mode]);
   const listenersRef = useRef(new Set<BatchListener>());
   const resumedAtRef = useRef(0);
   const knownRef = useRef(new Set<string>());
@@ -125,6 +144,7 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
         },
       },
       resume,
+      () => modeRef.current,
     );
   }, []);
 

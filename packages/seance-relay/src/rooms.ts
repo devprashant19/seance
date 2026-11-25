@@ -1,3 +1,4 @@
+import type { HostMode } from "seance-core/transports/phone-bridge";
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const CODE_LENGTH = 4;
 const MAX_PEERS = 8;
@@ -26,6 +27,8 @@ export interface Room {
   observerKey: string | undefined;
   /** Secret given only to the host that created the room; required to resume hosting it. */
   readonly hostToken: string;
+  /** What the laptop is currently showing (phones adapt their screen). */
+  hostMode: HostMode | undefined;
   readonly peers: Map<string, Peer>;
 }
 
@@ -56,6 +59,7 @@ export class RoomManager {
       hostDisconnectedAt: undefined,
       observerKey,
       hostToken: this._generateToken(),
+      hostMode: undefined,
       peers: new Map(),
     };
     this._rooms.set(code, room);
