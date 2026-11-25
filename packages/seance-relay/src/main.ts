@@ -11,6 +11,8 @@ const ALLOWED_ORIGINS = process.env["ALLOWED_ORIGINS"]
 const relay = createRelay({
   port: PORT,
   allowedOrigins: ALLOWED_ORIGINS.length > 0 ? ALLOWED_ORIGINS : undefined,
+  // Lifecycle log (no sensor values). Disable with SEANCE_RELAY_LOG=0.
+  log: process.env["SEANCE_RELAY_LOG"] === "0" ? undefined : (line) => console.log(`${new Date().toISOString().slice(11, 19)} ${line}`),
 });
 
 const server = createServer((req, res) => {

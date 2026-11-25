@@ -13,6 +13,8 @@ export interface RelayConfig {
   readonly port?: number;
   readonly allowedOrigins?: readonly string[];
   readonly pruneIntervalMs?: number;
+  /** Optional event log (room/peer lifecycle, first batch, errors). Never logs sensor values. */
+  readonly log?: (line: string) => void;
 }
 
 const DEFAULT_PORT = 4000;
@@ -22,6 +24,8 @@ export function createRelay(config: RelayConfig = {}) {
   const port = config.port ?? DEFAULT_PORT;
   const allowedOrigins = new Set(config.allowedOrigins ?? []);
   const pruneInterval = config.pruneIntervalMs ?? DEFAULT_PRUNE_INTERVAL_MS;
+  const log = config.log ?? (() => {});
+  const batchCounts = new WeakMap<WebSocket, number>();
 
   const rooms = new RoomManager();
   const router = new Router();
@@ -49,11 +53,54 @@ export function createRelay(config: RelayConfig = {}) {
     const role: Role = msg.role;
 
     if (role === "host") {
+      // Resume hosting an existing room (e.g. the laptop moves from the landing page to the
+      // possession view). Requires the secret host token from the original welcome.
+      if (msg.roomCode) {
+        const existing = rooms.getRoom(msg.roomCode);
+        if (!existing || !msg.resumeToken || msg.resumeToken !== existing.hostToken) {
+          log(`host resume FAILED for room ${msg.roomCode} (${existing ? "wrong token" : "room not found"})`);
+          sendJson(ws, {
+            type: "error",
+            code: "HOST_RESUME_FAILED",
+            message: "Cannot resume this séance: unknown room or wrong host token",
+          });
+          ws.close();
+          return;
+        }
+        // Evict any previous host socket so data is routed to the new page only.
+        for (const old of router.hostSockets(existing.code)) {
+          router.unregister(old, existing.code);
+          socketRooms.delete(old);
+          buckets.delete(old);
+          try {
+            old.close();
+          } catch {
+            /* already closed */
+          }
+        }
+        rooms.reconnectHost(existing);
+        log(`host resumed room ${existing.code} (${[...existing.peers.values()].filter((p) => p.connected).length} phone(s) connected)`);
+        const conn: Connection = { role: "host", peerId: undefined, send: (m) => sendJson(ws, m) };
+        router.register(ws, existing.code, conn);
+        socketRooms.set(ws, existing.code);
+        sendJson(ws, { type: "welcome", roomCode: existing.code, peerId: "host", resumeToken: existing.hostToken });
+        // Phones were told "room-paused" when the previous host page closed: tell them it is back.
+        router.broadcastToRoom(existing.code, { type: "room-resumed" }, ws);
+        // Tell the resumed host which phones are already in the room.
+        for (const peer of existing.peers.values()) {
+          if (peer.connected) {
+            sendJson(ws, { type: "peer-joined", peerId: peer.peerId, capabilities: peer.capabilities });
+          }
+        }
+        return;
+      }
+
       const room = rooms.createRoom();
+      log(`host created room ${room.code}`);
       const conn: Connection = { role: "host", peerId: undefined, send: (m) => sendJson(ws, m) };
       router.register(ws, room.code, conn);
       socketRooms.set(ws, room.code);
-      sendJson(ws, { type: "welcome", roomCode: room.code, peerId: "host", resumeToken: "" });
+      sendJson(ws, { type: "welcome", roomCode: room.code, peerId: "host", resumeToken: room.hostToken });
       return;
     }
 
@@ -66,6 +113,7 @@ export function createRelay(config: RelayConfig = {}) {
 
     const room = rooms.getRoom(roomCode);
     if (!room) {
+      log(`${role} tried to join unknown room ${roomCode}`);
       sendJson(ws, { type: "error", code: "ROOM_NOT_FOUND", message: "Room does not exist" });
       ws.close();
       return;
@@ -100,6 +148,7 @@ export function createRelay(config: RelayConfig = {}) {
 
     try {
       const peer = rooms.addPeer(room, []);
+      log(`phone ${peer.peerId} joined room ${roomCode} (host ${room.hostConnected ? "connected" : "DISCONNECTED"})`);
       const conn: Connection = { role: "peer", peerId: peer.peerId, send: (m) => sendJson(ws, m) };
       router.register(ws, roomCode, conn);
       socketRooms.set(ws, roomCode);
@@ -153,11 +202,31 @@ export function createRelay(config: RelayConfig = {}) {
     if (!room) return;
 
     if (msg.type === "ready") {
+      const conn = router.getConnection(ws);
+      if (conn?.peerId) {
+        const peer = room.peers.get(conn.peerId);
+        if (peer) {
+          peer.capabilities = [...msg.capabilities];
+        }
+        router.sendToHost(roomCode, {
+          type: "peer-joined",
+          peerId: conn.peerId,
+          capabilities: msg.capabilities,
+        });
+      }
       return;
     }
 
+    if (msg.type === "batch") {
+      const n = (batchCounts.get(ws) ?? 0) + 1;
+      batchCounts.set(ws, n);
+      if (n === 1 || n % 200 === 0) log(`room ${roomCode}: ${n} batch(es) from ${router.getConnection(ws)?.peerId ?? "?"}`);
+    }
     const errorMsg = router.routeClientMessage(ws, roomCode, room, msg);
-    if (errorMsg) sendJson(ws, errorMsg);
+    if (errorMsg) {
+      log(`room ${roomCode}: rejected ${msg.type} (${errorMsg.type === "error" ? errorMsg.code : "?"})`);
+      sendJson(ws, errorMsg);
+    }
   }
 
   function handleClose(ws: WebSocket): void {
@@ -170,6 +239,7 @@ export function createRelay(config: RelayConfig = {}) {
     const room = rooms.getRoom(roomCode);
     if (!room) return;
 
+    log(`${conn.role}${conn.peerId ? " " + conn.peerId : ""} left room ${roomCode}`);
     if (conn.role === "host") {
       rooms.disconnectHost(room);
       router.broadcastToRoom(roomCode, { type: "room-paused", reason: "Host disconnected" });

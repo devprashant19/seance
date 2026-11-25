@@ -7,7 +7,8 @@ const RESUME_WINDOW_MS = 2 * 60 * 1000;
 
 export interface Peer {
   readonly peerId: string;
-  readonly capabilities: readonly string[];
+  /** Channels the phone says it can stream (set by its "ready" message). */
+  capabilities: readonly string[];
   connected: boolean;
   resumeToken: string;
   disconnectedAt: number | undefined;
@@ -19,6 +20,8 @@ export interface Room {
   hostConnected: boolean;
   hostDisconnectedAt: number | undefined;
   observerKey: string | undefined;
+  /** Secret given only to the host that created the room; required to resume hosting it. */
+  readonly hostToken: string;
   readonly peers: Map<string, Peer>;
 }
 
@@ -48,6 +51,7 @@ export class RoomManager {
       hostConnected: true,
       hostDisconnectedAt: undefined,
       observerKey,
+      hostToken: this._generateToken(),
       peers: new Map(),
     };
     this._rooms.set(code, room);

@@ -42,6 +42,13 @@ export class Router {
     return this._connections.get(ws);
   }
 
+  /** All sockets currently registered as host of `roomCode`. */
+  hostSockets(roomCode: string): WebSocket[] {
+    const sockets = this._roomSockets.get(roomCode);
+    if (!sockets) return [];
+    return [...sockets].filter((ws) => this._connections.get(ws)?.role === "host");
+  }
+
   broadcastToRoom(
     roomCode: string,
     msg: ServerMessage,
@@ -96,6 +103,14 @@ export class Router {
         if (conn.role === "observer") {
           return { type: "error", code: "FORBIDDEN", message: "Observers cannot send batches" };
         }
+        if (!isValidBatchPayload(msg.payload)) {
+          // Fail loudly: a silently dropped batch looks like "the ghost doesn't move".
+          return {
+            type: "error",
+            code: "INVALID_BATCH",
+            message: "batch needs payload {seq:number, channels:{<id>:{t:number[], data:number[][]}}} (use encodeBatch)",
+          };
+        }
         const serverBatch: ServerMessage = {
           type: "batch",
           peerId: conn.peerId ?? "host",
@@ -106,6 +121,18 @@ export class Router {
         } else {
           this.broadcastToRoom(roomCode, serverBatch, ws);
         }
+        return undefined;
+      }
+      case "sync-reply": {
+        const serverSyncReply: ServerMessage = {
+          type: "sync-reply",
+          peerId: conn.peerId ?? "peer",
+          t0: msg.t0,
+          t1: msg.t1,
+          t2: msg.t2,
+          t3: msg.t3,
+        };
+        this.sendToHost(roomCode, serverSyncReply);
         return undefined;
       }
       case "instruct": {
@@ -141,4 +168,19 @@ export class Router {
   roomSocketCount(roomCode: string): number {
     return this._roomSockets.get(roomCode)?.size ?? 0;
   }
+}
+
+/** Structural check that a batch payload matches what `encodeBatch` produces. */
+export function isValidBatchPayload(payload: unknown): boolean {
+  if (typeof payload !== "object" || payload === null) return false;
+  const p = payload as { seq?: unknown; channels?: unknown };
+  if (typeof p.seq !== "number" || !Number.isFinite(p.seq)) return false;
+  if (typeof p.channels !== "object" || p.channels === null) return false;
+  for (const ch of Object.values(p.channels as Record<string, unknown>)) {
+    if (typeof ch !== "object" || ch === null) return false;
+    const c = ch as { t?: unknown; data?: unknown };
+    if (!Array.isArray(c.t) || !Array.isArray(c.data)) return false;
+    if (!c.data.every((axis) => Array.isArray(axis) && axis.length === (c.t as unknown[]).length)) return false;
+  }
+  return true;
 }
