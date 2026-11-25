@@ -300,8 +300,8 @@ export function ChoirHome() {
 
   return (
     <main className="sx-page" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <a href="/" className="sx-ghost-btn" style={{ position: "absolute", top: 16, left: 16 }}>
-        &larr; Poltergeist Lab
+      <a href="/session" className="sx-ghost-btn" style={{ position: "absolute", top: 16, left: 16 }}>
+        &larr; Séance lobby
       </a>
 
       <p className="sx-kicker" style={{ marginTop: 40 }}>Séance · Multiplayer</p>

@@ -424,3 +424,10 @@ make the ghost 3D everywhere, let players enter a name when joining, add choir i
   dizzy, phone name screen → join → own 3D ghost, instrument switch + cooldown on the phone, Lab → Choir keeps both
   phones, per-player instruments, laptop-side cooldown rejects a second switch within 10 s, Lab and possession pages.
 - **Not yet verified:** a real phone shake / real audio of each instrument on the owner's devices.
+
+### Merged with the product homepage (teammate commits ff8c56c…febb350)
+- Pulled the new homepage (`/`); the live séance lobby moved to `/session` as that work intended.
+- `homepage-arcade.css` re-points the homepage's design tokens at the arcade palette (layout untouched), darkens the
+  sections that used a solid brand fill, and the hero now shows the 3D ghost; its main button opens `/session`.
+- Feature pages' "back" links and the Choir's link now return to `/session` (the lobby with the QR code).
+- Re-verified: typecheck ✔ · root suite 56 files / 383 tests ✔ · builds ✔ · browser run 21/21 ✔.

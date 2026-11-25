@@ -88,7 +88,7 @@ export function WraithBench() {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "2rem", fontFamily: "monospace", color: "#eee8ff" }}>
       <nav style={{ marginBottom: "2rem" }}>
-        <Link to="/" style={{ color: "#b0a6cc", textDecoration: "none" }}>← Back to Sanctum</Link>
+        <Link to="/session" style={{ color: "#b0a6cc", textDecoration: "none" }}>← Back to Sanctum</Link>
       </nav>
 
       <header style={{ marginBottom: "2rem", borderBottom: "1px solid #2d1b4e", paddingBottom: "1rem" }}>

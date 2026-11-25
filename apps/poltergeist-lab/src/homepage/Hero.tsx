@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { HeroVisual } from "./HeroVisual.js";
+import { Ghost } from "seance-avatars";
 
 export function Hero() {
   const scrollToSection = () => {
@@ -26,6 +26,9 @@ export function Hero() {
           <h1 className="hero-title">
             Single phone for all your physics
           </h1>
+          <div className="hero-ghost">
+            <Ghost height={300} label="3D ghost mascot. Drag to spin it." />
+          </div>
         </div>
 
         <div className="hero-right">
@@ -35,8 +38,8 @@ export function Hero() {
             more with proper uncertainty analysis.
           </p>
           <div className="hero-cta-group">
-            <Link to="/lab" className="btn btn-primary">
-              Get Started
+            <Link to="/session" className="btn btn-primary">
+              Start a séance
               <svg
                 className="btn-icon"
                 viewBox="0 0 20 20"
@@ -46,6 +49,9 @@ export function Hero() {
               >
                 <path d="M5 10h10M11 6l4 4-4 4" />
               </svg>
+            </Link>
+            <Link to="/lab" className="btn btn-secondary">
+              Experiments
             </Link>
             <Link to="/replay" className="btn btn-secondary">
               Watch a Demo

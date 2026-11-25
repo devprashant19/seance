@@ -89,7 +89,7 @@ export function CircleRoute(): React.ReactElement {
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1rem", color: "#eee8ff", fontFamily: "monospace" }}>
       <header style={{ marginBottom: "1.5rem" }}>
-        <Link to="/" style={{ color: "#00e5ff", textDecoration: "none" }}>&larr; Back to Lab</Link>
+        <Link to="/session" style={{ color: "#00e5ff", textDecoration: "none" }}>&larr; Back to Lab</Link>
         <h1 style={{ fontSize: "1.8rem", margin: "0.5rem 0 0.25rem", color: "#f5f0ff" }}>
           Séance Circle: Classroom Board
         </h1>

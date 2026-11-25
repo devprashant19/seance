@@ -56,7 +56,7 @@ export function GhostEarRoute() {
 
       <nav style={{ width: "100%", maxWidth: 640, textAlign: "left", marginBottom: 20 }}>
         <Link
-          to="/"
+          to="/session"
           style={{
             color: isDarkroom ? "#ffffff" : "#00e5ff",
             textDecoration: "underline",

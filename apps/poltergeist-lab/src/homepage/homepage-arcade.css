@@ -1,0 +1,181 @@
+/*
+ * Neon arcade skin for the product homepage. Loaded after homepage.css: it re-points the
+ * homepage's design tokens at the shared Séance arcade palette (seance-avatars/theme.css), so the
+ * layout and components stay exactly as designed.
+ */
+.homepage {
+  /* Brand */
+  --brand: #ff00ff;
+  --brand-dark: #bd00ff;
+  --brand-light: #ff66ff;
+  --brand-glow: rgba(255, 0, 255, 0.28);
+
+  /* Accents */
+  --color-cyan: #00ffff;
+  --color-green: #00ff99;
+  --color-blue: #3d8bff;
+  --color-orange: #ffb347;
+  --color-pink: #ff3b8d;
+  --color-teal: #00e5ff;
+
+  /* Backgrounds */
+  --bg-white: rgba(12, 4, 24, 0.92);
+  --bg-light: rgba(20, 7, 38, 0.92);
+  --bg-gray: rgba(26, 10, 46, 0.92);
+  --bg-dark: #05010b;
+  --bg-brand: #2a0a4a;
+  --bg-teal: #062a33;
+
+  /* Text */
+  --text-dark: #f2ecff;
+  --text-body: #c9bfe6;
+  --text-muted: #9d8fc4;
+  --text-white: #ffffff;
+  --text-white-muted: rgba(242, 236, 255, 0.72);
+
+  /* Borders & shadows */
+  --border-light: rgba(0, 255, 255, 0.14);
+  --border-card: rgba(0, 255, 255, 0.24);
+  --shadow-sm: 0 0 10px rgba(0, 255, 255, 0.12);
+  --shadow-md: 0 0 18px rgba(0, 255, 255, 0.16), 0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 0 26px rgba(255, 0, 255, 0.22), 0 8px 40px rgba(0, 0, 0, 0.6);
+
+  /* Type */
+  --font-sans: "Rajdhani", "Inter", system-ui, sans-serif;
+
+  background: transparent;
+  color: var(--text-body);
+}
+
+/* Headings use the display face (the global arcade h1 pixel font is too wide for 88px hero type). */
+.homepage h1,
+.homepage h2,
+.homepage h3 {
+  font-family: "Orbitron", "Rajdhani", sans-serif;
+  text-shadow: none;
+  letter-spacing: 0.01em;
+}
+
+/* Hero: night sky + neon grid instead of a flat brand fill. */
+.homepage .hero {
+  background:
+    radial-gradient(circle at 70% 40%, rgba(255, 0, 255, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 20% 70%, rgba(0, 255, 255, 0.16) 0%, transparent 40%),
+    linear-gradient(to right, rgba(255, 0, 255, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(ellipse at top, #2a0a3b 0%, #090310 75%);
+}
+.homepage .hero-bg-shape circle {
+  fill: #ff00ff;
+}
+.homepage .hero-bg-shape--2 circle {
+  fill: #00ffff;
+}
+.homepage .hero-title {
+  font-weight: 900;
+  font-size: clamp(40px, 6.2vw, 82px);
+  line-height: 1.05;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.8), 0 0 26px rgba(255, 0, 255, 0.45);
+}
+.homepage .hero-subtitle {
+  font-size: 1.15rem;
+}
+
+.homepage .hero-ghost {
+  margin-top: 18px;
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  background: rgba(10, 4, 22, 0.55);
+  box-shadow: 0 0 18px rgba(0, 255, 255, 0.25), inset 0 0 24px rgba(255, 0, 255, 0.08);
+}
+
+/* Buttons: arcade style. */
+.homepage .btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+.homepage .btn-primary {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255, 0, 255, 0.3) 0%, rgba(80, 0, 80, 0.6) 100%);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 2px #ff00ff, 0 0 14px #ff00ff;
+}
+.homepage .btn-primary:hover {
+  box-shadow: inset 0 0 0 2px #ff00ff, 0 0 24px #ff00ff;
+}
+.homepage .btn-secondary {
+  color: #00ffff;
+  background: rgba(0, 255, 255, 0.06);
+  border-color: rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Nav: dark glass once scrolled. */
+.homepage .nav.scrolled {
+  background: rgba(9, 3, 16, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.25);
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.15);
+}
+.homepage .nav-cta {
+  border-radius: 0;
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.5);
+}
+
+/* Cards glow on hover. */
+.homepage [class*="card"] {
+  border-radius: 0;
+}
+.homepage [class*="card"]:hover {
+  border-color: rgba(255, 255, 0, 0.45);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.28), 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Giant "Séance" billboard as neon outline type. */
+.homepage .brand-billboard {
+  background: transparent;
+}
+.homepage .brand-billboard-text {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  color: transparent;
+  -webkit-text-stroke: 2px #ff00ff;
+  text-shadow: 0 0 18px rgba(255, 0, 255, 0.55), 0 0 40px rgba(0, 255, 255, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage .btn-primary,
+  .homepage [class*="card"] {
+    transition: none;
+  }
+}
+
+/* Sections that used the brand colour as a full background: deep neon night instead of solid magenta. */
+.homepage .how-it-works,
+.homepage .cta-section {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255, 0, 255, 0.28) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(0, 255, 255, 0.18) 0%, transparent 45%),
+    linear-gradient(180deg, #1d0636 0%, #0c0318 100%);
+  border-top: 1px solid rgba(255, 0, 255, 0.45);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.35);
+}
+.homepage .feature-showcase-icon--purple {
+  background: #bd00ff;
+}
+
+/* Active walkthrough step: neon card (was white with light text). */
+.homepage .walkthrough-step {
+  border-radius: 0;
+}
+.homepage .walkthrough-step--active,
+.homepage .walkthrough-step--active:hover {
+  background: rgba(255, 0, 255, 0.16);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px #ff00ff, 0 0 18px rgba(255, 0, 255, 0.45);
+}
+.homepage .walkthrough-step--active .walkthrough-step-number {
+  color: #ffff00;
+}

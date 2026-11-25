@@ -1,4 +1,5 @@
 import "./homepage.css";
+import "./homepage-arcade.css";
 import { Navbar } from "./Navbar.js";
 import { Hero } from "./Hero.js";
 import { FeatureShowcase } from "./FeatureShowcase.js";

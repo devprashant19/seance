@@ -7,7 +7,7 @@ export function Lab() {
 
   return (
     <main className="sx-page">
-      <Link to="/" className="sx-ghost-btn" style={{ marginBottom: 12 }}>&larr; Home</Link>
+      <Link to="/session" className="sx-ghost-btn" style={{ marginBottom: 12 }}>&larr; Séance lobby</Link>
       <p className="sx-kicker" style={{ textAlign: "center" }}>Experiments</p>
       <h1 style={{ fontSize: "clamp(18px, 4vw, 30px)", margin: "10px 0 12px", textAlign: "center" }}>
         Poltergeist Lab
