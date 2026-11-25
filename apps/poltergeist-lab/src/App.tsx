@@ -57,8 +57,8 @@ export function App() {
       <LiveRoomProvider>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/session" element={<Landing />} />
           <Route path="/join/:code" element={<Join />} />
           <Route path="/possession/:code" element={<Possession />} />
           <Route path="/lab" element={<Lab />} />
