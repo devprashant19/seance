@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
 import * as fc from "fast-check";
 import {
   filterInfrasoundBand,
@@ -80,5 +82,28 @@ describe("Skeptic's Environmental DSP & Claim Guard Properties", () => {
     expect(report.isFlickerDetected).toBe(true);
     expect(report.dominantSpatialCycles).toBeCloseTo(testCycles, 0);
     expect(report.explanation).toContain("Qualitative detection");
+  });
+
+  it("Property 4: Documentation and evidence summaries pass Claim Guard validation without forbidden claims", () => {
+    // Relative to repo root
+    const rootDir = resolve(__dirname, "../../..");
+    const filesToCheck = [
+      "README.md",
+      "docs/evidence/study-summary.md",
+      "docs/studies/ghost-ear-study.md",
+      "docs/evidence/passports-summary.md",
+      "docs/evidence/traces-summary.md",
+    ];
+
+    for (const relPath of filesToCheck) {
+      const fullPath = resolve(rootDir, relPath);
+      if (existsSync(fullPath)) {
+        const content = readFileSync(fullPath, "utf-8");
+        expect(() => assertValidClaimText(content)).not.toThrow();
+        const res = validateClaimText(content);
+        expect(res.valid).toBe(true);
+        expect(res.violations).toEqual([]);
+      }
+    }
   });
 });

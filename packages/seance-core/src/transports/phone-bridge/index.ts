@@ -32,5 +32,17 @@ export type { PhoneSpiritConfig } from "./phone-spirit.js";
 export { PhoneClient } from "./phone-client.js";
 export type { PhoneClientConfig, PhoneClientEvents, PhoneClientState } from "./phone-client.js";
 
+export {
+  DEG_TO_RAD,
+  motionSample,
+  orientationSample,
+  buildPhoneChannels,
+  toTimeSamples,
+} from "./phone-samples.js";
+export type { MotionSample, OrientationSample, TouchSample, ChannelArrays } from "./phone-samples.js";
+
+export { openHost, saveHostSession, loadHostSession, clearHostSession } from "./host-session.js";
+export type { HostSession, HostEvents, DecodedBatch } from "./host-session.js";
+
 export { FakeRelay } from "./fake-relay.js";
 export type { FakeClient } from "./fake-relay.js";

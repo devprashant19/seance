@@ -29,6 +29,7 @@ export type ServerMessage =
   | { type: "sync"; t0: number }
   | { type: "sync-reply"; peerId: string; t0: number; t1: number; t2: number; t3: number }
   | { type: "room-paused"; reason: string }
+  | { type: "room-resumed" }
   | { type: "instruct"; from: string; to: string; text: string; step?: number }
   | { type: "error"; code: string; message: string };
 
@@ -61,6 +62,7 @@ export function isServerMessage(msg: unknown): msg is ServerMessage {
     "sync",
     "sync-reply",
     "room-paused",
+    "room-resumed",
     "instruct",
     "error",
   ].includes(m.type);
