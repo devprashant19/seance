@@ -121,8 +121,12 @@ export function GateRoute(): React.ReactElement {
           (e) => e.direction === "enter",
         );
         // The bob enters the gate twice per period (once each way): entry i → entry i+2 is one full period.
-        const periods: number[] = [];
-        for (let i = 0; i + 2 < enters.length; i++) periods.push((enters[i + 2]!.t - enters[i]!.t) / 1000);
+        const all: number[] = [];
+        for (let i = 0; i + 2 < enters.length; i++) all.push((enters[i + 2]!.t - enters[i]!.t) / 1000);
+        // Ignore intervals that span a restart or a stray object (more than 15 % off the median).
+        const median = [...all].sort((a, b) => a - b)[Math.floor(all.length / 2)] ?? 0;
+        const periods = all.filter((p) => Math.abs(p - median) <= 0.15 * median);
+        const ignored = all.length - periods.length;
         if (periods.length < 1) {
           setHint(enters.length ? `Seen ${enters.length} gate entr${enters.length === 1 ? "y" : "ies"} — keep it swinging…` : "Waiting for the bob to swing through the gate…");
           return;
@@ -134,7 +138,7 @@ export function GateRoute(): React.ReactElement {
           value: mean,
           unc: Math.max(periods.length > 1 ? sd / Math.sqrt(periods.length) : frameTerm, frameTerm),
           unit: "s",
-          note: `${periods.length} period${periods.length === 1 ? "" : "s"} timed`,
+          note: `${periods.length} period${periods.length === 1 ? "" : "s"} timed${ignored ? ` (${ignored} irregular ignored)` : ""}`,
         });
         setHint("");
       } else if (m === "speed") {
@@ -150,12 +154,15 @@ export function GateRoute(): React.ReactElement {
         setResult({ value: r.speedMPerS, unc: r.uncertaintyMPerS, unit: "m/s", note: `Δt = ${((after.t - first1.t) / 1000).toFixed(3)} s` });
         setHint("");
       } else {
-        const r = computeGateRpm(h.map((x) => x.v1), sp.fps, nBlades);
+        // Sample rate from the frames' own timestamps (a running average of 1/Δt reads high).
+        const spanS = (h[h.length - 1]!.t - h[0]!.t) / 1000;
+        const fs = spanS > 0 ? (h.length - 1) / spanS : sp.fps;
+        const r = computeGateRpm(h.map((x) => x.v1), fs, nBlades);
         if (!(r.rpm > 0)) {
           setHint("Waiting for regular blade passes in the gate…");
           return;
         }
-        const durationS = (h[h.length - 1]!.t - h[0]!.t) / 1000;
+        const durationS = spanS;
         setResult({
           value: r.rpm,
           unc: durationS > 0 ? (60 * (1 / durationS / 2)) / nBlades : r.rpm,

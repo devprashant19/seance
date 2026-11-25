@@ -7,6 +7,15 @@ import {
   type BaselineCalibration,
 } from "../dsp/photogate.js";
 
+/** Chrome/Edge: read camera frames straight from the track (not available in all TS DOM libs). */
+interface FrameLike {
+  readonly timestamp: number | null; // microseconds
+  close(): void;
+}
+type TrackProcessorCtor = new (init: { track: MediaStreamTrack }) => {
+  readable: ReadableStream<FrameLike>;
+};
+
 const CAPABILITIES: readonly ChannelInfo[] = [
   { id: "camera.gate", unit: "1", axes: ["roi1", "roi2"], nominalRateHz: 30 },
 ];
@@ -48,6 +57,9 @@ export class CameraGateSpirit extends BaseSpirit {
   private _isBrowser = false;
   private _seq = 0;
   private _source: "none" | "camera" | "synthetic" = "none";
+  private _reader: ReadableStreamDefaultReader<FrameLike> | undefined;
+  private _running = false;
+  private _meanDtMs = 0;
   private _calibrated = false;
 
   constructor(options?: CameraGateSpiritOptions) {
@@ -129,17 +141,26 @@ export class CameraGateSpirit extends BaseSpirit {
 
         if (typeof OffscreenCanvas !== "undefined") {
           this._canvas = new OffscreenCanvas(this._width, this._height);
-          this._ctx = this._canvas.getContext("2d") as OffscreenCanvasRenderingContext2D;
+          this._ctx = this._canvas.getContext("2d", { willReadFrequently: true }) as OffscreenCanvasRenderingContext2D;
         } else if (typeof document !== "undefined") {
           const domCanvas = document.createElement("canvas");
           domCanvas.width = this._width;
           domCanvas.height = this._height;
           this._canvas = domCanvas;
-          this._ctx = domCanvas.getContext("2d") as CanvasRenderingContext2D;
+          this._ctx = domCanvas.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
         }
 
         this._source = "camera";
-        this._startVideoLoop();
+        this._running = true;
+        const Processor = (globalThis as { MediaStreamTrackProcessor?: TrackProcessorCtor }).MediaStreamTrackProcessor;
+        const track = this._stream.getVideoTracks()[0];
+        if (Processor && track) {
+          // Every frame, with its own capture timestamp, independent of page rendering (which browsers
+          // throttle for background/occluded windows and which would drop frames and skew timings).
+          void this._startTrackLoop(new Processor({ track }).readable.getReader());
+        } else {
+          this._startVideoLoop();
+        }
         this.setState("present", "camera photogate active");
         return;
       } catch {
@@ -152,6 +173,64 @@ export class CameraGateSpirit extends BaseSpirit {
     this._source = "synthetic";
     this._startSyntheticLoop();
     this.setState("present", "synthetic photogate active");
+  }
+
+  /** Pixels → gate signals for one frame captured at `tMs`. */
+  private _processPixels(source: CanvasImageSource, tMs: number): void {
+    if (!this._ctx) return;
+    this._ctx.drawImage(source, 0, 0, this._width, this._height);
+    const pixels = this._ctx.getImageData(0, 0, this._width, this._height).data;
+    const val1 = computeRoiSignal(pixels, this._width, this._height, this._roi1);
+    const val2 = computeRoiSignal(pixels, this._width, this._height, this._roi2);
+    if (this._calibrating) {
+      this._calibrationSamples1.push(val1);
+      this._calibrationSamples2.push(val2);
+    }
+    if (this._lastFrameTimeMs > 0) {
+      const dt = tMs - this._lastFrameTimeMs;
+      // Average the frame interval, then invert (averaging 1/Δt would read high when Δt varies).
+      if (dt > 0) {
+        this._meanDtMs = this._meanDtMs > 0 ? 0.9 * this._meanDtMs + 0.1 * dt : dt;
+        this._fps = 1000 / this._meanDtMs;
+      }
+    }
+    this._lastFrameTimeMs = tMs;
+    this.emitBatch({
+      channel: "camera.gate",
+      seq: this._seq++,
+      t: Float64Array.of(tMs),
+      values: [Float32Array.of(Math.abs(val1 - this._calib1.baseline)), Float32Array.of(Math.abs(val2 - this._calib2.baseline))],
+    });
+  }
+
+  private async _startTrackLoop(reader: ReadableStreamDefaultReader<FrameLike>): Promise<void> {
+    this._reader = reader;
+    const start = performance.now();
+    let firstTs: number | null = null;
+    while (this._running) {
+      let result: ReadableStreamReadResult<FrameLike>;
+      try {
+        result = await reader.read();
+      } catch {
+        break;
+      }
+      if (result.done || !result.value) break;
+      const frame = result.value;
+      try {
+        // Timestamps (µs) are on the camera's clock; map them onto this page's clock.
+        const ts = frame.timestamp;
+        let tMs = performance.now();
+        if (ts !== null) {
+          if (firstTs === null) firstTs = ts;
+          tMs = start + (ts - firstTs) / 1000;
+        }
+        this._processPixels(frame as unknown as CanvasImageSource, tMs);
+      } catch {
+        /* frame not drawable yet */
+      } finally {
+        frame.close();
+      }
+    }
   }
 
   private _startVideoLoop(): void {
@@ -231,6 +310,13 @@ export class CameraGateSpirit extends BaseSpirit {
   }
 
   override async banish(): Promise<void> {
+    this._running = false;
+    try {
+      await this._reader?.cancel();
+    } catch {
+      /* already closed */
+    }
+    this._reader = undefined;
     if (this._stream) {
       for (const track of this._stream.getTracks()) {
         track.stop();
