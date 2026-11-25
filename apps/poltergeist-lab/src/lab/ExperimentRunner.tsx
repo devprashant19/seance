@@ -12,6 +12,7 @@ import { diagnoseDiscrepancies, type SpiritDiagnosis } from "../oracle/explain.j
 import { AskTheSpiritModal } from "../oracle/AskTheSpiritModal.js";
 import { computeTimingStats } from "seance-core";
 import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
+import { HowTo } from "./HowTo.js";
 import { toTimeSamples } from "seance-core/transports/phone-bridge";
 
 type LiveStatus = "connecting" | "waiting-phone" | "live" | "error";
@@ -184,6 +185,10 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         }}>
           ⚠ {experiment.safetyNote}
         </div>
+      )}
+
+      {(state === "SETUP" || state === "READY_CHECK") && (
+        <HowTo experimentId={experiment.id} compact={state === "READY_CHECK"} />
       )}
 
       {state === "SETUP" && (
