@@ -17,7 +17,7 @@ export function Join() {
   return (
     <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 16, textAlign: "center" }}>
       <p>
-        Opening the séance… <a href={target} style={{ color: "#88bbff" }}>Tap here if nothing happens</a>.
+        Opening the séance… <a href={target} style={{ color: "#00e5ff" }}>Tap here if nothing happens</a>.
       </p>
     </main>
   );

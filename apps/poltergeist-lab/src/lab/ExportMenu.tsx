@@ -144,9 +144,9 @@ export function ExportMenu({ experimentId, channels, verdict, inputs }: ExportMe
 
 const btnStyle: React.CSSProperties = {
   padding: "6px 16px",
-  background: "#1a1a2e",
-  border: "1px solid #334",
-  color: "#aab",
+  background: "#1a0a2e",
+  border: "1px solid #3d2466",
+  color: "#c9bfe6",
   borderRadius: 4,
   cursor: "pointer",
   fontSize: 12,

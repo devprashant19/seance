@@ -9,8 +9,8 @@
 | **B1** | Possession view frame rate | 60 fps sustained (p5 ≥ 55 fps) | not measured | — | Measure with the Performance panel on a mid-range laptop |
 | **B2** | Phone → screen latency (Wi-Fi) | < 150 ms median | not measured | — | Measure with clock-synced timestamps (phone-bridge test plan) |
 | **B2** | Phone → screen latency (hotspot) | < 150 ms median | not measured | — | Same method over a phone hotspot |
-| **B3** | Phone join route JS (gzip) | ≤ 50 kB gzip before the Begin tap | **3.27 kB gzip JS** (join 1.98 + phone-samples 0.55 + relay-url 0.30 + preload polyfill 0.44) + 1.39 kB HTML, measured from `pnpm build` on 2026-11-25 | **PASS** | `join.html` streams with the real phone-bridge protocol (`encodeBatch`, gyro rad/s, orientation rad) and loads no React |
-| **B3** | Landing route JS (gzip) | ≤ 250 kB gzip | **89.60 kB gzip** (Landing + React + app shell) | **PASS** | |
+| **B3** | Phone join route JS (gzip) | ≤ 50 kB gzip before the Join tap | **3.38 kB gzip JS** + 2.69 kB gzip HTML (name entry, instrument picker, protocol streaming), measured from `pnpm build` on 2026-11-25. The 3D ghost (three.js 125.33 kB + ghost module 6.94 kB gzip) is fetched only **after** joining | **PASS** | Fonts load from Google Fonts with `display=swap` (not counted; page renders with system fonts first) |
+| **B3** | Landing route JS (gzip) | ≤ 250 kB gzip | **104.0 kB gzip** before the 3D ghost (Landing 15.91 + React 69.21 + router 13.83 + app shell 2.83 + theme CSS 2.22), measured 2026-11-25; the 3D ghost then streams in lazily (three.js 125.33 + ghost 9.08 kB gzip) | **PASS** | three.js is code-split; the page is usable while it loads |
 | **B4** | Time to first ghost | Tap → ghost active ≤ 5 s | not measured | — | Time it in the hallway test |
 
 ## Bundle Breakdown (Production Build)

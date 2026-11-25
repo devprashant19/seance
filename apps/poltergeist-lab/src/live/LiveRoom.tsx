@@ -20,13 +20,28 @@ const RETRY_MS = 3000;
 const RESUME_ANNOUNCE_MS = 750;
 
 export type RoomStatus = "idle" | "connecting" | "ready" | "error";
+
+export interface Player {
+  readonly id: string;
+  /** Name typed on the phone; undefined until the phone's "ready" arrives (or if left blank). */
+  readonly name: string | undefined;
+}
+
+/** Display label for a player: their name, or "Spirit N" by join order. */
+export function playerLabel(players: readonly Player[], id: string): string {
+  const i = players.findIndex((p) => p.id === id);
+  const p = players[i];
+  return p?.name ?? `Spirit ${i >= 0 ? i + 1 : "?"}`;
+}
 type BatchListener = (peerId: string, batch: DecodedBatch) => void;
 
 export interface LiveRoom {
   readonly status: RoomStatus;
   readonly code: string | null;
-  /** Phones currently streaming into the room. */
+  /** Phones currently in the room (ids), in join order. */
   readonly phones: readonly string[];
+  /** Same phones with their players' names. */
+  readonly players: readonly Player[];
   /** Time (ms) of the most recent *new* phone join; 0 if none yet. */
   readonly lastJoinAt: number;
   readonly error: string | null;
@@ -43,13 +58,15 @@ const Ctx = createContext<LiveRoom | null>(null);
 export function LiveRoomProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<RoomStatus>("idle");
   const [code, setCode] = useState<string | null>(null);
-  const [phones, setPhones] = useState<readonly string[]>([]);
+  const [players, setPlayers] = useState<readonly Player[]>([]);
+  const phones = useMemo(() => players.map((p) => p.id), [players]);
   const [lastJoinAt, setLastJoinAt] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const closeRef = useRef<(() => void) | null>(null);
   const listenersRef = useRef(new Set<BatchListener>());
   const resumedAtRef = useRef(0);
+  const knownRef = useRef(new Set<string>());
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const connect = useCallback((fresh: boolean) => {
@@ -58,7 +75,8 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
     if (fresh) clearHostSession();
     setStatus("connecting");
     setError(null);
-    setPhones([]);
+    setPlayers([]);
+    knownRef.current = new Set();
     const resume = loadHostSession();
 
     closeRef.current = openHost(
@@ -69,12 +87,25 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
           setStatus("ready");
           resumedAtRef.current = resumed ? Date.now() : 0;
         },
-        onPeerJoined: (peerId) => {
-          setPhones((p) => (p.includes(peerId) ? p : [...p, peerId]));
+        onPeerJoined: (peerId, _caps, name) => {
+          const known = knownRef.current.has(peerId);
+          knownRef.current.add(peerId);
+          setPlayers((list) => {
+            const i = list.findIndex((p) => p.id === peerId);
+            if (i < 0) return [...list, { id: peerId, name }];
+            if (!name || list[i]!.name === name) return list;
+            const next = [...list];
+            next[i] = { id: peerId, name };
+            return next;
+          });
+          if (known) return; // re-announcement (e.g. the player's name arrived), not a new join
           const isResumeAnnounce = resumedAtRef.current > 0 && Date.now() - resumedAtRef.current < RESUME_ANNOUNCE_MS;
           if (!isResumeAnnounce) setLastJoinAt(Date.now());
         },
-        onPeerLeft: (peerId) => setPhones((p) => p.filter((id) => id !== peerId)),
+        onPeerLeft: (peerId) => {
+          knownRef.current.delete(peerId);
+          setPlayers((list) => list.filter((p) => p.id !== peerId));
+        },
         onBatch: (peerId, batch) => {
           for (const l of listenersRef.current) l(peerId, batch);
         },
@@ -122,6 +153,7 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
       status,
       code,
       phones,
+      players,
       lastJoinAt,
       error,
       acquire,
@@ -129,7 +161,7 @@ export function LiveRoomProvider({ children }: { children: ReactNode }) {
       retry: () => connect(false),
       newRoom: () => connect(true),
     }),
-    [status, code, phones, lastJoinAt, error, acquire, subscribe, connect],
+    [status, code, phones, players, lastJoinAt, error, acquire, subscribe, connect],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

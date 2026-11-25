@@ -118,13 +118,13 @@ export function GateRoute(): React.ReactElement {
   };
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1rem", color: "#e6edf3", fontFamily: "monospace" }}>
+    <div style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1rem", color: "#eee8ff", fontFamily: "monospace" }}>
       <header style={{ marginBottom: "1.5rem" }}>
-        <Link to="/" style={{ color: "#58a6ff", textDecoration: "none" }}>&larr; Back to Lab</Link>
-        <h1 style={{ fontSize: "1.8rem", margin: "0.5rem 0 0.25rem", color: "#f0f6fc" }}>
+        <Link to="/" style={{ color: "#00e5ff", textDecoration: "none" }}>&larr; Back to Lab</Link>
+        <h1 style={{ fontSize: "1.8rem", margin: "0.5rem 0 0.25rem", color: "#f5f0ff" }}>
           Apparition Gate
         </h1>
-        <p style={{ color: "#8b949e", margin: 0 }}>
+        <p style={{ color: "#b4a9d6", margin: 0 }}>
           Contactless optical photogate & tachometer (Runs laptop-only with your camera)
         </p>
       </header>
@@ -135,9 +135,9 @@ export function GateRoute(): React.ReactElement {
           onClick={() => setMode("period")}
           style={{
             padding: "0.5rem 1rem",
-            background: mode === "period" ? "#238636" : "#21262d",
+            background: mode === "period" ? "#00b377" : "#1f0a35",
             color: "#fff",
-            border: "1px solid #30363d",
+            border: "1px solid #3d2466",
             borderRadius: 6,
             cursor: "pointer",
           }}
@@ -148,9 +148,9 @@ export function GateRoute(): React.ReactElement {
           onClick={() => setMode("speed")}
           style={{
             padding: "0.5rem 1rem",
-            background: mode === "speed" ? "#238636" : "#21262d",
+            background: mode === "speed" ? "#00b377" : "#1f0a35",
             color: "#fff",
-            border: "1px solid #30363d",
+            border: "1px solid #3d2466",
             borderRadius: 6,
             cursor: "pointer",
           }}
@@ -161,9 +161,9 @@ export function GateRoute(): React.ReactElement {
           onClick={() => setMode("rpm")}
           style={{
             padding: "0.5rem 1rem",
-            background: mode === "rpm" ? "#238636" : "#21262d",
+            background: mode === "rpm" ? "#00b377" : "#1f0a35",
             color: "#fff",
-            border: "1px solid #30363d",
+            border: "1px solid #3d2466",
             borderRadius: 6,
             cursor: "pointer",
           }}
@@ -174,10 +174,10 @@ export function GateRoute(): React.ReactElement {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
         {/* Gate Visualizer */}
-        <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 8, padding: "1rem" }}>
+        <div style={{ background: "#140726", border: "1px solid #3d2466", borderRadius: 8, padding: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.9rem", color: "#8b949e" }}>Status: {status}</span>
-            <span style={{ fontSize: "0.9rem", color: "#8b949e" }}>FPS: {fps}</span>
+            <span style={{ fontSize: "0.9rem", color: "#b4a9d6" }}>Status: {status}</span>
+            <span style={{ fontSize: "0.9rem", color: "#b4a9d6" }}>FPS: {fps}</span>
           </div>
 
           <div
@@ -185,8 +185,8 @@ export function GateRoute(): React.ReactElement {
               position: "relative",
               width: "100%",
               height: 240,
-              background: "#0d1117",
-              border: "1px dashed #30363d",
+              background: "#0e0420",
+              border: "1px dashed #3d2466",
               borderRadius: 6,
               overflow: "hidden",
             }}
@@ -199,13 +199,13 @@ export function GateRoute(): React.ReactElement {
                 top: `${roi1.y * 100}%`,
                 width: `${roi1.width * 100}%`,
                 height: `${roi1.height * 100}%`,
-                border: "2px solid #58a6ff",
+                border: "2px solid #00e5ff",
                 background: "rgba(88, 166, 255, 0.15)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "0.75rem",
-                color: "#58a6ff",
+                color: "#00e5ff",
               }}
             >
               Gate 1
@@ -220,13 +220,13 @@ export function GateRoute(): React.ReactElement {
                   top: `${roi2.y * 100}%`,
                   width: `${roi2.width * 100}%`,
                   height: `${roi2.height * 100}%`,
-                  border: "2px solid #3fb950",
+                  border: "2px solid #00ff99",
                   background: "rgba(63, 185, 80, 0.15)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "0.75rem",
-                  color: "#3fb950",
+                  color: "#00ff99",
                 }}
               >
                 Gate 2
@@ -240,7 +240,7 @@ export function GateRoute(): React.ReactElement {
               disabled={isCalibrating}
               style={{
                 padding: "0.5rem 1rem",
-                background: isCalibrating ? "#8b949e" : "#1f6feb",
+                background: isCalibrating ? "#b4a9d6" : "#008a99",
                 color: "#fff",
                 border: "none",
                 borderRadius: 6,
@@ -253,18 +253,18 @@ export function GateRoute(): React.ReactElement {
         </div>
 
         {/* Readout & Verdict */}
-        <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: 8, padding: "1.5rem" }}>
-          <h2 style={{ fontSize: "1.1rem", margin: "0 0 1rem", color: "#f0f6fc" }}>
+        <div style={{ background: "#140726", border: "1px solid #3d2466", borderRadius: 8, padding: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.1rem", margin: "0 0 1rem", color: "#f5f0ff" }}>
             Optical Measurement
           </h2>
 
           {mode === "period" && (
             <div>
-              <p style={{ color: "#8b949e", fontSize: "0.9rem" }}>Pendulum Period (T)</p>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#58a6ff", margin: "0.5rem 0" }}>
+              <p style={{ color: "#b4a9d6", fontSize: "0.9rem" }}>Pendulum Period (T)</p>
+              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#00e5ff", margin: "0.5rem 0" }}>
                 {periodRes ? `${periodRes.period.toFixed(3)} ± ${periodRes.unc.toFixed(3)} s` : "Waiting for swing..."}
               </div>
-              <p style={{ fontSize: "0.85rem", color: "#8b949e" }}>
+              <p style={{ fontSize: "0.85rem", color: "#b4a9d6" }}>
                 Method: Successive optical same-direction crossings with linear sub-frame interpolation.
               </p>
             </div>
@@ -272,11 +272,11 @@ export function GateRoute(): React.ReactElement {
 
           {mode === "speed" && (
             <div>
-              <p style={{ color: "#8b949e", fontSize: "0.9rem" }}>Velocity (v = d / Δt)</p>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#3fb950", margin: "0.5rem 0" }}>
+              <p style={{ color: "#b4a9d6", fontSize: "0.9rem" }}>Velocity (v = d / Δt)</p>
+              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#00ff99", margin: "0.5rem 0" }}>
                 {speedRes ? `${speedRes.speed.toFixed(2)} ± ${speedRes.unc.toFixed(2)} m/s` : "Roll marble across Gate 1 & 2..."}
               </div>
-              <p style={{ fontSize: "0.85rem", color: "#8b949e" }}>
+              <p style={{ fontSize: "0.85rem", color: "#b4a9d6" }}>
                 Gate separation: 0.200 ± 0.002 m. Uncertainty propagated non-linearly.
               </p>
             </div>
@@ -284,14 +284,14 @@ export function GateRoute(): React.ReactElement {
 
           {mode === "rpm" && (
             <div>
-              <p style={{ color: "#8b949e", fontSize: "0.9rem" }}>Rotation Speed</p>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#d29922", margin: "0.5rem 0" }}>
+              <p style={{ color: "#b4a9d6", fontSize: "0.9rem" }}>Rotation Speed</p>
+              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#ffe066", margin: "0.5rem 0" }}>
                 {rpmRes ? `${rpmRes.rpm.toFixed(0)} rpm` : "Point camera at fan or wheel..."}
               </div>
               {rpmRes?.isAliased && (
-                <div style={{ background: "#381804", border: "1px solid #d29922", padding: "0.75rem", borderRadius: 6, marginTop: "0.75rem" }}>
-                  <strong style={{ color: "#f0883e" }}>Stroboscopic Nyquist Aliasing</strong>
-                  <p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0", color: "#e6edf3" }}>
+                <div style={{ background: "#381804", border: "1px solid #ffe066", padding: "0.75rem", borderRadius: 6, marginTop: "0.75rem" }}>
+                  <strong style={{ color: "#ff7a00" }}>Stroboscopic Nyquist Aliasing</strong>
+                  <p style={{ fontSize: "0.85rem", margin: "0.25rem 0 0", color: "#eee8ff" }}>
                     {rpmRes.warning}
                   </p>
                 </div>

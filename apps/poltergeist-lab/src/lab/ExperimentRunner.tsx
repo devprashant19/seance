@@ -175,13 +175,13 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
   return (
     <div style={{ maxWidth: 560, margin: "0 auto", padding: 16 }}>
       <h2 style={{ fontSize: 22, fontWeight: 300, marginBottom: 4 }}>{experiment.name}</h2>
-      <p style={{ fontSize: 13, color: "#889", marginBottom: 20 }}>{experiment.plain}</p>
+      <p style={{ fontSize: 13, color: "#b4a9d6", marginBottom: 20 }}>{experiment.plain}</p>
 
       {experiment.safetyNote && state === "SETUP" && (
         <div style={{
           padding: "10px 14px", background: "rgba(200,160,50,0.08)",
           border: "1px solid rgba(200,160,50,0.2)", borderRadius: 6,
-          fontSize: 13, color: "#ca8", marginBottom: 16,
+          fontSize: 13, color: "#ffe066", marginBottom: 16,
         }}>
           ⚠ {experiment.safetyNote}
         </div>
@@ -198,18 +198,18 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
       {state === "READY_CHECK" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 16, marginBottom: 16 }}>Ready to record?</p>
-          <p style={{ fontSize: 13, color: "#889", marginBottom: 12 }}>
+          <p style={{ fontSize: 13, color: "#b4a9d6", marginBottom: 12 }}>
             Recording lasts {RECORD_DURATION_MS / 1000} seconds. Hold the phone steady or perform the experiment motion.
           </p>
-          <p role="status" style={{ fontSize: 13, marginBottom: 20, color: liveStatus === "live" ? "#6c9" : "#ca8" }}>
+          <p role="status" style={{ fontSize: 13, marginBottom: 20, color: liveStatus === "live" ? "#00ff99" : "#ffe066" }}>
             {liveStatus === "live" && "Phone connected — live data is streaming."}
             {liveStatus === "waiting-phone" && `No phone yet — scan the QR on the home page (room ${room.code ?? "…"}), or use Replay.`}
             {liveStatus === "connecting" && "Connecting to the séance…"}
             {liveStatus === "error" && "Can't reach the séance server — retrying… (Replay works offline.)"}
           </p>
           <button onClick={handleStartRecording} disabled={liveStatus !== "live"} style={{
-            padding: "12px 32px", background: "#223355", border: "1px solid #446",
-            color: "#ccd", borderRadius: 6, cursor: liveStatus === "live" ? "pointer" : "not-allowed", fontSize: 16,
+            padding: "12px 32px", background: "#2a0a4a", border: "1px solid #5a2d8c",
+            color: "#e6e0ff", borderRadius: 6, cursor: liveStatus === "live" ? "pointer" : "not-allowed", fontSize: 16,
             opacity: liveStatus === "live" ? 1 : 0.5,
           }}>Begin Recording</button>
         </div>
@@ -217,11 +217,11 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
 
       {state === "RECORDING" && (
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: 18, marginBottom: 12, color: "#aabbff" }}>Recording...</p>
-          <div style={{ width: "100%", height: 6, background: "#1a1a2e", borderRadius: 3, marginBottom: 16 }}>
+          <p style={{ fontSize: 18, marginBottom: 12, color: "#00ffff" }}>Recording...</p>
+          <div style={{ width: "100%", height: 6, background: "#1a0a2e", borderRadius: 3, marginBottom: 16 }}>
             <div style={{
               width: `${progress * 100}%`, height: "100%",
-              background: "#6688ff", borderRadius: 3, transition: "width 0.1s",
+              background: "#ff00ff", borderRadius: 3, transition: "width 0.1s",
             }} />
           </div>
           <LiveChart data={chartData} label="signal" unit="SI" />
@@ -230,7 +230,7 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
 
       {state === "ANALYZING" && (
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: 18, color: "#889" }}>The oracle deliberates...</p>
+          <p style={{ fontSize: 18, color: "#b4a9d6" }}>The oracle deliberates...</p>
         </div>
       )}
 
@@ -270,14 +270,14 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
               setDiagnoses(diagnoseDiscrepancies(facts));
               setShowSpirit(true);
             }} style={{
-              padding: "10px 24px", background: "#1a1a3e", border: "1px solid #558",
-              color: "#aabbff", borderRadius: 6, cursor: "pointer", fontSize: 14,
+              padding: "10px 24px", background: "#1f0a35", border: "1px solid #558",
+              color: "#00ffff", borderRadius: 6, cursor: "pointer", fontSize: 14,
               alignSelf: "flex-start",
             }}>Ask the Spirit</button>
           )}
           <button onClick={() => setShowNotebook(true)} style={{
-            padding: "10px 24px", background: "#1a1a3e", border: "1px solid #446",
-            color: "#aabbdd", borderRadius: 6, cursor: "pointer", fontSize: 14,
+            padding: "10px 24px", background: "#1f0a35", border: "1px solid #5a2d8c",
+            color: "#c9bfe6", borderRadius: 6, cursor: "pointer", fontSize: 14,
             alignSelf: "flex-start",
           }}>Write it up (Lab Report)</button>
           <UncertaintyBudget budget={budget} dominantName={verdict.dominantTerm.name} />
@@ -288,8 +288,8 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
             inputs={inputs}
           />
           <button onClick={handleReset} style={{
-            padding: "10px 24px", background: "#1a1a2e", border: "1px solid #334",
-            color: "#aab", borderRadius: 6, cursor: "pointer", fontSize: 14,
+            padding: "10px 24px", background: "#1a0a2e", border: "1px solid #3d2466",
+            color: "#c9bfe6", borderRadius: 6, cursor: "pointer", fontSize: 14,
           }}>Run Again</button>
         </div>
       )}
@@ -298,8 +298,8 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 16, color: "#f66", marginBottom: 12 }}>{errorMsg}</p>
           <button onClick={handleReset} style={{
-            padding: "10px 24px", background: "#223", border: "1px solid #446",
-            color: "#ccd", borderRadius: 6, cursor: "pointer",
+            padding: "10px 24px", background: "#2d1b4e", border: "1px solid #5a2d8c",
+            color: "#e6e0ff", borderRadius: 6, cursor: "pointer",
           }}>Try Again</button>
         </div>
       )}

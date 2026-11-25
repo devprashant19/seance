@@ -16,7 +16,7 @@ export function LiveChart({
   unit,
   width = 400,
   height = 160,
-  color = "#6688ff",
+  color = "#ff00ff",
   maxPoints = 200,
 }: LiveChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +30,7 @@ export function LiveChart({
     const visible = data.length > maxPoints ? data.slice(-maxPoints) : data;
     if (visible.length < 2) {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#555";
+      ctx.fillStyle = "#76679f";
       ctx.font = "12px system-ui";
       ctx.fillText("Waiting for data...", 10, height / 2);
       return;
@@ -47,7 +47,7 @@ export function LiveChart({
 
     ctx.clearRect(0, 0, width, height);
 
-    ctx.strokeStyle = "#222";
+    ctx.strokeStyle = "#1f0a35";
     ctx.lineWidth = 0.5;
     const zeroY = height - ((0 - (minV - pad)) / (range + 2 * pad)) * height;
     if (zeroY > 0 && zeroY < height) {
@@ -68,7 +68,7 @@ export function LiveChart({
     }
     ctx.stroke();
 
-    ctx.fillStyle = "#889";
+    ctx.fillStyle = "#b4a9d6";
     ctx.font = "11px system-ui";
     ctx.fillText(`${label} (${unit})`, 4, 14);
     ctx.fillText(`${visible[visible.length - 1]!.v.toFixed(2)}`, width - 50, 14);
@@ -80,7 +80,7 @@ export function LiveChart({
       width={width}
       height={height}
       style={{
-        width, height, background: "#0d0d1f", borderRadius: 6, border: "1px solid #223",
+        width, height, background: "#0d0d1f", borderRadius: 6, border: "1px solid #2d1b4e",
       }}
     />
   );

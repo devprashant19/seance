@@ -55,7 +55,7 @@ export function InputsForm({ specs, onSubmit }: InputsFormProps) {
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {specs.map((spec) => (
         <label key={spec.key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontSize: 13, color: "#aab" }}>
+          <span style={{ fontSize: 13, color: "#c9bfe6" }}>
             {spec.label} ({spec.unit})
           </span>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -67,14 +67,14 @@ export function InputsForm({ specs, onSubmit }: InputsFormProps) {
               style={{
                 flex: 1,
                 padding: "6px 10px",
-                background: "#1a1a2e",
-                border: errors[spec.key] ? "1px solid #a44" : "1px solid #334",
+                background: "#1a0a2e",
+                border: errors[spec.key] ? "1px solid #a44" : "1px solid #3d2466",
                 borderRadius: 4,
-                color: "#ddd",
+                color: "#eee8ff",
                 fontSize: 14,
               }}
             />
-            <span style={{ fontSize: 12, color: "#667", minWidth: 40 }}>{spec.unit}</span>
+            <span style={{ fontSize: 12, color: "#8a7bb5", minWidth: 40 }}>{spec.unit}</span>
           </div>
           {errors[spec.key] && (
             <span style={{ fontSize: 11, color: "#f66" }}>{errors[spec.key]}</span>
@@ -87,9 +87,9 @@ export function InputsForm({ specs, onSubmit }: InputsFormProps) {
         style={{
           marginTop: 8,
           padding: "10px 24px",
-          background: Object.keys(errors).length > 0 ? "#222" : "#223355",
-          border: "1px solid #446",
-          color: "#ccd",
+          background: Object.keys(errors).length > 0 ? "#1f0a35" : "#2a0a4a",
+          border: "1px solid #5a2d8c",
+          color: "#e6e0ff",
           borderRadius: 6,
           cursor: Object.keys(errors).length > 0 ? "not-allowed" : "pointer",
           fontSize: 14,

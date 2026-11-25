@@ -80,7 +80,7 @@ function downloadBlob(content: string, filename: string, mime: string) {
 function DataPreviewTable({ channels }: { channels: readonly ChannelData[] }) {
   const primary = channels[0];
   if (!primary || primary.samples.length === 0) {
-    return <p style={{ color: "#889", fontStyle: "italic" }}>No data recorded.</p>;
+    return <p style={{ color: "#b4a9d6", fontStyle: "italic" }}>No data recorded.</p>;
   }
 
   const samples = primary.samples;
@@ -117,7 +117,7 @@ function DataPreviewTable({ channels }: { channels: readonly ChannelData[] }) {
         {head.map(renderRow)}
         {showEllipsis && (
           <tr>
-            <td colSpan={axes + 1} style={{ ...cellStyle, textAlign: "center", color: "#667" }}>
+            <td colSpan={axes + 1} style={{ ...cellStyle, textAlign: "center", color: "#8a7bb5" }}>
               ... {samples.length - previewCount * 2} rows omitted ...
             </td>
           </tr>
@@ -177,8 +177,8 @@ export function NotebookView({
 
         {/* Title */}
         <h1 style={h1Style}>{experimentName}</h1>
-        <p style={{ fontStyle: "italic", color: "#a9b4c8", fontSize: 15, marginBottom: 4 }}>{spookyTitle}</p>
-        <p style={{ fontSize: 12, color: "#778", marginBottom: 24 }}>
+        <p style={{ fontStyle: "italic", color: "#b4a9d6", fontSize: 15, marginBottom: 4 }}>{spookyTitle}</p>
+        <p style={{ fontSize: 12, color: "#9d8fc4", marginBottom: 24 }}>
           {dateStr} at {timeStr} {deviceInfo ? `· ${deviceInfo}` : ""} {"·"} Experiment: {experimentId}
         </p>
 
@@ -199,7 +199,7 @@ export function NotebookView({
           ))}
         </ul>
         {safetyNote && (
-          <p style={{ fontSize: 12, color: "#ca8", marginTop: 8 }}>Safety: {safetyNote}</p>
+          <p style={{ fontSize: 12, color: "#ffe066", marginTop: 8 }}>Safety: {safetyNote}</p>
         )}
 
         {/* Method */}
@@ -217,7 +217,7 @@ export function NotebookView({
           {totalSamples} samples across {channels.length} channel{channels.length !== 1 ? "s" : ""}.
         </p>
         <DataPreviewTable channels={channels} />
-        <p style={{ fontSize: 11, color: "#667", marginTop: 4 }}>Full data available via CSV export.</p>
+        <p style={{ fontSize: 11, color: "#8a7bb5", marginTop: 4 }}>Full data available via CSV export.</p>
 
         <hr style={dividerStyle} />
 
@@ -228,15 +228,15 @@ export function NotebookView({
         </p>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
-            <span style={{ fontSize: 11, color: "#667" }}>Percent Error</span>
+            <span style={{ fontSize: 11, color: "#8a7bb5" }}>Percent Error</span>
             <p style={{ fontSize: 16, fontFamily: "monospace" }}>{verdict.percentError.toFixed(2)}%</p>
           </div>
           <div>
-            <span style={{ fontSize: 11, color: "#667" }}>z-score</span>
+            <span style={{ fontSize: 11, color: "#8a7bb5" }}>z-score</span>
             <p style={{ fontSize: 16, fontFamily: "monospace" }}>{verdict.z.toFixed(2)}</p>
           </div>
           <div>
-            <span style={{ fontSize: 11, color: "#667" }}>Confidence</span>
+            <span style={{ fontSize: 11, color: "#8a7bb5" }}>Confidence</span>
             <p style={{ fontSize: 14, textTransform: "capitalize" }}>{verdict.confidence}</p>
           </div>
         </div>
@@ -267,7 +267,7 @@ export function NotebookView({
         )}
         {verdict.causes.length > 0 && (
           <div>
-            <h3 style={{ fontSize: 14, color: "#889", marginBottom: 8 }}>Diagnostics</h3>
+            <h3 style={{ fontSize: 14, color: "#b4a9d6", marginBottom: 8 }}>Diagnostics</h3>
             <ul style={{ paddingLeft: 24, fontSize: 13 }}>
               {verdict.causes.map((c, i) => (
                 <li key={i} style={{ marginBottom: 4 }}>
@@ -283,7 +283,7 @@ export function NotebookView({
 
         {/* Conclusion */}
         <h2 style={h2Style}>Conclusion</h2>
-        <blockquote style={{ borderLeft: "3px solid #446", paddingLeft: 16, fontStyle: "italic", color: "#a9b4c8", margin: "0 0 8px 0" }}>
+        <blockquote style={{ borderLeft: "3px solid #5a2d8c", paddingLeft: 16, fontStyle: "italic", color: "#b4a9d6", margin: "0 0 8px 0" }}>
           {verdict.spooky}
         </blockquote>
         <p style={bodyStyle}>{verdict.plain}</p>
@@ -296,7 +296,7 @@ export function NotebookView({
 
         {/* Appendix */}
         <h2 style={h2Style}>Appendix</h2>
-        <ul style={{ ...bodyStyle, paddingLeft: 24, fontSize: 12, color: "#778" }}>
+        <ul style={{ ...bodyStyle, paddingLeft: 24, fontSize: 12, color: "#9d8fc4" }}>
           <li>Generated: {now.toISOString()}</li>
           <li>Experiment ID: {experimentId}</li>
           <li>Verdict tier: {verdict.tier}</li>
@@ -328,9 +328,9 @@ const reportStyle: React.CSSProperties = {
   margin: "0 auto",
   padding: 32,
   background: "#0f1020",
-  border: "1px solid #223",
+  border: "1px solid #2d1b4e",
   borderRadius: 12,
-  color: "#ccd4e0",
+  color: "#e6e0ff",
   fontFamily: "Georgia, 'Times New Roman', serif",
   lineHeight: 1.7,
 };
@@ -366,9 +366,9 @@ const dividerStyle: React.CSSProperties = {
 
 const actionBtnStyle: React.CSSProperties = {
   padding: "8px 20px",
-  background: "#1a1a3e",
-  border: "1px solid #446",
-  color: "#aabbdd",
+  background: "#1f0a35",
+  border: "1px solid #5a2d8c",
+  color: "#c9bfe6",
   borderRadius: 6,
   cursor: "pointer",
   fontSize: 13,
@@ -394,14 +394,14 @@ const printStyles = `
     color: black !important;
   }
   .notebook-report p, .notebook-report li, .notebook-report td, .notebook-report th {
-    color: #222 !important;
+    color: #1f0a35 !important;
   }
   .notebook-report blockquote {
-    color: #333 !important;
-    border-left-color: #999 !important;
+    color: #2d1b4e !important;
+    border-left-color: #b0a6cc !important;
   }
   .notebook-report hr {
-    border-top-color: #ccc !important;
+    border-top-color: #e6e0ff !important;
   }
   .notebook-no-print {
     display: none !important;

@@ -69,14 +69,14 @@ export function ReplayController({ traceId }: { traceId?: string }) {
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
       <div style={{
         display: "inline-flex", alignItems: "center", gap: 8,
-        padding: "4px 12px", background: "rgba(100,140,255,0.1)",
-        borderRadius: 20, marginBottom: 16, fontSize: 12, color: "#889",
+        padding: "4px 12px", background: "rgba(0,255,255,0.1)",
+        borderRadius: 20, marginBottom: 16, fontSize: 12, color: "#b4a9d6",
       }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#6688ff", opacity: 0.6 }} />
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff00ff", opacity: 0.6 }} />
         Recorded {selectedEntry?.device ?? "device"} · Replay
       </div>
 
-      {playState === "loading" && <p style={{ color: "#889" }}>Loading trace...</p>}
+      {playState === "loading" && <p style={{ color: "#b4a9d6" }}>Loading trace...</p>}
 
       {playState === "error" && (
         <div>
@@ -88,13 +88,13 @@ export function ReplayController({ traceId }: { traceId?: string }) {
       {manifest && (playState === "ready" || playState === "playing" || playState === "paused" || playState === "done") && (
         <>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, color: "#667", marginBottom: 4, display: "block" }}>Trace</label>
+            <label style={{ fontSize: 12, color: "#8a7bb5", marginBottom: 4, display: "block" }}>Trace</label>
             <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
               style={{
-                padding: "6px 10px", background: "#1a1a2e", border: "1px solid #334",
-                borderRadius: 4, color: "#ddd", fontSize: 13, width: "100%",
+                padding: "6px 10px", background: "#1a0a2e", border: "1px solid #3d2466",
+                borderRadius: 4, color: "#eee8ff", fontSize: 13, width: "100%",
               }}
             >
               {manifest.traces.map((t) => (
@@ -131,6 +131,6 @@ export function ReplayController({ traceId }: { traceId?: string }) {
 }
 
 const btnStyle: React.CSSProperties = {
-  padding: "6px 16px", background: "#1a1a2e", border: "1px solid #334",
-  color: "#aab", borderRadius: 4, cursor: "pointer", fontSize: 12,
+  padding: "6px 16px", background: "#1a0a2e", border: "1px solid #3d2466",
+  color: "#c9bfe6", borderRadius: 4, cursor: "pointer", fontSize: 12,
 };

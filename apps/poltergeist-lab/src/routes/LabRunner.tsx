@@ -11,10 +11,10 @@ export function LabRunner() {
       <main style={{
         minHeight: "100vh", display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
-        background: "#0a0a1a", padding: 24,
+        background: "#090310", padding: 24,
       }}>
         <p style={{ fontSize: 18, marginBottom: 16 }}>Experiment not found.</p>
-        <Link to="/lab" style={{ color: "#6688ff", fontSize: 14 }}>← Back to experiments</Link>
+        <Link to="/lab" style={{ color: "#ff00ff", fontSize: 14 }}>← Back to experiments</Link>
       </main>
     );
   }
@@ -22,10 +22,10 @@ export function LabRunner() {
   return (
     <main style={{
       minHeight: "100vh", padding: 24,
-      background: "radial-gradient(ellipse at center, #12122a 0%, #0a0a1a 70%)",
+      background: "transparent",
     }}>
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
-        <Link to="/lab" style={{ color: "#667", fontSize: 13, textDecoration: "none", marginBottom: 16, display: "block" }}>
+        <Link to="/lab" style={{ color: "#8a7bb5", fontSize: 13, textDecoration: "none", marginBottom: 16, display: "block" }}>
           ← All experiments
         </Link>
         <ExperimentRunner experiment={experiment} />

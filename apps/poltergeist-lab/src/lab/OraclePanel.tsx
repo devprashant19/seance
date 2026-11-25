@@ -17,26 +17,26 @@ export function OraclePanel({ verdict }: { verdict: Verdict }) {
       borderRadius: 12, boxShadow: style.glow, maxWidth: 480,
     }}>
       <h3 style={{ fontSize: 20, fontWeight: 400, marginBottom: 4 }}>{verdict.spooky}</h3>
-      <p style={{ fontSize: 13, color: "#889", marginBottom: 16 }}>{verdict.plain}</p>
+      <p style={{ fontSize: 13, color: "#b4a9d6", marginBottom: 16 }}>{verdict.plain}</p>
 
       <div style={{ display: "flex", gap: 24, marginBottom: 16, flexWrap: "wrap" }}>
         <div>
-          <span style={{ fontSize: 11, color: "#667" }}>Error</span>
+          <span style={{ fontSize: 11, color: "#8a7bb5" }}>Error</span>
           <p style={{ fontSize: 18, fontFamily: "monospace" }}>{verdict.percentError.toFixed(2)}%</p>
         </div>
         <div>
-          <span style={{ fontSize: 11, color: "#667" }}>z-score</span>
+          <span style={{ fontSize: 11, color: "#8a7bb5" }}>z-score</span>
           <p style={{ fontSize: 18, fontFamily: "monospace" }}>{verdict.z.toFixed(2)}</p>
         </div>
         <div>
-          <span style={{ fontSize: 11, color: "#667" }}>Confidence</span>
+          <span style={{ fontSize: 11, color: "#8a7bb5" }}>Confidence</span>
           <p style={{ fontSize: 14, textTransform: "capitalize" }}>{verdict.confidence}</p>
         </div>
       </div>
 
       {verdict.causes.length > 0 && (
         <div>
-          <h4 style={{ fontSize: 13, color: "#889", marginBottom: 8 }}>Diagnostics</h4>
+          <h4 style={{ fontSize: 13, color: "#b4a9d6", marginBottom: 8 }}>Diagnostics</h4>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {verdict.causes.map((c, i) => (
               <li key={i} style={{
@@ -45,7 +45,7 @@ export function OraclePanel({ verdict }: { verdict: Verdict }) {
                 borderRadius: 6, fontSize: 13,
               }}>
                 <p style={{ marginBottom: 2 }}>{c.spooky}</p>
-                <p style={{ color: "#889", fontSize: 12 }}>{c.plain}</p>
+                <p style={{ color: "#b4a9d6", fontSize: 12 }}>{c.plain}</p>
                 <p style={{ color: "#6a8", fontSize: 12, marginTop: 4 }}>Fix: {c.fix}</p>
               </li>
             ))}
@@ -64,7 +64,7 @@ export function OraclePanel({ verdict }: { verdict: Verdict }) {
           background: "#1c2b3a",
           border: "1px solid #3a5070",
           borderRadius: 6,
-          color: "#b0d0ff",
+          color: "#7ffcff",
           cursor: "pointer",
           fontSize: 13,
           display: "inline-flex",

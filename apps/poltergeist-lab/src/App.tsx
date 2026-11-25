@@ -44,7 +44,7 @@ const HomePage = lazy(() =>
 
 function RouteFallback() {
   return (
-    <div style={{ padding: "2rem", color: "#888", textAlign: "center" }}>
+    <div style={{ padding: "2rem", color: "#b0a6cc", textAlign: "center" }}>
       Summoning...
     </div>
   );

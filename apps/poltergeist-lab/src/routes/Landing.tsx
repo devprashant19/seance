@@ -1,21 +1,49 @@
-import { useState, useEffect, useCallback, useRef, type CSSProperties } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SpiritTrouble, QrCode } from "seance-avatars";
-import { useLiveRoom } from "../live/LiveRoom.js";
+import { SpiritTrouble, QrCode, Ghost, playerNeon } from "seance-avatars";
+import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
+import { ShakeTrigger } from "../live/shake.js";
+
+interface Feature {
+  readonly to: string;
+  readonly icon: string;
+  readonly title: string;
+  readonly what: string;
+  /** Opens a different app (full page load) instead of an in-app route. */
+  readonly external?: boolean;
+}
+
+const FEATURES: readonly Feature[] = [
+  { to: "/lab", icon: "🧪", title: "Physics Lab", what: "9 experiments with your phone: gravity, free fall, spin… the Oracle checks your result." },
+  { to: "/choir/", icon: "🎤", title: "Banshee Choir", what: "Everyone's phone becomes a singing ghost. Pick an instrument, hold to sing, tilt for notes.", external: true },
+  { to: "/hear", icon: "🎧", title: "Ghost Ear", what: "Accessible mode: hear sensor data as sound instead of reading charts." },
+  { to: "/bench", icon: "📱", title: "WraithBench", what: "Test how good your phone's sensors really are and get a device passport." },
+  { to: "/array", icon: "🌌", title: "Spirit Array", what: "Several phones at once, as one big multi-point sensor." },
+  { to: "/gate", icon: "📷", title: "Apparition Gate", what: "Turn the laptop camera into a light gate that times things passing by." },
+  { to: "/circle", icon: "🕯️", title: "Séance Circle", what: "Classroom board: pool everyone's measurements and compare." },
+  { to: "/skeptic", icon: "🔍", title: "Skeptic's Séance", what: "Audit the room for vibration and noise before trusting a measurement." },
+  { to: "/replay", icon: "📼", title: "Recorded Haunting", what: "No phone? Watch a recorded session play back." },
+];
 
 export function Landing() {
   const room = useLiveRoom();
   const roomCode = room.status === "ready" ? room.code : null;
   const error = room.status === "error" ? room.error : null;
   const [copied, setCopied] = useState(false);
+  const [dizzy, setDizzy] = useState(0);
+  const [lastShaker, setLastShaker] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // A phone that joins while this page is open takes the laptop to the possession view. Phones that
-  // were already in the room (coming back from another page) don't — the "go to ghost" link does.
-  const mountedAt = useRef(Date.now());
-  useEffect(() => {
-    if (room.code && room.lastJoinAt > mountedAt.current) navigate(`/possession/${room.code}`);
-  }, [room.lastJoinAt, room.code, navigate]);
+  // Shake any connected phone: the ghost gets dizzy (wobbles, spiral eyes, topples; ~3 s).
+  const shakeRef = useRef(new ShakeTrigger());
+  const playersRef = useRef(room.players);
+  playersRef.current = room.players;
+  useLiveBatches((peerId, batch) => {
+    if (!shakeRef.current.feed(batch)) return;
+    const i = playersRef.current.findIndex((p) => p.id === peerId);
+    setLastShaker(playersRef.current[i]?.name ?? `Spirit ${i + 1}`);
+    setDizzy((n) => n + 1);
+  });
 
   const joinUrl = roomCode ? `${window.location.origin}/join.html?code=${roomCode}` : "";
 
@@ -28,176 +56,114 @@ export function Landing() {
     } catch { /* clipboard unavailable */ }
   }, [joinUrl]);
 
-  return (
-    <main style={{
-      minHeight: "100vh", display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center", padding: 16,
-      textAlign: "center", background: "radial-gradient(ellipse at center, #12122a 0%, #0a0a1a 70%)",
-    }}>
-      <div aria-hidden="true" style={{
-        width: 200, height: 200, borderRadius: "50%",
-        border: "2px solid rgba(100,140,255,0.3)",
-        boxShadow: "0 0 40px rgba(100,140,255,0.15)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: 32, animation: "pulse 3s ease-in-out infinite",
-      }}>
-        <svg viewBox="0 0 100 100" width={120} height={120}>
-          <circle cx={50} cy={50} r={45} fill="none" stroke="rgba(100,140,255,0.4)" strokeWidth={1} />
-          <circle cx={50} cy={50} r={30} fill="none" stroke="rgba(100,140,255,0.3)" strokeWidth={0.5} strokeDasharray="4 4" />
-          <text x={50} y={55} textAnchor="middle" fill="rgba(200,220,255,0.6)" fontSize={8} fontFamily="serif">summon</text>
-        </svg>
-      </div>
+  const players = room.players;
+  const host = players[0];
 
-      <h1 style={{ fontSize: 28, fontWeight: 300, marginBottom: 4, letterSpacing: 2 }}>Poltergeist Lab</h1>
-      <p style={{ color: "#7799cc", fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>
-        Séance: Ghost Ear Lab
-      </p>
-      <p style={{ color: "#888", marginBottom: 32, maxWidth: 400 }}>Scan the code with your phone to begin the haunting.</p>
+  return (
+    <main className="sx-page" style={{ maxWidth: 1180, margin: "0 auto" }}>
+      <header style={{ textAlign: "center", marginTop: 12 }}>
+        <p className="sx-kicker">Séance · Phone-powered physics</p>
+        <h1 className="sx-glitch" style={{ fontSize: "clamp(20px, 5vw, 40px)", margin: "12px 0 8px" }}>Poltergeist Lab</h1>
+        <p className="sx-muted" style={{ maxWidth: 620, margin: "0 auto", fontSize: 18 }}>
+          Scan the code with your phone, type your name, and your phone possesses the ghost. Then measure real physics
+          with its sensors, or sing together in the Banshee Choir.
+        </p>
+      </header>
 
       {error && !roomCode && (
-        <SpiritTrouble
-          code="relay-unreachable-host"
-          onAction={room.retry}
-          onSecondaryAction={() => navigate("/replay")}
-        />
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
+          <SpiritTrouble code="relay-unreachable-host" onAction={room.retry} onSecondaryAction={() => navigate("/replay")} />
+        </div>
       )}
 
-      {roomCode && (
-        <>
-          <div style={{ marginBottom: 16 }}>
-            <QrCode text={joinUrl} size={280} />
-          </div>
-          <p style={{ fontSize: 48, fontFamily: "monospace", letterSpacing: 8, marginBottom: 12, color: "#aabbff" }}>
-            {roomCode}
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: 20,
+          marginTop: 28,
+          alignItems: "stretch",
+        }}
+      >
+        <div className="sx-box" style={{ padding: 0, minHeight: 380, position: "relative" }}>
+          <Ghost
+            height={380}
+            color={host ? playerNeon(0) : "#00ffff"}
+            name={host?.name}
+            dizzy={dizzy}
+            label="3D ghost. Drag to spin it; shake a connected phone to make it dizzy."
+          />
+          <p
+            className={players.length > 0 ? "sx-status-live" : "sx-muted"}
+            style={{ position: "absolute", left: 12, bottom: 10, fontSize: 14, pointerEvents: "none" }}
+          >
+            {players.length === 0
+              ? "Drag to spin the ghost · connect a phone and shake it 🌀"
+              : lastShaker && dizzy > 0
+                ? `${lastShaker} made the ghost dizzy! 🌀`
+                : "Shake your phone to make the ghost dizzy 🌀"}
           </p>
-          <button onClick={handleCopy} style={{
-            padding: "8px 24px", background: copied ? "#334466" : "#223355",
-            border: "1px solid #446", color: "#ccd", borderRadius: 6, cursor: "pointer", fontSize: 14,
-          }}>{copied ? "Copied!" : "Copy Link"}</button>
-          {room.phones.length > 0 && (
-            <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <span style={{ color: "#8f8", fontSize: 14, alignSelf: "center" }}>
-                {room.phones.length === 1 ? "1 phone connected" : `${room.phones.length} phones connected`}
-              </span>
-              <Link to={`/possession/${roomCode}`} style={pillStyle("#aabbff", "#446")}>Go to the ghost &rarr;</Link>
-              <a href="/choir/" style={pillStyle("#f9a8d4", "#702459")}>Banshee Choir &rarr;</a>
-            </div>
+        </div>
+
+        <div className="sx-box sx-box--pink" style={{ padding: 20, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
+          {!roomCode && !error && <p className="sx-glow-cyan sx-pulse" style={{ fontFamily: "var(--sx-font-pixel)", fontSize: 11, marginTop: 40 }}>OPENING THE SÉANCE…</p>}
+          {roomCode && (
+            <>
+              <p className="sx-muted" style={{ fontSize: 14 }}>1 · Scan with your phone camera</p>
+              <div className="sx-qr">
+                <QrCode text={joinUrl} size={200} />
+              </div>
+              <p className="sx-code" style={{ fontSize: 28 }}>{roomCode}</p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                <button onClick={handleCopy} className="sx-ghost-btn">{copied ? "Copied!" : "Copy link"}</button>
+                <button onClick={room.newRoom} className="sx-ghost-btn sx-ghost-btn--pink" title="Forget this room and make a new code">New code</button>
+              </div>
+
+              <p className="sx-muted" style={{ fontSize: 14, marginTop: 6 }}>2 · Players in this séance</p>
+              {players.length === 0 ? (
+                <p className="sx-muted sx-pulse" style={{ fontSize: 15 }}>Waiting for the first spirit…</p>
+              ) : (
+                <ul aria-label="Players" style={{ listStyle: "none", display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+                  {players.map((p, i) => (
+                    <li key={p.id} className="sx-chip" style={{ borderColor: playerNeon(i), color: playerNeon(i), fontSize: 14 }}>
+                      👻 {p.name ?? `Spirit ${i + 1} (naming…)`}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {players.length > 0 && (
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginTop: 6 }}>
+                  <Link to={`/possession/${roomCode}`} className="sx-btn">Enter the possession &rarr;</Link>
+                  <a href="/choir/" className="sx-btn sx-btn--cyan">Banshee Choir &rarr;</a>
+                </div>
+              )}
+            </>
           )}
-          <button onClick={room.newRoom} style={{
-            marginTop: 12, background: "none", border: "none", color: "#667", cursor: "pointer", fontSize: 12, textDecoration: "underline",
-          }}>Start a new séance (new code)</button>
-        </>
-      )}
+        </div>
+      </section>
 
-      <div style={{ marginTop: 28, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
-        <Link
-          to="/hear"
-          style={{
-            color: "#88bbff",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #335588",
-            borderRadius: 6,
-            background: "rgba(50,100,200,0.1)",
-          }}
-        >
-          🎧 Ghost Ear (accessible mode) &rarr;
-        </Link>
-        <Link
-          to="/bench"
-          style={{
-            color: "#ecc94b",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #744210",
-            borderRadius: 6,
-            background: "rgba(200,150,50,0.1)",
-          }}
-        >
-          📱 WraithBench (device passport) &rarr;
-        </Link>
-        <Link
-          to="/array"
-          style={{
-            color: "#63b3ed",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #2b6cb0",
-            borderRadius: 6,
-            background: "rgba(40,100,200,0.1)",
-          }}
-        >
-          🌌 Spirit Array (multi-device) &rarr;
-        </Link>
-        <Link
-          to="/gate"
-          style={{
-            color: "#68d391",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #276749",
-            borderRadius: 6,
-            background: "rgba(56,161,105,0.1)",
-          }}
-        >
-          📷 Apparition Gate (camera photogate) &rarr;
-        </Link>
-        <Link
-          to="/circle"
-          style={{
-            color: "#b794f4",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #553c9a",
-            borderRadius: 6,
-            background: "rgba(128,90,213,0.1)",
-          }}
-        >
-          🕯️ Séance Circle (classroom board) &rarr;
-        </Link>
-        <Link
-          to="/skeptic"
-          style={{
-            color: "#f6ad55",
-            fontSize: 14,
-            textDecoration: "none",
-            padding: "8px 16px",
-            border: "1px solid #9c4221",
-            borderRadius: 6,
-            background: "rgba(221,107,32,0.1)",
-          }}
-        >
-          🔍 Skeptic's Séance (environmental audit) &rarr;
-        </Link>
-        <Link
-          to="/replay"
-          style={{
-            color: "#99aabb",
-            fontSize: 14,
-            textDecoration: "underline",
-            padding: "8px 16px",
-            display: "inline-block",
-          }}
-        >
-          No phone? Watch a recorded haunting &rarr;
-        </Link>
-      </div>
-
-      {room.status === "connecting" && !roomCode && <p style={{ color: "#667" }}>Opening the séance…</p>}
-
-      <style>{`@keyframes pulse { 0%,100% { opacity:.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.05); } }`}</style>
+      <h2 style={{ fontSize: 18, textAlign: "center", margin: "40px 0 6px" }} className="sx-glow-cyan">Pick your haunting</h2>
+      <p className="sx-muted" style={{ textAlign: "center", marginBottom: 18 }}>Your phone stays connected while you switch between these.</p>
+      <nav
+        aria-label="Features"
+        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 14 }}
+      >
+        {FEATURES.map((f) => {
+          const body = (
+            <>
+              <span style={{ fontSize: 28 }} aria-hidden="true">{f.icon}</span>
+              <span style={{ display: "block", fontFamily: "var(--sx-font-display)", fontSize: 16, margin: "8px 0 4px", color: "#fff" }}>{f.title}</span>
+              <span className="sx-muted" style={{ fontSize: 15, lineHeight: 1.35 }}>{f.what}</span>
+            </>
+          );
+          return f.external ? (
+            <a key={f.to} href={f.to} className="sx-card" style={{ padding: 16 }}>{body}</a>
+          ) : (
+            <Link key={f.to} to={f.to} className="sx-card" style={{ padding: 16 }}>{body}</Link>
+          );
+        })}
+      </nav>
     </main>
   );
-}
-
-function pillStyle(color: string, border: string): CSSProperties {
-  return {
-    color, fontSize: 14, textDecoration: "none", padding: "8px 16px",
-    border: `1px solid ${border}`, borderRadius: 6, background: "rgba(255,255,255,0.04)",
-  };
 }

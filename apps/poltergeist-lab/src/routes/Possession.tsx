@@ -9,7 +9,9 @@ import {
 } from "seance-avatars";
 import { Quaternion, Euler } from "three";
 import type { Mood } from "seance-core";
-import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
+import { useLiveRoom, useLiveBatches, playerLabel } from "../live/LiveRoom.js";
+import { ShakeTrigger } from "../live/shake.js";
+import { Ghost, MOOD_NEON } from "seance-avatars";
 
 
 type TutorialStep = "summoning" | "tilt" | "shake" | "still" | "doors";
@@ -68,18 +70,18 @@ function TutorialGuide({
   return (
     <div style={{ textAlign: "center", marginBottom: 24 }}>
       <p style={{ fontSize: 24, fontWeight: 300, marginBottom: 4, letterSpacing: 1 }}>{c.spooky}</p>
-      <p style={{ fontSize: 14, color: "#888" }}>{c.plain}</p>
+      <p style={{ fontSize: 14, color: "#b0a6cc" }}>{c.plain}</p>
       {step === "still" && (
-        <div style={{ marginTop: 12, width: 200, height: 6, background: "#222", borderRadius: 3, margin: "12px auto 0" }}>
+        <div style={{ marginTop: 12, width: 200, height: 6, background: "#1f0a35", borderRadius: 3, margin: "12px auto 0" }}>
           <div style={{
             width: `${Math.min(stillProgress, 100)}%`, height: "100%",
-            background: "rgba(100,140,255,0.6)", borderRadius: 3, transition: "width 0.1s",
+            background: "rgba(0,255,255,0.6)", borderRadius: 3, transition: "width 0.1s",
           }} />
         </div>
       )}
       {step !== "doors" && step !== "summoning" && (
         <button onClick={onSkip} style={{
-          marginTop: 16, background: "none", border: "none", color: "#555",
+          marginTop: 16, background: "none", border: "none", color: "#76679f",
           fontSize: 12, cursor: "pointer", textDecoration: "underline",
         }}>Skip tutorial</button>
       )}
@@ -87,107 +89,21 @@ function TutorialGuide({
   );
 }
 
-function GhostVisual({
-  rotation,
-  mood,
-  reducedMotion,
-  shakeIntensity,
-}: {
-  rotation: { x: number; y: number; z: number };
-  mood: Mood;
-  reducedMotion: boolean;
-  shakeIntensity: number;
-}) {
-  const visuals = moodVisuals(mood, 60, 60);
-  const hueRotate = visuals.hue - 165;
-  const jitter = Math.min(shakeIntensity * 0.3, 8);
-
-  if (reducedMotion) {
-    return (
-      <div style={{
-        width: 200, height: 240, display: "flex", alignItems: "center",
-        justifyContent: "center", opacity: visuals.opacity,
-        transform: `rotate(${rotation.z}deg)`,
-        filter: `hue-rotate(${hueRotate}deg)`,
-        transition: "transform 0.15s ease-out, opacity 0.3s",
-      }}>
-        <svg viewBox="0 0 100 130" width={160} height={200}>
-          <defs>
-            <radialGradient id="ghost-glow" cx="50%" cy="40%" r="50%">
-              <stop offset="0%" stopColor={`hsl(${visuals.hue}, 60%, 80%)`} stopOpacity={visuals.glow} />
-              <stop offset="100%" stopColor={`hsl(${visuals.hue}, 60%, 40%)`} stopOpacity={0.1} />
-            </radialGradient>
-          </defs>
-          <ellipse cx={50} cy={50} rx={30} ry={40} fill="url(#ghost-glow)" />
-          <path d="M20 50 Q20 110 30 120 Q35 105 40 120 Q45 105 50 120 Q55 105 60 120 Q65 105 70 120 Q80 110 80 50"
-            fill="url(#ghost-glow)" opacity={0.6} />
-          <circle cx={40} cy={42} r={4} fill="#fff" opacity={0.9} />
-          <circle cx={60} cy={42} r={4} fill="#fff" opacity={0.9} />
-          <circle cx={50} cy={35} r={6} fill={`hsl(${visuals.hue}, 70%, 70%)`} opacity={visuals.glow * 0.8}>
-            <animate attributeName="opacity" values={`${visuals.glow * 0.5};${visuals.glow};${visuals.glow * 0.5}`}
-              dur="2s" repeatCount="indefinite" />
-          </circle>
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{
-      width: 240, height: 300, display: "flex", alignItems: "center",
-      justifyContent: "center", opacity: visuals.opacity,
-      transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg) translate(${jitter * (Math.random() - 0.5)}px, ${jitter * (Math.random() - 0.5)}px)`,
-      filter: `hue-rotate(${hueRotate}deg) drop-shadow(0 0 ${visuals.glow * 30}px hsl(${visuals.hue}, 60%, 50%))`,
-      transition: "opacity 0.3s",
-      perspective: 800,
-    }}>
-      <svg viewBox="0 0 100 140" width={200} height={260}>
-        <defs>
-          <radialGradient id="ghost-body" cx="50%" cy="35%" r="55%">
-            <stop offset="0%" stopColor={`hsl(${visuals.hue}, 50%, 85%)`} stopOpacity={0.9} />
-            <stop offset="70%" stopColor={`hsl(${visuals.hue}, 50%, 55%)`} stopOpacity={0.4} />
-            <stop offset="100%" stopColor={`hsl(${visuals.hue}, 50%, 30%)`} stopOpacity={0.1} />
-          </radialGradient>
-          <filter id="ghost-blur">
-            <feGaussianBlur stdDeviation="1.5" />
-          </filter>
-        </defs>
-        <ellipse cx={50} cy={45} rx={32} ry={42} fill="url(#ghost-body)" filter="url(#ghost-blur)" />
-        <path d="M18 45 Q18 115 28 130 Q33 112 38 130 Q43 112 50 130 Q57 112 62 130 Q67 112 72 130 Q82 115 82 45"
-          fill="url(#ghost-body)" opacity={0.5} />
-        <circle cx={40} cy={38} r={5} fill="#fff" opacity={0.95}>
-          <animate attributeName="r" values="5;4.5;5" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx={60} cy={38} r={5} fill="#fff" opacity={0.95}>
-          <animate attributeName="r" values="5;4.5;5" dur="3s" begin="0.2s" repeatCount="indefinite" />
-        </circle>
-        <circle cx={50} cy={28} r={8} fill={`hsl(${visuals.hue}, 70%, 70%)`} opacity={visuals.glow}>
-          <animate attributeName="opacity" values={`${visuals.glow * 0.4};${visuals.glow};${visuals.glow * 0.4}`}
-            dur="1.5s" repeatCount="indefinite" />
-          <animate attributeName="r" values="8;9;8" dur="2s" repeatCount="indefinite" />
-        </circle>
-        <ellipse cx={50} cy={58} rx={7} ry={4} fill="none" stroke={`hsl(${visuals.hue}, 50%, 70%)`}
-          strokeWidth={1.2} opacity={0.6} />
-      </svg>
-    </div>
-  );
-}
-
 function Doors({ roomCode, onLab }: { roomCode: string; onLab: () => void }) {
   const doorStyle = (bg: string): React.CSSProperties => ({
     flex: 1, maxWidth: 260, padding: "32px 24px", background: bg,
-    border: "1px solid #334", borderRadius: 12, cursor: "pointer",
+    border: "1px solid #3d2466", borderRadius: 12, cursor: "pointer",
     textAlign: "center", transition: "transform 0.2s, box-shadow 0.2s",
   });
   return (
     <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap", marginTop: 32 }}>
-      <button onClick={onLab} style={doorStyle("linear-gradient(180deg, #1a1a3a 0%, #0d0d2a 100%)")}>
+      <button onClick={onLab} style={doorStyle("linear-gradient(180deg, #1f0a35 0%, #0c0418 100%)")}>
         <p style={{ fontSize: 20, fontWeight: 400, marginBottom: 8 }}>Poltergeist Lab</p>
-        <p style={{ fontSize: 13, color: "#889" }}>Measure the world with your phone.</p>
+        <p style={{ fontSize: 13, color: "#b4a9d6" }}>Measure the world with your phone.</p>
       </button>
       <a href="/choir/" style={{ ...doorStyle("linear-gradient(180deg, #2a1a2a 0%, #1a0d1a 100%)"), textDecoration: "none", color: "inherit" }}>
         <p style={{ fontSize: 20, fontWeight: 400, marginBottom: 8 }}>Banshee Choir</p>
-        <p style={{ fontSize: 13, color: "#988" }}>Turn motion into music, together.</p>
+        <p style={{ fontSize: 13, color: "#d9a6c9" }}>Turn motion into music, together.</p>
       </a>
     </div>
   );
@@ -200,11 +116,11 @@ function DisconnectOverlay({ message, onRetry }: { message: string; onRetry?: ()
       display: "flex", flexDirection: "column", alignItems: "center",
       justifyContent: "center", zIndex: 100, padding: 24,
     }}>
-      <p style={{ fontSize: 18, marginBottom: 12, color: "#ff8866" }}>{message}</p>
+      <p style={{ fontSize: 18, marginBottom: 12, color: "#ff3b8d" }}>{message}</p>
       {onRetry && (
         <button onClick={onRetry} style={{
-          padding: "10px 24px", background: "#223355",
-          border: "1px solid #446", color: "#ccd", borderRadius: 6, cursor: "pointer",
+          padding: "10px 24px", background: "#2a0a4a",
+          border: "1px solid #5a2d8c", color: "#e6e0ff", borderRadius: 6, cursor: "pointer",
         }}>Try Again</button>
       )}
     </div>
@@ -219,7 +135,9 @@ export function Possession() {
   const [viewState, setViewState] = useState<ViewState>("connecting");
   const [tutorialStep, setTutorialStep] = useState<TutorialStep>("summoning");
   const [mood, setMood] = useState<Mood>("uneasy");
-  const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
+  const [ghostQuat, setGhostQuat] = useState<Quaternion | null>(null);
+  const [dizzy, setDizzy] = useState(0);
+  const shakeTriggerRef = useRef(new ShakeTrigger());
   const [shakeValue, setShakeValue] = useState(0);
   const [stillProgress, setStillProgress] = useState(0);
   const [peakShake, setPeakShake] = useState(0);
@@ -275,6 +193,7 @@ export function Possession() {
   }, [room.status, room.code, room.error, phoneCount, code, navigate]);
 
   useLiveBatches((_peerId, batch) => {
+    if (shakeTriggerRef.current.feed(batch)) setDizzy((n) => n + 1);
     const orientation = batch.channels["orientation"];
     const accelG = batch.channels["accelG"];
     const step = tutorialStepRef.current;
@@ -287,6 +206,7 @@ export function Possession() {
       const gamma = orientation.values[2]![i]!;
 
       const qNow = deviceOrientationToQuaternion(alpha, beta, gamma);
+      if (!refPoseRef.current) refPoseRef.current = qNow.clone();
       const displayQuat = refPoseRef.current
         ? computeGhostRotation(qNow, refPoseRef.current, new Quaternion())
         : qNow;
@@ -298,7 +218,7 @@ export function Possession() {
       const pitch = euler.x * (180 / Math.PI);
       const yaw = euler.y * (180 / Math.PI);
       const roll = euler.z * (180 / Math.PI);
-      setRotation({ x: pitch, y: yaw, z: roll });
+      setGhostQuat(smoothed.clone());
 
       const totalRotation = Math.abs(pitch) + Math.abs(yaw) + Math.abs(roll);
       if (!tiltDetectedRef.current && totalRotation > TILT_THRESHOLD && step === "tilt") {
@@ -347,24 +267,14 @@ export function Possession() {
     }
   });
 
-  const handleDrag = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (viewState !== "summoning") return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width / 2);
-    const dy = (e.clientY - cy) / (rect.height / 2);
-    setRotation({ x: dy * -30, y: dx * 30, z: 0 });
-  }, [viewState]);
 
   const moodCopy = MOOD_COPY[mood];
 
   return (
-    <main style={{
-      minHeight: "100vh", display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center", padding: 16,
-      background: "radial-gradient(ellipse at center, #12122a 0%, #0a0a1a 70%)",
-      color: "#ddd", position: "relative", overflow: "hidden",
+    <main className="sx-page" style={{
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      position: "relative", overflow: "hidden",
     }}>
       {disconnectMsg && (
         <DisconnectOverlay
@@ -374,29 +284,26 @@ export function Possession() {
       )}
 
       {viewState === "connecting" && (
-        <p style={{ fontSize: 18, color: "#888" }}>Opening the circle...</p>
+        <p style={{ fontSize: 18, color: "#b0a6cc" }}>Opening the circle...</p>
       )}
 
       {viewState === "summoning" && (
         <div style={{ textAlign: "center" }}>
           <div aria-hidden="true" style={{
             width: 200, height: 200, borderRadius: "50%",
-            border: "2px solid rgba(100,140,255,0.3)",
-            boxShadow: "0 0 60px rgba(100,140,255,0.1)",
+            border: "2px solid rgba(0,255,255,0.3)",
+            boxShadow: "0 0 60px rgba(0,255,255,0.1)",
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 24px", animation: "pulse 3s ease-in-out infinite",
           }}>
-            <span style={{ fontSize: 14, color: "#667" }}>The circle is open</span>
+            <span style={{ fontSize: 14, color: "#8a7bb5" }}>The circle is open</span>
           </div>
-          <p style={{ fontSize: 18, color: "#889" }}>Waiting for a spirit to join...</p>
-          <p style={{ fontSize: 13, color: "#556", marginTop: 8 }}>
+          <p style={{ fontSize: 18, color: "#b4a9d6" }}>Waiting for a spirit to join...</p>
+          <p style={{ fontSize: 13, color: "#76679f", marginTop: 8 }}>
             Scan the QR code on the landing page, or drag the ghost below.
           </p>
-          <div
-            onMouseMove={handleDrag}
-            style={{ marginTop: 24, cursor: "grab" }}
-          >
-            <GhostVisual rotation={rotation} mood="calm" reducedMotion={reducedMotion} shakeIntensity={0} />
+          <div className="sx-box" style={{ marginTop: 24, width: "min(92vw, 520px)" }}>
+            <Ghost height={340} mood="calm" label="3D ghost waiting for a phone. Drag to look around it." />
           </div>
         </div>
       )}
@@ -411,12 +318,17 @@ export function Possession() {
           />
 
           <div style={{ position: "relative" }}>
-            <GhostVisual
-              rotation={rotation}
-              mood={mood}
-              reducedMotion={reducedMotion}
-              shakeIntensity={shakeValue}
-            />
+            <div className="sx-box" style={{ width: "min(92vw, 620px)" }}>
+              <Ghost
+                height={420}
+                color={MOOD_NEON[mood]}
+                quaternion={ghostQuat}
+                shake={reducedMotion ? 0 : Math.min(1, shakeValue / 20)}
+                dizzy={dizzy}
+                name={room.players[0] ? playerLabel(room.players, room.players[0].id) : undefined}
+                label="3D ghost following your phone. Drag to look at it from any angle; shake the phone to make it dizzy."
+              />
+            </div>
             {viewState === "fading" && (
               <div style={{
                 position: "absolute", inset: 0, display: "flex",
@@ -424,7 +336,7 @@ export function Possession() {
               }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: "50%",
-                  border: "2px solid rgba(100,140,255,0.3)",
+                  border: "2px solid rgba(0,255,255,0.3)",
                   animation: "pulse 1.5s ease-in-out infinite",
                 }} />
               </div>
@@ -435,10 +347,10 @@ export function Possession() {
             title={moodCopy.plain}>
             <span style={{
               width: 10, height: 10, borderRadius: "50%",
-              background: mood === "calm" ? "#4a8" : mood === "uneasy" ? "#a84" : mood === "restless" ? "#a44" : "#66a",
+              background: mood === "calm" ? "#00ff99" : mood === "uneasy" ? "#a84" : mood === "restless" ? "#a44" : "#66a",
               display: "inline-block",
             }} />
-            <span style={{ fontSize: 13, color: "#889" }}>{moodCopy.spooky}</span>
+            <span style={{ fontSize: 13, color: "#b4a9d6" }}>{moodCopy.spooky}</span>
           </div>
 
           {tutorialStep === "doors" && code && (

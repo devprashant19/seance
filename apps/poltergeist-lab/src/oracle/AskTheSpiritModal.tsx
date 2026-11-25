@@ -7,7 +7,7 @@ interface AskTheSpiritModalProps {
 
 const SEVERITY_COLORS: Record<DiagnosisSeverity, string> = {
   high: "#c44",
-  medium: "#ca8",
+  medium: "#ffe066",
   low: "#8ac",
   info: "#6a8",
 };
@@ -40,7 +40,7 @@ export function AskTheSpiritModal({ diagnoses, onClose }: AskTheSpiritModalProps
       <div
         style={{
           background: "#0e0e1a",
-          border: "1px solid #334",
+          border: "1px solid #3d2466",
           borderRadius: 10,
           padding: 24,
           maxWidth: 520,
@@ -49,13 +49,13 @@ export function AskTheSpiritModal({ diagnoses, onClose }: AskTheSpiritModalProps
           overflowY: "auto",
         }}
       >
-        <h2 style={{ fontSize: 20, fontWeight: 400, color: "#dde", marginTop: 0, marginBottom: 16 }}>
+        <h2 style={{ fontSize: 20, fontWeight: 400, color: "#eee8ff", marginTop: 0, marginBottom: 16 }}>
           The Spirit Speaks
         </h2>
 
         <div aria-live="polite" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {diagnoses.length === 0 && (
-            <p style={{ color: "#889", fontSize: 14 }}>The spirit has nothing to say.</p>
+            <p style={{ color: "#b4a9d6", fontSize: 14 }}>The spirit has nothing to say.</p>
           )}
           {diagnoses.map((d) => (
             <div
@@ -83,7 +83,7 @@ export function AskTheSpiritModal({ diagnoses, onClose }: AskTheSpiritModalProps
               >
                 {SEVERITY_LABELS[d.severity]}
               </span>
-              <p style={{ fontSize: 14, fontStyle: "italic", color: "#aabbdd", margin: "8px 0 6px" }}>
+              <p style={{ fontSize: 14, fontStyle: "italic", color: "#c9bfe6", margin: "8px 0 6px" }}>
                 {d.spooky}
               </p>
               <p style={{ fontSize: 13, color: "#99a", margin: "0 0 6px" }}>
@@ -101,9 +101,9 @@ export function AskTheSpiritModal({ diagnoses, onClose }: AskTheSpiritModalProps
           style={{
             marginTop: 18,
             padding: "8px 24px",
-            background: "#1a1a2e",
-            border: "1px solid #446",
-            color: "#aab",
+            background: "#1a0a2e",
+            border: "1px solid #5a2d8c",
+            color: "#c9bfe6",
             borderRadius: 6,
             cursor: "pointer",
             fontSize: 14,

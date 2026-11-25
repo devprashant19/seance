@@ -58,7 +58,7 @@ export function GhostEarRoute() {
         <Link
           to="/"
           style={{
-            color: isDarkroom ? "#ffffff" : "#88aacc",
+            color: isDarkroom ? "#ffffff" : "#00e5ff",
             textDecoration: "underline",
             fontSize: 14,
           }}
@@ -74,14 +74,14 @@ export function GhostEarRoute() {
             fontWeight: 400,
             letterSpacing: 2,
             marginBottom: 8,
-            color: isDarkroom ? "#ffffff" : "#68d391",
+            color: isDarkroom ? "#ffffff" : "#00ff99",
           }}
         >
           Ghost Ear Lab
         </h1>
         <p
           style={{
-            color: isDarkroom ? "#e2e8f0" : "#7799cc",
+            color: isDarkroom ? "#eee8ff" : "#ff66ff",
             fontSize: 13,
             letterSpacing: 2,
             textTransform: "uppercase",
@@ -114,9 +114,9 @@ export function GhostEarRoute() {
             key={id}
             onClick={() => setExperiment(id)}
             style={{
-              background: experiment === id ? (isDarkroom ? "#ffffff" : "#3182ce") : isDarkroom ? "#222" : "#1a202c",
-              color: experiment === id ? (isDarkroom ? "#000000" : "#ffffff") : isDarkroom ? "#ffffff" : "#cbd5e0",
-              border: `1px solid ${isDarkroom ? "#ffffff" : "#4a5568"}`,
+              background: experiment === id ? (isDarkroom ? "#ffffff" : "#a100c2") : isDarkroom ? "#1f0a35" : "#140726",
+              color: experiment === id ? (isDarkroom ? "#000000" : "#ffffff") : isDarkroom ? "#ffffff" : "#e6e0ff",
+              border: `1px solid ${isDarkroom ? "#ffffff" : "#4a2a70"}`,
               padding: "6px 14px",
               borderRadius: 6,
               cursor: "pointer",
@@ -135,7 +135,7 @@ export function GhostEarRoute() {
           width: "100%",
           maxWidth: 640,
           background: isDarkroom ? "#111111" : "#0c0c1e",
-          border: `2px solid ${isDarkroom ? "#ffffff" : "#2a3a5c"}`,
+          border: `2px solid ${isDarkroom ? "#ffffff" : "#3a0f5c"}`,
           borderRadius: 12,
           padding: 28,
           boxShadow: isDarkroom ? "none" : "0 0 30px rgba(80,120,255,0.1)",
@@ -147,7 +147,7 @@ export function GhostEarRoute() {
               fontSize: 12,
               textTransform: "uppercase",
               letterSpacing: 2,
-              color: state === "RECORDING" ? "#48bb78" : isDarkroom ? "#ffffff" : "#88aacc",
+              color: state === "RECORDING" ? "#00ff99" : isDarkroom ? "#ffffff" : "#00e5ff",
               fontWeight: 700,
             }}
           >
@@ -171,14 +171,14 @@ export function GhostEarRoute() {
             borderRadius: 6,
             overflow: "hidden",
             marginBottom: 20,
-            border: `1px solid ${isDarkroom ? "#666" : "#223355"}`,
+            border: `1px solid ${isDarkroom ? "#8a7bb5" : "#2a0a4a"}`,
           }}
         >
           <div
             style={{
               width: `${Math.round(scrubPosition * 100)}%`,
               height: "100%",
-              background: isDarkroom ? "#ffffff" : "#68d391",
+              background: isDarkroom ? "#ffffff" : "#00ff99",
               transition: "width 0.1s ease",
             }}
           />
@@ -195,13 +195,13 @@ export function GhostEarRoute() {
               marginBottom: 20,
             }}
           >
-            <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 1, color: isDarkroom ? "#ffffff" : "#a0aec0" }}>
+            <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 1, color: isDarkroom ? "#ffffff" : "#b4a9d6" }}>
               {result.label}
             </div>
-            <div style={{ fontSize: 26, fontWeight: 700, margin: "6px 0", color: isDarkroom ? "#ffffff" : "#68d391" }}>
+            <div style={{ fontSize: 26, fontWeight: 700, margin: "6px 0", color: isDarkroom ? "#ffffff" : "#00ff99" }}>
               {result.value.toFixed(2)} ± {result.uncertainty.toFixed(2)} {result.unit}
             </div>
-            <p style={{ fontSize: 14, color: isDarkroom ? "#ffffff" : "#cbd5e0", margin: 0 }}>
+            <p style={{ fontSize: 14, color: isDarkroom ? "#ffffff" : "#e6e0ff", margin: 0 }}>
               {result.sentence}
             </p>
           </div>
@@ -212,7 +212,7 @@ export function GhostEarRoute() {
           <button
             onClick={togglePlay}
             style={{
-              background: state === "RECORDING" ? "#e53e3e" : isDarkroom ? "#ffffff" : "#3182ce",
+              background: state === "RECORDING" ? "#ff3b8d" : isDarkroom ? "#ffffff" : "#a100c2",
               color: isDarkroom && state !== "RECORDING" ? "#000000" : "#ffffff",
               border: "none",
               padding: "10px 20px",
@@ -228,9 +228,9 @@ export function GhostEarRoute() {
             onClick={repeatResult}
             disabled={!result}
             style={{
-              background: isDarkroom ? "#222" : "#2d3748",
-              color: result ? (isDarkroom ? "#fff" : "#edf2f7") : "#718096",
-              border: `1px solid ${isDarkroom ? "#fff" : "#4a5568"}`,
+              background: isDarkroom ? "#1f0a35" : "#2d1b4e",
+              color: result ? (isDarkroom ? "#fff" : "#f5f0ff") : "#8a7bb5",
+              border: `1px solid ${isDarkroom ? "#fff" : "#4a2a70"}`,
               padding: "10px 16px",
               borderRadius: 6,
               cursor: result ? "pointer" : "not-allowed",
@@ -241,9 +241,9 @@ export function GhostEarRoute() {
           <button
             onClick={help}
             style={{
-              background: isDarkroom ? "#222" : "#2d3748",
-              color: isDarkroom ? "#fff" : "#edf2f7",
-              border: `1px solid ${isDarkroom ? "#fff" : "#4a5568"}`,
+              background: isDarkroom ? "#1f0a35" : "#2d1b4e",
+              color: isDarkroom ? "#fff" : "#f5f0ff",
+              border: `1px solid ${isDarkroom ? "#fff" : "#4a2a70"}`,
               padding: "10px 16px",
               borderRadius: 6,
               cursor: "pointer",
@@ -256,7 +256,7 @@ export function GhostEarRoute() {
         {/* Accessibility & Darkroom Settings */}
         <footer
           style={{
-            borderTop: `1px solid ${isDarkroom ? "#444" : "#223355"}`,
+            borderTop: `1px solid ${isDarkroom ? "#3d2466" : "#2a0a4a"}`,
             paddingTop: 16,
             display: "flex",
             justifyContent: "space-between",
@@ -264,7 +264,7 @@ export function GhostEarRoute() {
             flexWrap: "wrap",
             gap: 12,
             fontSize: 12,
-            color: isDarkroom ? "#ffffff" : "#a0aec0",
+            color: isDarkroom ? "#ffffff" : "#b4a9d6",
           }}
         >
           <div>
@@ -275,9 +275,9 @@ export function GhostEarRoute() {
                 setSettings((s) => ({ ...s, speechRate: Number(e.target.value) }))
               }
               style={{
-                background: isDarkroom ? "#333" : "#1a202c",
-                color: isDarkroom ? "#fff" : "#e2e8f0",
-                border: "1px solid #4a5568",
+                background: isDarkroom ? "#2d1b4e" : "#140726",
+                color: isDarkroom ? "#fff" : "#eee8ff",
+                border: "1px solid #4a2a70",
                 borderRadius: 4,
                 padding: "2px 6px",
               }}
@@ -292,9 +292,9 @@ export function GhostEarRoute() {
           <button
             onClick={toggleDarkroom}
             style={{
-              background: isDarkroom ? "#ffffff" : "#2d3748",
+              background: isDarkroom ? "#ffffff" : "#2d1b4e",
               color: isDarkroom ? "#000000" : "#ffffff",
-              border: "1px solid #4a5568",
+              border: "1px solid #4a2a70",
               borderRadius: 4,
               padding: "4px 10px",
               cursor: "pointer",

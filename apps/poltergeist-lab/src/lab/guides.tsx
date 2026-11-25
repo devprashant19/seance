@@ -16,16 +16,16 @@ export interface ExperimentGuide {
   readonly Illustration: () => ReactNode;
 }
 
-const INK = "#9fb4ff";
-const DIM = "#4a5680";
-const ACCENT = "#f6c177";
+const INK = "#00ffff";
+const DIM = "#6a4c9c";
+const ACCENT = "#ffff00";
 
 /** A phone drawn as a rounded rectangle centred at (x, y); rotate in degrees. */
 function Phone({ x, y, w = 18, h = 32, rotate = 0, chip }: { x: number; y: number; w?: number; h?: number; rotate?: number; chip?: boolean }) {
   return (
     <g transform={`translate(${x} ${y}) rotate(${rotate})`}>
-      <rect x={-w / 2} y={-h / 2} width={w} height={h} rx={3} fill="#1b2140" stroke={INK} strokeWidth={1.5} />
-      <rect x={-w / 2 + 2.5} y={-h / 2 + 4} width={w - 5} height={h - 8} rx={1} fill="#26305a" />
+      <rect x={-w / 2} y={-h / 2} width={w} height={h} rx={3} fill="#1f0a35" stroke={INK} strokeWidth={1.5} />
+      <rect x={-w / 2 + 2.5} y={-h / 2 + 4} width={w - 5} height={h - 8} rx={1} fill="#2a0a4a" />
       {chip && <rect x={-w / 2 + 3} y={-h / 2 + 5} width={4} height={4} fill={ACCENT} />}
     </g>
   );
@@ -45,7 +45,7 @@ function Svg({ children, label }: { children: ReactNode; label: string }) {
 }
 
 const arrow = { stroke: ACCENT, strokeWidth: 1.6, fill: "none", markerEnd: "url(#g-arrow)" } as const;
-const text = { fill: "#8a95bb", fontSize: 9, fontFamily: "system-ui, sans-serif" } as const;
+const text = { fill: "#b4a9d6", fontSize: 9, fontFamily: "system-ui, sans-serif" } as const;
 
 export const GUIDES: Record<string, ExperimentGuide> = {
   "spin-find-chip": {
@@ -60,7 +60,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     source: "phone",
     Illustration: () => (
       <Svg label="Phone lying flat on a table, spinning in place">
-        <ellipse cx={120} cy={95} rx={95} ry={22} fill="#141a33" stroke={DIM} />
+        <ellipse cx={120} cy={95} rx={95} ry={22} fill="#1a0a2e" stroke={DIM} />
         <Phone x={120} y={78} w={34} h={20} chip />
         <path d="M 78 70 A 45 18 0 0 1 162 70" {...arrow} />
         <path d="M 162 92 A 45 18 0 0 1 78 92" {...arrow} />
@@ -123,7 +123,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     source: "mic",
     Illustration: () => (
       <Svg label="Ruler clamped to a table edge, free end vibrating">
-        <rect x={20} y={70} width={110} height={40} fill="#141a33" stroke={DIM} />
+        <rect x={20} y={70} width={110} height={40} fill="#1a0a2e" stroke={DIM} />
         <rect x={40} y={64} width={170} height={6} fill="#3a4470" stroke={INK} />
         <rect x={60} y={50} width={30} height={14} fill={DIM} />
         <path d="M 130 67 Q 175 50 210 58" fill="none" stroke={INK} strokeDasharray="3 2" />
@@ -150,7 +150,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
         <line x1={150} y1={12} x2={150} y2={92} stroke={INK} />
         <path d="M 86 50 Q 118 62 150 50" fill="none" stroke={ACCENT} strokeDasharray="3 2" />
         <Phone x={82} y={102} rotate={6} />
-        <circle cx={150} cy={102} r={9} fill="#1b2140" stroke={INK} />
+        <circle cx={150} cy={102} r={9} fill="#1f0a35" stroke={INK} />
         <text x={100} y={74} {...text}>slack cord</text>
       </Svg>
     ),
@@ -189,10 +189,10 @@ export const GUIDES: Record<string, ExperimentGuide> = {
     source: "camera",
     Illustration: () => (
       <Svg label="Pendulum swinging in front of a laptop camera">
-        <rect x={150} y={60} width={70} height={45} rx={3} fill="#1b2140" stroke={INK} />
+        <rect x={150} y={60} width={70} height={45} rx={3} fill="#1f0a35" stroke={INK} />
         <circle cx={185} cy={66} r={2.5} fill={ACCENT} />
         <line x1={60} y1={10} x2={60} y2={80} stroke={INK} />
-        <circle cx={60} cy={86} r={7} fill="#2a3060" stroke={INK} />
+        <circle cx={60} cy={86} r={7} fill="#3d2466" stroke={INK} />
         <path d="M 30 96 A 40 40 0 0 0 90 96" {...arrow} />
         <rect x={50} y={74} width={20} height={24} fill="none" stroke={ACCENT} strokeDasharray="3 2" />
         <line x1={183} y1={66} x2={72} y2={86} stroke={DIM} strokeDasharray="2 3" />
@@ -214,7 +214,7 @@ export const GUIDES: Record<string, ExperimentGuide> = {
         <line x1={15} y1={95} x2={225} y2={95} stroke={DIM} />
         <rect x={70} y={60} width={22} height={34} fill="none" stroke={ACCENT} strokeDasharray="3 2" />
         <rect x={150} y={60} width={22} height={34} fill="none" stroke={ACCENT} strokeDasharray="3 2" />
-        <circle cx={40} cy={86} r={8} fill="#2a3060" stroke={INK} />
+        <circle cx={40} cy={86} r={8} fill="#3d2466" stroke={INK} />
         <path d="M 52 80 L 120 80" {...arrow} />
         <line x1={81} y1={110} x2={161} y2={110} stroke={INK} />
         <text x={112} y={122} {...text}>d</text>
@@ -235,11 +235,11 @@ export const GUIDES: Record<string, ExperimentGuide> = {
       <Svg label="Fan blades spinning in front of a camera">
         <circle cx={90} cy={65} r={42} fill="none" stroke={DIM} />
         {[0, 120, 240].map((a) => (
-          <ellipse key={a} cx={90} cy={42} rx={9} ry={22} fill="#26305a" stroke={INK} transform={`rotate(${a} 90 65)`} />
+          <ellipse key={a} cx={90} cy={42} rx={9} ry={22} fill="#2a0a4a" stroke={INK} transform={`rotate(${a} 90 65)`} />
         ))}
         <circle cx={90} cy={65} r={5} fill={INK} />
         <path d="M 140 40 A 55 55 0 0 1 140 90" {...arrow} />
-        <rect x={170} y={50} width={50} height={32} rx={3} fill="#1b2140" stroke={INK} />
+        <rect x={170} y={50} width={50} height={32} rx={3} fill="#1f0a35" stroke={INK} />
         <circle cx={195} cy={56} r={2.5} fill={ACCENT} />
       </Svg>
     ),

@@ -394,3 +394,33 @@ This session's fixes were made with an external assistant at the owner's request
 ### Verified
 - `pnpm -r typecheck` ✔ · tests ✔ (relay 41/41, root 368/368) · `pnpm -r build` ✔
 - **Not yet verified:** real-phone switch Lab → Choir → Lab (pending owner test).
+
+## 2026-11-25 · Session: neon arcade UI, 3D ghosts, names, instruments (external assistant, not Kiro)
+
+Requested by the owner: restyle the whole project in the neon arcade look of their `psycho-pool-frontend` repo,
+make the ghost 3D everywhere, let players enter a name when joining, add choir instruments that players can switch
+(10 s cooldown), and make the home ghost dizzy when a phone is shaken.
+
+### What changed
+- **Theme** (`seance-avatars/theme.css`): deep-purple night, cyan/magenta neon, Press Start 2P / Orbitron / Rajdhani,
+  scrolling grid, neon boxes with corner accents, arcade buttons with shine. Both apps import it; every page's old
+  palette was mapped onto it.
+- **3D ghost** (`seance-avatars/src/ghost3d/`): built from code with three.js (no downloaded model — a web search found
+  no clearly CC0, good-looking GLB). Lathe-turned body with a rippling hem, glossy eyes, singing mouth, waving arms,
+  neon fresnel halo, glowing séance circle, sparks, drag-to-orbit, name tags. One canvas renders many ghosts (Choir).
+  Lazy-loaded; falls back to the flat SVG ghost without WebGL.
+- **Dizzy reaction**: a firm phone shake (> 14 m/s² linear acceleration) makes the ghost wobble, get spiral eyes and
+  orbiting stars, topple and bounce back (≤ 3 s). On the home page, possession view, Choir stage and the phone itself.
+- **Names**: phones type a name before joining; it travels in `ready.name`, is cleaned by `sanitizeName`
+  (no markup/control chars, ≤ 20 chars) on the relay and laptop, and is shown above each ghost and in player lists.
+- **Choir instruments**: 8 synthesised instruments (banshee, organ, theremin, strings, music box, bells, ghost choir,
+  bass) sharing the same tilt/roll/shake/hold controls. Picked on the phone (`ready.instrument`); switching has a 10 s
+  cooldown shown on the phone and enforced again on the laptop (`InstrumentCooldown`).
+- **Home page** is now a lobby (big 3D ghost, QR, named players, feature cards); it no longer jumps away when a phone joins.
+
+### Verified
+- `pnpm -r typecheck` ✔ · tests ✔ (core 189, relay 42, Lab 68, Choir 21, root suite) · `pnpm -r build` ✔
+- Scripted browser run against the dev servers (real Chrome + simulated phones): room code, named players, shake →
+  dizzy, phone name screen → join → own 3D ghost, instrument switch + cooldown on the phone, Lab → Choir keeps both
+  phones, per-player instruments, laptop-side cooldown rejects a second switch within 10 s, Lab and possession pages.
+- **Not yet verified:** a real phone shake / real audio of each instrument on the owner's devices.

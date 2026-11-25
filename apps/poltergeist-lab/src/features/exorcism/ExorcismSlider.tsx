@@ -83,7 +83,7 @@ export function ExorcismSlider({
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
         <label
           htmlFor="exorcism-slider"
-          style={{ fontSize: 13, color: "#889", whiteSpace: "nowrap" }}
+          style={{ fontSize: 13, color: "#b4a9d6", whiteSpace: "nowrap" }}
         >
           Exorcism
         </label>
@@ -98,13 +98,13 @@ export function ExorcismSlider({
           aria-label={`Noise filter cutoff: ${cutoffHz.toFixed(1)} Hz`}
           style={{ flex: 1, accentColor: "#7755cc" }}
         />
-        <span style={{ fontSize: 13, color: "#aab", fontFamily: "monospace", minWidth: 90 }}>
+        <span style={{ fontSize: 13, color: "#c9bfe6", fontFamily: "monospace", minWidth: 90 }}>
           {sliderPos === 0 ? "Raw" : `${cutoffHz.toFixed(1)} Hz`}
         </span>
       </div>
 
       {filterResult && (
-        <p style={{ fontSize: 12, color: "#778", margin: "4px 0" }}>
+        <p style={{ fontSize: 12, color: "#9d8fc4", margin: "4px 0" }}>
           Noise removed: RMS {filterResult.rmsRaw.toFixed(3)} → {filterResult.rmsFiltered.toFixed(3)} {unit}
         </p>
       )}
@@ -117,7 +117,7 @@ export function ExorcismSlider({
           borderRadius: 6,
           marginTop: 8,
           fontSize: 12,
-          color: "#ca8",
+          color: "#ffe066",
         }}>
           {reducedMotion ? null : (
             <span style={{ marginRight: 6 }}>~</span>
@@ -130,7 +130,7 @@ export function ExorcismSlider({
         </div>
       )}
 
-      <p style={{ fontSize: 11, color: "#556", marginTop: 8, fontStyle: "italic" }}>
+      <p style={{ fontSize: 11, color: "#76679f", marginTop: 8, fontStyle: "italic" }}>
         Display filter only — Physics Oracle measurement uses calibrated fixed-frequency filter.
       </p>
     </div>

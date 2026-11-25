@@ -86,43 +86,43 @@ export function WraithBench() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto", padding: "2rem", fontFamily: "monospace", color: "#e0e0e0" }}>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "2rem", fontFamily: "monospace", color: "#eee8ff" }}>
       <nav style={{ marginBottom: "2rem" }}>
-        <Link to="/" style={{ color: "#888", textDecoration: "none" }}>← Back to Sanctum</Link>
+        <Link to="/" style={{ color: "#b0a6cc", textDecoration: "none" }}>← Back to Sanctum</Link>
       </nav>
 
-      <header style={{ marginBottom: "2rem", borderBottom: "1px solid #333", paddingBottom: "1rem" }}>
-        <h1 style={{ fontSize: "1.75rem", color: "#68d391", margin: 0 }}>WraithBench: Device Passport</h1>
-        <p style={{ color: "#aaa", fontSize: "0.9rem", marginTop: "0.5rem" }}>
+      <header style={{ marginBottom: "2rem", borderBottom: "1px solid #2d1b4e", paddingBottom: "1rem" }}>
+        <h1 style={{ fontSize: "1.75rem", color: "#00ff99", margin: 0 }}>WraithBench: Device Passport</h1>
+        <p style={{ color: "#c9bfe6", fontSize: "0.9rem", marginTop: "0.5rem" }}>
           Physical reality verification, sensor capability profiling, and calibration rituals.
         </p>
-        <div style={{ background: "#2d3748", padding: "0.75rem 1rem", borderRadius: 4, marginTop: "1rem", fontSize: "0.85rem", borderLeft: "3px solid #ecc94b" }}>
+        <div style={{ background: "#2d1b4e", padding: "0.75rem 1rem", borderRadius: 4, marginTop: "1rem", fontSize: "0.85rem", borderLeft: "3px solid #ffff33" }}>
           <strong>Notice:</strong> Physical quantities have explicit units and measured uncertainties.
           Not for medical, structural-safety, or supernatural claims.
         </div>
       </header>
 
       {/* Capabilities */}
-      <section style={{ background: "#1a202c", padding: "1.5rem", borderRadius: 8, marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "1.2rem", marginTop: 0, color: "#cbd5e0" }}>Hardware Capabilities</h2>
+      <section style={{ background: "#140726", padding: "1.5rem", borderRadius: 8, marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "1.2rem", marginTop: 0, color: "#e6e0ff" }}>Hardware Capabilities</h2>
         {caps ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
             <div>
-              <div style={{ color: "#718096" }}>Secure Context</div>
-              <div style={{ color: caps.isSecureContext ? "#68d391" : "#e53e3e" }}>
+              <div style={{ color: "#8a7bb5" }}>Secure Context</div>
+              <div style={{ color: caps.isSecureContext ? "#00ff99" : "#ff3b8d" }}>
                 {caps.isSecureContext ? "Yes (HTTPS / Localhost)" : "No (Insecure)"}
               </div>
             </div>
             <div>
-              <div style={{ color: "#718096" }}>Device Type</div>
+              <div style={{ color: "#8a7bb5" }}>Device Type</div>
               <div>{caps.isMobile ? "Mobile Device" : "Desktop / Laptop"}</div>
             </div>
             <div>
-              <div style={{ color: "#718096" }}>Motion API</div>
+              <div style={{ color: "#8a7bb5" }}>Motion API</div>
               <div>{caps.permissions.motion}</div>
             </div>
             <div>
-              <div style={{ color: "#718096" }}>Available Channels</div>
+              <div style={{ color: "#8a7bb5" }}>Available Channels</div>
               <div>{caps.availableChannels.join(", ") || "None"}</div>
             </div>
           </div>
@@ -132,9 +132,9 @@ export function WraithBench() {
       </section>
 
       {/* Calibration Ritual */}
-      <section style={{ background: "#1a202c", padding: "1.5rem", borderRadius: 8, marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "1.2rem", marginTop: 0, color: "#cbd5e0" }}>Calibration Rituals</h2>
-        <p style={{ color: "#a0aec0", fontSize: "0.9rem" }}>
+      <section style={{ background: "#140726", padding: "1.5rem", borderRadius: 8, marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "1.2rem", marginTop: 0, color: "#e6e0ff" }}>Calibration Rituals</h2>
+        <p style={{ color: "#b4a9d6", fontSize: "0.9rem" }}>
           Verify sensor orientation and coordinate frame conventions across operating systems.
         </p>
 
@@ -145,7 +145,7 @@ export function WraithBench() {
               onClick={() => runRitualCheck(step)}
               disabled={isMeasuring}
               style={{
-                background: activeStep === step ? "#3182ce" : "#2d3748",
+                background: activeStep === step ? "#a100c2" : "#2d1b4e",
                 color: "#fff",
                 border: "none",
                 padding: "0.5rem 1rem",
@@ -160,7 +160,7 @@ export function WraithBench() {
         </div>
 
         {isMeasuring && (
-          <div style={{ marginTop: "1.5rem", padding: "1rem", background: "#2b6cb0", borderRadius: 4 }}>
+          <div style={{ marginTop: "1.5rem", padding: "1rem", background: "#008a99", borderRadius: 4 }}>
             Recording 3.0s window for {activeStep}... ({measuredSamples} samples gathered)
           </div>
         )}
@@ -172,7 +172,7 @@ export function WraithBench() {
               padding: "1rem",
               background: stepResult.passed ? "#22543d" : "#742a2a",
               borderRadius: 4,
-              borderLeft: `4px solid ${stepResult.passed ? "#48bb78" : "#f56565"}`,
+              borderLeft: `4px solid ${stepResult.passed ? "#00ff99" : "#ff3b8d"}`,
             }}
           >
             <div style={{ fontWeight: "bold", fontSize: "1rem" }}>
