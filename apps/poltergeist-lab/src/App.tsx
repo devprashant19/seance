@@ -38,6 +38,9 @@ const CircleRoute = lazy(() =>
 const SkepticRoute = lazy(() =>
   import("./routes/SkepticRoute.js").then((m) => ({ default: m.SkepticRoute }))
 );
+const HomePage = lazy(() =>
+  import("./homepage/index.js").then((m) => ({ default: m.HomePage }))
+);
 
 function RouteFallback() {
   return (
@@ -55,6 +58,7 @@ export function App() {
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/join/:code" element={<Join />} />
           <Route path="/possession/:code" element={<Possession />} />
           <Route path="/lab" element={<Lab />} />
