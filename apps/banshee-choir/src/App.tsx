@@ -4,7 +4,7 @@ import { JoinChoir } from "./routes/JoinChoir.js";
 
 export function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <Routes>
         <Route path="/" element={<ChoirHome />} />
         <Route path="/join/:code" element={<JoinChoir />} />
