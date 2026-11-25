@@ -378,7 +378,7 @@ This session's fixes were made with an external assistant at the owner's request
 - `pnpm typecheck` ✔ · `pnpm test` ✔ 368/368 (54 files) · `pnpm build` ✔
 - Scripted end-to-end run against the live dev servers: 10/10 checks (room → phone join → possession resume → tilt/gyro data in rad → malformed batch rejected → choir touch data).
 - Join page: 3.27 kB gzip JS + 1.39 kB HTML (measured).
-- **Not yet verified:** a real phone scan (pending owner test), deployment, real sensor recordings.
+- **Tested on mobile since:** the owner scanned the QR with a real Android phone and the possession view followed it. Still not done: deployment.
 
 ## 2026-11-25 · Session: one room across pages and apps (external assistant, not Kiro)
 
@@ -393,7 +393,7 @@ This session's fixes were made with an external assistant at the owner's request
 
 ### Verified
 - `pnpm -r typecheck` ✔ · tests ✔ (relay 41/41, root 368/368) · `pnpm -r build` ✔
-- **Not yet verified:** real-phone switch Lab → Choir → Lab (pending owner test).
+- **Tested on mobile since:** the owner switched Lab → Choir with a real phone connected; the phone stayed in the room (that test exposed the stuck-on-Choir screen, fixed later).
 
 ## 2026-11-25 · Session: neon arcade UI, 3D ghosts, names, instruments (external assistant, not Kiro)
 
@@ -423,7 +423,7 @@ make the ghost 3D everywhere, let players enter a name when joining, add choir i
 - Scripted browser run against the dev servers (real Chrome + simulated phones): room code, named players, shake →
   dizzy, phone name screen → join → own 3D ghost, instrument switch + cooldown on the phone, Lab → Choir keeps both
   phones, per-player instruments, laptop-side cooldown rejects a second switch within 10 s, Lab and possession pages.
-- **Not yet verified:** a real phone shake / real audio of each instrument on the owner's devices.
+- **Tested on mobile since (simulated phones, see the 'end-to-end' entry):** shake → dizzy ghost, phone keys and each instrument's notes checked on the laptop's synth. Not yet listened to on the owner's speakers.
 
 ### Merged with the product homepage (teammate commits ff8c56c…febb350)
 - Pulled the new homepage (`/`); the live séance lobby moved to `/session` as that work intended.
@@ -466,7 +466,7 @@ pointed at `https://github.com`.
 
 ### Verified
 - `pnpm -r typecheck` ✔ · root suite 58 files / 398 tests ✔ · `pnpm -r build` ✔ · browser run 25/25 ✔
-- **Not yet verified on real devices:** a real spin / plank / coupled-pendulum recording.
+- **Tested on mobile since:** the owner ran a real spin (it exposed the fake 0 % pass); spin, plank and coupled pendulums were then checked end-to-end with simulated phones (see the next entry).
 
 ### Apparition Gate: the camera was used but never shown
 The page asked for the webcam but never displayed it, measured without calibration, silently fell back to synthetic
@@ -475,3 +475,43 @@ pendulum through a central gate is half a period. Now: live video with clickable
 Calibrate, "Camera not available" + Retry instead of synthetic numbers, gate distance and blade count as inputs, and
 the period timed from every second entry (entry i to i+2 is one full period). Checked with Chrome's fake webcam and
 with no camera.
+
+## 2026-11-25 · Session: end-to-end test with simulated phones (external assistant, not Kiro)
+
+**Setup.** Real Chrome in mobile emulation opened the real phone pages (`join.html`, `/choir/join/…`) and received
+physics-generated DeviceMotion/DeviceOrientation events with known truth, timestamped on a steady 60 Hz clock like phone
+hardware. A second Chrome ran the real Lab and Choir pages; synthetic webcam clips (known period/speed/RPM) fed the
+Apparition Gate through Chrome's fake camera. Everything ran on one machine against the dev servers.
+
+**Results (29/29 checks, no page errors):**
+
+| Check | Truth | Measured |
+|---|---|---|
+| Pendulum g (1 m) | 9.81 m/s² | 9.81 ± 0.05 · Newton approves |
+| Free fall (0.50 m) | 0.50 m | 0.49 ± 0.03 · Newton approves |
+| Spin: sensor offset | 27.73 mm | 27.68 mm · measurement |
+| Plank resonance | 17 Hz | 16.99 ± 0.14 Hz · measurement |
+| Coupled pendulums beat | 10 s | 10.0 ± 1.8 s · measurement |
+| Gate pendulum period | 2.000 s | 1.998 ± 0.013 s |
+| Gate speed | 0.25 m/s | 0.248 ± 0.008 m/s |
+| Gate fan | 120 rpm | 120 ± 1 rpm |
+
+Also checked: still phone → "No spin detected" / "No free fall" / "No clear ringing"; possession tutorial (tilt →
+shake → hold still → doors); shake → dizzy ghost; phone keys and instruments on the laptop synth; cooldown; Choir QR
+page; phone leaves Choir controls when the laptop leaves; homepage links. Choir stream: 0 % dropouts over 2 min, key-to-
+sound median 3.3 ms (same machine; see choir-validation.md).
+
+**Bugs the test found and fixed:**
+- Pendulum: crossings were snapped to a 50 Hz grid (g read 9.92); now interpolated, full periods, uncertainty from scatter.
+- Plank: regular taps split the spectrum into comb lines (16.67 Hz); each tap is now measured separately.
+- Free fall: edges biased the fall short (0.44–0.46 m); edges are now gap midpoints.
+- Spin: a sudden spin-up biased |r| by 3 %; the first/last 0.1 s of each spin are now skipped.
+- Apparition Gate: frames were read through page rendering (4–16 fps when throttled); now read straight from the camera
+  track with capture timestamps (30 fps); fps estimate no longer reads high (fan read 124 rpm); irregular intervals
+  (restarts) are ignored for the period.
+- The Lab only stayed connected on phone pages, so phones missed the laptop leaving the Choir; it now stays connected.
+- Camera/microphone experiments offered "Begin Recording" in the phone runner; they now point to the Gate page / say the
+  microphone isn't connected.
+
+**Still not done (needs people or real hardware):** the Ghost Ear study with blind/low-vision participants, an
+accessibility audit with a screen reader, device passports measured on real phones, and a phone lock/unlock test.
