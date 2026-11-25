@@ -9,8 +9,8 @@ import {
 } from "seance-avatars";
 import { Quaternion, Euler } from "three";
 import type { Mood } from "seance-core";
+import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
 
-const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "ws://localhost:4000";
 
 type TutorialStep = "summoning" | "tilt" | "shake" | "still" | "doors";
 type ViewState = "connecting" | "summoning" | "possessed" | "fading" | "relay_down";
@@ -185,7 +185,7 @@ function Doors({ roomCode, onLab }: { roomCode: string; onLab: () => void }) {
         <p style={{ fontSize: 20, fontWeight: 400, marginBottom: 8 }}>Poltergeist Lab</p>
         <p style={{ fontSize: 13, color: "#889" }}>Measure the world with your phone.</p>
       </button>
-      <a href={`/choir?room=${roomCode}`} style={{ ...doorStyle("linear-gradient(180deg, #2a1a2a 0%, #1a0d1a 100%)"), textDecoration: "none", color: "inherit" }}>
+      <a href="/choir/" style={{ ...doorStyle("linear-gradient(180deg, #2a1a2a 0%, #1a0d1a 100%)"), textDecoration: "none", color: "inherit" }}>
         <p style={{ fontSize: 20, fontWeight: 400, marginBottom: 8 }}>Banshee Choir</p>
         <p style={{ fontSize: 13, color: "#988" }}>Turn motion into music, together.</p>
       </a>
@@ -225,7 +225,6 @@ export function Possession() {
   const [peakShake, setPeakShake] = useState(0);
   const [disconnectMsg, setDisconnectMsg] = useState<string | null>(null);
 
-  const wsRef = useRef<WebSocket | null>(null);
   const refPoseRef = useRef<Quaternion | null>(null);
   const stillStartRef = useRef<number | null>(null);
   const prevQuatRef = useRef(new Quaternion());
@@ -241,126 +240,112 @@ export function Possession() {
     navigate(`/lab?room=${code}`);
   }, [navigate, code]);
 
+  // The message handler is registered once per room, so it must read live values through refs
+  // (plain state would be frozen at its initial value and the tutorial would never advance).
+  const tutorialStepRef = useRef<TutorialStep>(tutorialStep);
+  const viewStateRef = useRef<ViewState>(viewState);
+  useEffect(() => { tutorialStepRef.current = tutorialStep; }, [tutorialStep]);
+  useEffect(() => { viewStateRef.current = viewState; }, [viewState]);
+
+  // The app-wide séance room: the phone joined once (on the home page) and keeps streaming while
+  // the laptop moves between pages. This view just follows it.
+  const room = useLiveRoom();
+  const phoneCount = room.phones.length;
   useEffect(() => {
-    if (!code) {
-      setDisconnectMsg("No room code.");
+    if (room.status === "ready" && room.code && code && room.code !== code) {
+      navigate(`/possession/${room.code}`, { replace: true }); // stale link: follow the live room
       return;
     }
+    if (room.status === "error") {
+      setDisconnectMsg(room.error ?? "The veil is thick tonight. We can't reach the séance server.");
+      return;
+    }
+    setDisconnectMsg(null);
+    if (room.status !== "ready") {
+      setViewState((v) => (v === "possessed" ? v : "connecting"));
+    } else if (phoneCount > 0) {
+      setViewState("possessed");
+      setMood((m) => (m === "fading" ? "uneasy" : m));
+      setTutorialStep((t) => (t === "summoning" ? "tilt" : t));
+    } else {
+      const v = viewStateRef.current;
+      if (v === "possessed") setMood("fading");
+      setViewState(v === "possessed" || v === "fading" ? "fading" : "summoning");
+    }
+  }, [room.status, room.code, room.error, phoneCount, code, navigate]);
 
-    const ws = new WebSocket(RELAY_URL);
-    wsRef.current = ws;
+  useLiveBatches((_peerId, batch) => {
+    const orientation = batch.channels["orientation"];
+    const accelG = batch.channels["accelG"];
+    const step = tutorialStepRef.current;
 
-    ws.addEventListener("open", () => {
-      ws.send(JSON.stringify({ type: "hello", version: 1, role: "host", roomCode: code }));
-    });
+    if (orientation && orientation.t.length > 0) {
+      const i = orientation.t.length - 1;
+      // Radians, as sent by the phone page (deviceOrientationToQuaternion expects radians).
+      const alpha = orientation.values[0]![i]!;
+      const beta = orientation.values[1]![i]!;
+      const gamma = orientation.values[2]![i]!;
 
-    ws.addEventListener("message", (e) => {
-      try {
-        const msg = JSON.parse(e.data as string);
+      const qNow = deviceOrientationToQuaternion(alpha, beta, gamma);
+      const displayQuat = refPoseRef.current
+        ? computeGhostRotation(qNow, refPoseRef.current, new Quaternion())
+        : qNow;
 
-        if (msg.type === "welcome") {
-          setViewState("summoning");
-          return;
-        }
+      const smoothed = smoothStep(prevQuatRef.current, displayQuat, 1 / 60);
+      prevQuatRef.current = smoothed;
 
-        if (msg.type === "peer-joined") {
-          setViewState("possessed");
-          if (tutorialStep === "summoning") setTutorialStep("tilt");
-          return;
-        }
+      const euler = new Euler().setFromQuaternion(smoothed, "YXZ");
+      const pitch = euler.x * (180 / Math.PI);
+      const yaw = euler.y * (180 / Math.PI);
+      const roll = euler.z * (180 / Math.PI);
+      setRotation({ x: pitch, y: yaw, z: roll });
 
-        if (msg.type === "room-paused" || msg.type === "peer-left") {
-          setViewState("fading");
-          setMood("fading");
-          return;
-        }
-
-        if (msg.type === "batch" && msg.channels) {
-          const orientationSamples = msg.channels.orientation as Array<{ t: number; v: number[] }> | undefined;
-          const accelSamples = msg.channels.accel as Array<{ t: number; v: number[] }> | undefined;
-
-          if (orientationSamples && orientationSamples.length > 0) {
-            const last = orientationSamples[orientationSamples.length - 1]!;
-            const [alpha, beta, gamma] = last.v as [number, number, number];
-
-            const qNow = deviceOrientationToQuaternion(alpha, beta, gamma);
-            let displayQuat: Quaternion;
-
-            if (refPoseRef.current) {
-              const yHeading = new Quaternion();
-              displayQuat = computeGhostRotation(qNow, refPoseRef.current, yHeading);
-            } else {
-              displayQuat = qNow;
-            }
-
-            const smoothed = smoothStep(prevQuatRef.current, displayQuat, 1 / 60);
-            prevQuatRef.current = smoothed;
-
-            const euler = new Euler().setFromQuaternion(smoothed, "YXZ");
-            const pitch = euler.x * (180 / Math.PI);
-            const yaw = euler.y * (180 / Math.PI);
-            const roll = euler.z * (180 / Math.PI);
-
-            setRotation({ x: pitch, y: yaw, z: roll });
-
-            const totalRotation = Math.abs(pitch) + Math.abs(yaw) + Math.abs(roll);
-            if (!tiltDetectedRef.current && totalRotation > TILT_THRESHOLD && tutorialStep === "tilt") {
-              tiltDetectedRef.current = true;
-              setTimeout(() => setTutorialStep("shake"), 1500);
-            }
-
-            if (tutorialStep === "still") {
-              if (totalRotation < 5) {
-                if (!stillStartRef.current) stillStartRef.current = Date.now();
-                const elapsed = Date.now() - stillStartRef.current;
-                setStillProgress((elapsed / STILL_DURATION_MS) * 100);
-                if (elapsed >= STILL_DURATION_MS) {
-                  refPoseRef.current = qNow.clone();
-                  setTutorialStep("doors");
-                  setMood("calm");
-                }
-              } else {
-                stillStartRef.current = null;
-                setStillProgress(0);
-              }
-            }
-          }
-
-          if (accelSamples && accelSamples.length > 0) {
-            const last = accelSamples[accelSamples.length - 1]!;
-            const [ax, ay, az] = last.v as [number, number, number];
-            const mag = Math.sqrt(ax * ax + ay * ay + az * az);
-            const shakeAboveGravity = Math.max(0, mag - 9.81);
-            setShakeValue(shakeAboveGravity);
-            if (shakeAboveGravity > peakShake) setPeakShake(shakeAboveGravity);
-
-            if (!shakeDetectedRef.current && shakeAboveGravity > SHAKE_THRESHOLD && tutorialStep === "shake") {
-              shakeDetectedRef.current = true;
-              setTimeout(() => setTutorialStep("still"), 1500);
-            }
-          }
-
-          if (viewState === "fading") {
-            setViewState("possessed");
-            setMood("uneasy");
-          }
-        }
-      } catch { /* ignore parse errors */ }
-    });
-
-    ws.addEventListener("error", () => {
-      setViewState("relay_down");
-      setDisconnectMsg("The veil is thick tonight. We can't reach the séance server.");
-    });
-
-    ws.addEventListener("close", () => {
-      if (viewState !== "relay_down") {
-        setViewState("fading");
+      const totalRotation = Math.abs(pitch) + Math.abs(yaw) + Math.abs(roll);
+      if (!tiltDetectedRef.current && totalRotation > TILT_THRESHOLD && step === "tilt") {
+        tiltDetectedRef.current = true;
+        setTimeout(() => setTutorialStep("shake"), 1500);
       }
-    });
 
-    return () => { ws.close(); };
-  }, [code]);
+      if (step === "still") {
+        // "Still" means not rotating: use the latest gyro magnitude when available.
+        const gyro = batch.channels["gyro"];
+        const gi = gyro ? gyro.t.length - 1 : -1;
+        const spin = gyro && gi >= 0
+          ? Math.hypot(gyro.values[0]![gi]!, gyro.values[1]![gi]!, gyro.values[2]![gi]!)
+          : 0;
+        if (spin < 0.15) {
+          if (!stillStartRef.current) stillStartRef.current = Date.now();
+          const elapsed = Date.now() - stillStartRef.current;
+          setStillProgress(Math.min(100, (elapsed / STILL_DURATION_MS) * 100));
+          if (elapsed >= STILL_DURATION_MS) {
+            refPoseRef.current = qNow.clone();
+            setTutorialStep("doors");
+            setMood("calm");
+          }
+        } else {
+          stillStartRef.current = null;
+          setStillProgress(0);
+        }
+      }
+    }
+
+    if (accelG && accelG.t.length > 0) {
+      const i = accelG.t.length - 1;
+      const mag = Math.hypot(accelG.values[0]![i]!, accelG.values[1]![i]!, accelG.values[2]![i]!);
+      const shakeAboveGravity = Math.max(0, mag - 9.81);
+      setShakeValue(shakeAboveGravity);
+      setPeakShake((p) => Math.max(p, shakeAboveGravity));
+      if (!shakeDetectedRef.current && shakeAboveGravity > SHAKE_THRESHOLD && step === "shake") {
+        shakeDetectedRef.current = true;
+        setTimeout(() => setTutorialStep("still"), 1500);
+      }
+    }
+
+    if (viewStateRef.current === "fading") {
+      setViewState("possessed");
+      setMood("uneasy");
+    }
+  });
 
   const handleDrag = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (viewState !== "summoning") return;
@@ -384,7 +369,7 @@ export function Possession() {
       {disconnectMsg && (
         <DisconnectOverlay
           message={disconnectMsg}
-          onRetry={() => window.location.reload()}
+          onRetry={room.retry}
         />
       )}
 

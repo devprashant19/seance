@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LiveRoomProvider } from "./live/LiveRoom.js";
 const Landing = lazy(() =>
   import("./routes/Landing.js").then((m) => ({ default: m.Landing }))
 );
@@ -49,6 +50,8 @@ function RouteFallback() {
 export function App() {
   return (
     <BrowserRouter>
+      {/* One séance room for every page: the phone joins once and stays while you switch pages. */}
+      <LiveRoomProvider>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -65,6 +68,7 @@ export function App() {
           <Route path="/skeptic" element={<SkepticRoute />} />
         </Routes>
       </Suspense>
+      </LiveRoomProvider>
     </BrowserRouter>
   );
 }

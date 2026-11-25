@@ -60,6 +60,13 @@
         font-size: 14px;
         max-width: 320px;
       }
+      .sing-pad {
+        display: none; margin: 20px auto 0; width: min(300px, 90vw); height: 150px;
+        border-radius: 16px; border: 2px dashed rgba(240,120,200,0.5); background: rgba(240,120,200,0.08);
+        color: #f9a8d4; font-size: 18px; align-items: center; justify-content: center;
+        touch-action: none; user-select: none; -webkit-user-select: none;
+      }
+      .sing-pad.active { background: rgba(240,120,200,0.3); border-style: solid; }
       .trouble {
         max-width: 340px;
         padding: 16px;
@@ -88,6 +95,7 @@
         <button id="begin-btn" class="btn">Begin Séance</button>
       </div>
       <p id="status-text" class="status">Tap Begin to channel phone sensors to the lab.</p>
+      <div id="sing-pad" class="sing-pad" role="button" aria-label="Hold to sing in the Banshee Choir">🎤 Hold here to sing<br/><small style="color:#a77;font-size:12px">(when the laptop is on the Choir)</small></div>
       <div id="trouble-box" class="trouble" style="display: none;"></div>
     </div>
     <script type="module" src="/src/join-standalone.ts"></script>

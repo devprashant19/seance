@@ -1,95 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import { SpiritTrouble } from "seance-avatars";
-
-const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "ws://localhost:4000";
-const RETRY_DELAY_MS = 5000;
-
-function encodeToMatrix(text: string): boolean[][] {
-  const size = 21;
-  const matrix: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false) as boolean[]);
-  for (let i = 0; i < text.length && i < size * size; i++) {
-    const code = text.charCodeAt(i);
-    for (let b = 0; b < 8 && i * 8 + b < size * size; b++) {
-      const idx = i * 8 + b;
-      const r = Math.floor(idx / size);
-      const c = idx % size;
-      if (r < size && c < size) {
-        matrix[r]![c] = Boolean((code >> (7 - b)) & 1);
-      }
-    }
-  }
-  for (const [row, col] of [[0, 0], [0, size - 7], [size - 7, 0]] as const) {
-    for (let r = 0; r < 7; r++) {
-      for (let c = 0; c < 7; c++) {
-        const isEdge = r === 0 || r === 6 || c === 0 || c === 6;
-        const isInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-        if (row + r < size && col + c < size) {
-          matrix[row + r]![col + c] = isEdge || isInner;
-        }
-      }
-    }
-  }
-  return matrix;
-}
-
-function QrCode({ text, size }: { text: string; size: number }) {
-  const cells = encodeToMatrix(text);
-  const n = cells.length;
-  const cellSize = size / n;
-  return (
-    <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} role="img" aria-label={`QR code for ${text}`}>
-      {cells.flatMap((row, r) =>
-        row.map((on, c) =>
-          on ? <rect key={`${r}-${c}`} x={c * cellSize} y={r * cellSize} width={cellSize} height={cellSize} fill="#fff" /> : null,
-        ),
-      )}
-    </svg>
-  );
-}
+import { useState, useEffect, useCallback, useRef, type CSSProperties } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { SpiritTrouble, QrCode } from "seance-avatars";
+import { useLiveRoom } from "../live/LiveRoom.js";
 
 export function Landing() {
-  const [roomCode, setRoomCode] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [retryIn, setRetryIn] = useState(0);
+  const room = useLiveRoom();
+  const roomCode = room.status === "ready" ? room.code : null;
+  const error = room.status === "error" ? room.error : null;
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
-  const connectRelay = useCallback(() => {
-    setError(null);
-    try {
-      const ws = new WebSocket(RELAY_URL);
-      ws.addEventListener("open", () => {
-        ws.send(JSON.stringify({ type: "hello", version: 1, role: "host" }));
-      });
-      ws.addEventListener("message", (e) => {
-        try {
-          const msg = JSON.parse(e.data as string);
-          if (msg.type === "welcome" && msg.roomCode) {
-            setRoomCode(msg.roomCode as string);
-          }
-        } catch { /* ignore */ }
-      });
-      ws.addEventListener("error", () => {
-        setError("Cannot reach relay server.");
-        setRetryIn(RETRY_DELAY_MS / 1000);
-      });
-    } catch {
-      setError("Cannot reach relay server.");
-      setRetryIn(RETRY_DELAY_MS / 1000);
-    }
-  }, []);
-
-  useEffect(() => { connectRelay(); }, [connectRelay]);
-
+  // A phone that joins while this page is open takes the laptop to the possession view. Phones that
+  // were already in the room (coming back from another page) don't — the "go to ghost" link does.
+  const mountedAt = useRef(Date.now());
   useEffect(() => {
-    if (retryIn <= 0) return;
-    const t = setInterval(() => {
-      setRetryIn((prev) => {
-        if (prev <= 1) { connectRelay(); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(t);
-  }, [retryIn, connectRelay]);
+    if (room.code && room.lastJoinAt > mountedAt.current) navigate(`/possession/${room.code}`);
+  }, [room.lastJoinAt, room.code, navigate]);
 
   const joinUrl = roomCode ? `${window.location.origin}/join.html?code=${roomCode}` : "";
 
@@ -131,8 +57,8 @@ export function Landing() {
       {error && !roomCode && (
         <SpiritTrouble
           code="relay-unreachable-host"
-          onAction={connectRelay}
-          onSecondaryAction={() => { window.location.href = "/replay"; }}
+          onAction={room.retry}
+          onSecondaryAction={() => navigate("/replay")}
         />
       )}
 
@@ -148,12 +74,24 @@ export function Landing() {
             padding: "8px 24px", background: copied ? "#334466" : "#223355",
             border: "1px solid #446", color: "#ccd", borderRadius: 6, cursor: "pointer", fontSize: 14,
           }}>{copied ? "Copied!" : "Copy Link"}</button>
+          {room.phones.length > 0 && (
+            <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+              <span style={{ color: "#8f8", fontSize: 14, alignSelf: "center" }}>
+                {room.phones.length === 1 ? "1 phone connected" : `${room.phones.length} phones connected`}
+              </span>
+              <Link to={`/possession/${roomCode}`} style={pillStyle("#aabbff", "#446")}>Go to the ghost &rarr;</Link>
+              <a href="/choir/" style={pillStyle("#f9a8d4", "#702459")}>Banshee Choir &rarr;</a>
+            </div>
+          )}
+          <button onClick={room.newRoom} style={{
+            marginTop: 12, background: "none", border: "none", color: "#667", cursor: "pointer", fontSize: 12, textDecoration: "underline",
+          }}>Start a new séance (new code)</button>
         </>
       )}
 
       <div style={{ marginTop: 28, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
-        <a
-          href="/hear"
+        <Link
+          to="/hear"
           style={{
             color: "#88bbff",
             fontSize: 14,
@@ -165,9 +103,9 @@ export function Landing() {
           }}
         >
           🎧 Ghost Ear (accessible mode) &rarr;
-        </a>
-        <a
-          href="/bench"
+        </Link>
+        <Link
+          to="/bench"
           style={{
             color: "#ecc94b",
             fontSize: 14,
@@ -179,9 +117,9 @@ export function Landing() {
           }}
         >
           📱 WraithBench (device passport) &rarr;
-        </a>
-        <a
-          href="/array"
+        </Link>
+        <Link
+          to="/array"
           style={{
             color: "#63b3ed",
             fontSize: 14,
@@ -193,9 +131,9 @@ export function Landing() {
           }}
         >
           🌌 Spirit Array (multi-device) &rarr;
-        </a>
-        <a
-          href="/gate"
+        </Link>
+        <Link
+          to="/gate"
           style={{
             color: "#68d391",
             fontSize: 14,
@@ -207,9 +145,9 @@ export function Landing() {
           }}
         >
           📷 Apparition Gate (camera photogate) &rarr;
-        </a>
-        <a
-          href="/circle"
+        </Link>
+        <Link
+          to="/circle"
           style={{
             color: "#b794f4",
             fontSize: 14,
@@ -221,9 +159,9 @@ export function Landing() {
           }}
         >
           🕯️ Séance Circle (classroom board) &rarr;
-        </a>
-        <a
-          href="/skeptic"
+        </Link>
+        <Link
+          to="/skeptic"
           style={{
             color: "#f6ad55",
             fontSize: 14,
@@ -235,9 +173,9 @@ export function Landing() {
           }}
         >
           🔍 Skeptic's Séance (environmental audit) &rarr;
-        </a>
-        <a
-          href="/replay"
+        </Link>
+        <Link
+          to="/replay"
           style={{
             color: "#99aabb",
             fontSize: 14,
@@ -247,10 +185,19 @@ export function Landing() {
           }}
         >
           No phone? Watch a recorded haunting &rarr;
-        </a>
+        </Link>
       </div>
+
+      {room.status === "connecting" && !roomCode && <p style={{ color: "#667" }}>Opening the séance…</p>}
 
       <style>{`@keyframes pulse { 0%,100% { opacity:.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.05); } }`}</style>
     </main>
   );
+}
+
+function pillStyle(color: string, border: string): CSSProperties {
+  return {
+    color, fontSize: 14, textDecoration: "none", padding: "8px 16px",
+    border: `1px solid ${border}`, borderRadius: 6, background: "rgba(255,255,255,0.04)",
+  };
 }

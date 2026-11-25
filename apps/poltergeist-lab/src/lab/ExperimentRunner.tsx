@@ -10,6 +10,11 @@ import { ExportMenu } from "./ExportMenu.js";
 import { NotebookView } from "../features/notebook/index.js";
 import { diagnoseDiscrepancies, type SpiritDiagnosis } from "../oracle/explain.js";
 import { AskTheSpiritModal } from "../oracle/AskTheSpiritModal.js";
+import { computeTimingStats } from "seance-core";
+import { useLiveRoom, useLiveBatches } from "../live/LiveRoom.js";
+import { toTimeSamples } from "seance-core/transports/phone-bridge";
+
+type LiveStatus = "connecting" | "waiting-phone" | "live" | "error";
 
 type RunnerState = "SETUP" | "READY_CHECK" | "RECORDING" | "ANALYZING" | "RESULT" | "ERROR";
 
@@ -35,6 +40,32 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
   const [diagnoses, setDiagnoses] = useState<readonly SpiritDiagnosis[]>([]);
   const [progress, setProgress] = useState(0);
   const channelsRef = useRef<Map<string, ChannelBuffer>>(new Map());
+  const room = useLiveRoom();
+  const liveStatus: LiveStatus =
+    room.status === "error" ? "error"
+    : room.status !== "ready" ? "connecting"
+    : room.phones.length > 0 ? "live"
+    : "waiting-phone";
+  const recordingRef = useRef(false);
+  useEffect(() => {
+    recordingRef.current = state === "RECORDING";
+  }, [state]);
+
+  // Live phone data from the app-wide séance room: buffer every batch while recording.
+  useLiveBatches((_peerId, batch) => {
+    if (!recordingRef.current) return;
+    for (const name of experiment.channels) {
+      const ch = batch.channels[name];
+      const buf = channelsRef.current.get(name);
+      if (ch && buf) buf.samples.push(...toTimeSamples(ch));
+    }
+    const chartChannel = experiment.channels[0];
+    const shown = chartChannel ? batch.channels[chartChannel] : undefined;
+    if (shown && shown.t.length > 0) {
+      const points = toTimeSamples(shown).map((s) => ({ t: s.t, v: Math.hypot(...s.v) }));
+      setChartData((prev) => [...prev, ...points].slice(-600));
+    }
+  });
   const recordTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleInputsSubmit = useCallback((vals: Record<string, number>) => {
@@ -78,16 +109,29 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         channelData[name] = buf.samples;
       }
 
+      const primary = channelData[experiment.channels[0] ?? ""] ?? [];
+      if (primary.length < 10) {
+        throw new Error(
+          primary.length === 0
+            ? "No phone data arrived during recording. Keep the phone's join page open with the screen on, then try again."
+            : `Only ${primary.length} samples arrived — too few to analyse. Keep the phone screen on and retry.`,
+        );
+      }
+
       const result = experiment.analyze(channelData, inputs);
 
+      // Real timing statistics of what actually arrived (previously hard-coded placeholders).
+      const times = primary.map((s) => s.t);
+      const first = computeTimingStats(times);
+      const timing = computeTimingStats(times, Math.max(3 * first.medianIntervalMs, 1));
       const stats: TraceStats = {
-        rateHz: 50,
-        jitterPct: 5,
-        dropouts: 0,
-        dropoutPct: 0,
-        durationS: RECORD_DURATION_MS / 1000,
-        calibrated: true,
-        noiseFloor: 0.01,
+        rateHz: timing.meanHz,
+        jitterPct: timing.jitterCv,
+        dropouts: timing.dropouts,
+        dropoutPct: timing.count > 1 ? (100 * timing.dropouts) / (timing.count - 1) : 0,
+        durationS: times.length > 1 ? (times[times.length - 1]! - times[0]!) / 1000 : 0,
+        calibrated: false,
+        noiseFloor: 0,
       };
 
       const pendUncBudget: BudgetTerm[] = [
@@ -149,12 +193,19 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
       {state === "READY_CHECK" && (
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 16, marginBottom: 16 }}>Ready to record?</p>
-          <p style={{ fontSize: 13, color: "#889", marginBottom: 20 }}>
+          <p style={{ fontSize: 13, color: "#889", marginBottom: 12 }}>
             Recording lasts {RECORD_DURATION_MS / 1000} seconds. Hold the phone steady or perform the experiment motion.
           </p>
-          <button onClick={handleStartRecording} style={{
+          <p role="status" style={{ fontSize: 13, marginBottom: 20, color: liveStatus === "live" ? "#6c9" : "#ca8" }}>
+            {liveStatus === "live" && "Phone connected — live data is streaming."}
+            {liveStatus === "waiting-phone" && `No phone yet — scan the QR on the home page (room ${room.code ?? "…"}), or use Replay.`}
+            {liveStatus === "connecting" && "Connecting to the séance…"}
+            {liveStatus === "error" && "Can't reach the séance server — retrying… (Replay works offline.)"}
+          </p>
+          <button onClick={handleStartRecording} disabled={liveStatus !== "live"} style={{
             padding: "12px 32px", background: "#223355", border: "1px solid #446",
-            color: "#ccd", borderRadius: 6, cursor: "pointer", fontSize: 16,
+            color: "#ccd", borderRadius: 6, cursor: liveStatus === "live" ? "pointer" : "not-allowed", fontSize: 16,
+            opacity: liveStatus === "live" ? 1 : 0.5,
           }}>Begin Recording</button>
         </div>
       )}
