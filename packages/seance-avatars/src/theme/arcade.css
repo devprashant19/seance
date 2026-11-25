@@ -1,0 +1,377 @@
+/*
+ * Séance — Neon Arcade theme (shared by the Poltergeist Lab and the Banshee Choir).
+ * Deep purple night, cyan + magenta neon, pixel display type, scrolling grid.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@500;700;900&display=swap");
+
+:root {
+  --sx-bg: #090310;
+  --sx-bg-2: #150520;
+  --sx-panel: rgba(16, 6, 30, 0.86);
+  --sx-panel-solid: #140726;
+  --sx-line: rgba(0, 255, 255, 0.22);
+  --sx-line-pink: rgba(255, 0, 255, 0.35);
+  --sx-cyan: #00ffff;
+  --sx-pink: #ff00ff;
+  --sx-yellow: #ffff00;
+  --sx-green: #00ff99;
+  --sx-purple: #bd00ff;
+  --sx-red: #ff3b8d;
+  --sx-text: #f2ecff;
+  --sx-muted: #b4a9d6;
+  --sx-dim: #8a7bb5;
+  --sx-font-pixel: "Press Start 2P", ui-monospace, monospace;
+  --sx-font-display: "Orbitron", "Rajdhani", system-ui, sans-serif;
+  --sx-font-body: "Rajdhani", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sx-page-bg:
+    radial-gradient(circle at 50% 30%, rgba(40, 10, 70, 0) 0%, rgba(9, 3, 16, 0.9) 85%),
+    linear-gradient(to right, rgba(255, 0, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 255, 0.06) 1px, transparent 1px),
+    radial-gradient(ellipse at top, #2a0a3b 0%, #090310 70%);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background-color: var(--sx-bg);
+  color: var(--sx-text);
+  font-family: var(--sx-font-body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 17px;
+  }
+}
+
+/* Scrolling neon grid behind every page. */
+body {
+  background-image: var(--sx-page-bg);
+  background-size: 100% 100%, 40px 40px, 40px 40px, 100% 100%;
+  background-attachment: fixed;
+  animation: sx-grid 20s linear infinite;
+}
+
+@keyframes sx-grid {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 40px 40px, 40px 40px, 0 0; }
+}
+
+h1 {
+  font-family: var(--sx-font-pixel);
+  font-weight: 400;
+  letter-spacing: -1px;
+  line-height: 1.45;
+  text-shadow: 0 0 6px var(--sx-cyan), 0 0 18px rgba(0, 255, 255, 0.6);
+}
+
+h2,
+h3,
+h4 {
+  font-family: var(--sx-font-display);
+  letter-spacing: 1px;
+}
+
+a {
+  color: var(--sx-cyan);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  background: rgba(10, 5, 20, 0.9);
+  color: var(--sx-text);
+  border: 1px solid var(--sx-line);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--sx-pink);
+  outline-offset: 2px;
+}
+
+input[type="range"] {
+  accent-color: var(--sx-pink);
+  border: none;
+  background: transparent;
+}
+
+::selection {
+  background: var(--sx-pink);
+  color: #000;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--sx-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--sx-pink), var(--sx-cyan));
+}
+
+kbd {
+  font-family: var(--sx-font-pixel);
+  font-size: 0.6em;
+  padding: 3px 6px;
+  border: 1px solid var(--sx-cyan);
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+  background: #12062a;
+}
+
+/* ---------- Components ---------- */
+
+/* Neon box with a magenta corner accent. */
+.sx-box {
+  position: relative;
+  border: 1px solid var(--sx-cyan);
+  background: var(--sx-panel);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+.sx-box::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--sx-pink);
+  border-bottom: 2px solid var(--sx-pink);
+  pointer-events: none;
+}
+.sx-box--pink {
+  border-color: var(--sx-pink);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3), inset 0 0 20px rgba(255, 0, 255, 0.08);
+}
+.sx-box--pink::after {
+  border-color: var(--sx-cyan);
+}
+
+/* Glass card that lifts on hover (experiment / feature tiles). */
+.sx-card {
+  position: relative;
+  display: block;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  color: inherit;
+  text-decoration: none;
+}
+.sx-card:hover,
+.sx-card:focus-visible {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 0, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 0, 255, 0.25);
+}
+
+/* Primary arcade button: magenta neon with a shine sweep. */
+.sx-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  font-family: var(--sx-font-pixel);
+  font-size: 12px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 0, 255, 0.25) 0%, rgba(80, 0, 80, 0.55) 100%);
+  box-shadow: inset 0 0 0 2px var(--sx-pink), 0 0 12px var(--sx-pink);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.sx-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+.sx-btn:hover::before {
+  left: 100%;
+}
+.sx-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 0 0 2px var(--sx-pink);
+}
+.sx-btn:disabled {
+  filter: grayscale(100%);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.sx-btn--cyan {
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 60, 80, 0.55) 100%);
+  box-shadow: inset 0 0 0 2px var(--sx-cyan), 0 0 12px var(--sx-cyan);
+}
+.sx-btn--cyan:active {
+  box-shadow: inset 0 0 0 2px var(--sx-cyan);
+}
+.sx-btn--small {
+  padding: 9px 14px;
+  font-size: 10px;
+}
+
+/* Quiet secondary button / link pill. */
+.sx-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-family: var(--sx-font-display);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--sx-cyan);
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid var(--sx-line);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.sx-ghost-btn:hover {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: var(--sx-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+.sx-ghost-btn--pink {
+  color: var(--sx-pink);
+  border-color: var(--sx-line-pink);
+  background: rgba(255, 0, 255, 0.05);
+}
+.sx-ghost-btn--pink:hover {
+  border-color: var(--sx-pink);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.45);
+}
+
+.sx-chip {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-family: var(--sx-font-display);
+  letter-spacing: 0.5px;
+  color: var(--sx-cyan);
+  border: 1px solid var(--sx-line);
+  background: rgba(0, 255, 255, 0.06);
+}
+
+.sx-kicker {
+  font-family: var(--sx-font-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sx-pink);
+  text-shadow: 0 0 8px rgba(255, 0, 255, 0.7);
+}
+
+.sx-code {
+  font-family: var(--sx-font-pixel);
+  color: var(--sx-yellow);
+  letter-spacing: 6px;
+  text-shadow: 0 0 6px var(--sx-yellow), 0 0 16px rgba(255, 255, 0, 0.5);
+}
+
+.sx-glow-cyan {
+  color: var(--sx-cyan);
+  text-shadow: 0 0 5px var(--sx-cyan), 0 0 15px var(--sx-cyan);
+}
+.sx-glow-pink {
+  color: var(--sx-pink);
+  text-shadow: 0 0 5px var(--sx-pink), 0 0 15px var(--sx-pink);
+}
+.sx-muted {
+  color: var(--sx-muted);
+}
+
+.sx-status-live {
+  color: var(--sx-green);
+  text-shadow: 0 0 8px rgba(0, 255, 153, 0.6);
+}
+.sx-status-wait {
+  color: var(--sx-yellow);
+}
+
+.sx-pulse {
+  animation: sx-pulse 1.6s ease-in-out infinite;
+}
+@keyframes sx-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1.2); }
+  50% { opacity: 0.55; filter: brightness(0.85); }
+}
+
+.sx-float {
+  animation: sx-float 3s ease-in-out infinite;
+}
+@keyframes sx-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.sx-glitch {
+  animation: sx-glitch 2.4s infinite;
+}
+@keyframes sx-glitch {
+  0%, 10%, 100% { transform: translate(0); }
+  2% { transform: translate(-2px, 2px); }
+  4% { transform: translate(-2px, -2px); }
+  6% { transform: translate(2px, 2px); }
+  8% { transform: translate(2px, -2px); }
+}
+
+/* Page shell: centred column with comfortable side gutters. */
+.sx-page {
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+  position: relative;
+}
+
+.sx-qr {
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--sx-cyan), 0 0 24px rgba(0, 255, 255, 0.55), 0 0 48px rgba(255, 0, 255, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .sx-pulse,
+  .sx-float,
+  .sx-glitch {
+    animation: none !important;
+  }
+  .sx-card,
+  .sx-btn {
+    transition: none;
+  }
+}

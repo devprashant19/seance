@@ -5,7 +5,9 @@
     "type": "module",
     "sideEffects": false,
     "exports": {
-        ".": "./src/index.ts"
+        ".": "./src/index.ts",
+        "./ghost3d": "./src/ghost3d/index.ts",
+        "./theme.css": "./src/theme/arcade.css"
     },
     "dependencies": {
         "qrcode": "^1.5.4",

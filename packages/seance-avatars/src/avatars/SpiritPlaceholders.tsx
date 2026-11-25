@@ -13,7 +13,7 @@ const SPIRIT_COLORS: Record<string, string> = {
   golem: "#cc8844",
   wisp: "#aaddff",
   organist: "#dd88aa",
-  poltergeist: "#88aaff",
+  poltergeist: "#00ffff",
   revenant: "#667788",
 };
 
@@ -79,7 +79,7 @@ export function RevenantWrapper({ children, timestamp }: RevenantWrapperProps) {
             transform: "translateX(-50%)",
             fontSize: 10,
             fontFamily: "monospace",
-            color: "#aaa",
+            color: "#c9bfe6",
             background: "rgba(0,0,0,0.5)",
             padding: "1px 6px",
             borderRadius: 3,

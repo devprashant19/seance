@@ -108,8 +108,8 @@ export function MoodTooltip({ mood, children }: MoodTooltipProps) {
             bottom: "calc(100% + 8px)",
             left: "50%",
             transform: "translateX(-50%)",
-            background: "#1a1a2e",
-            color: "#ddd",
+            background: "#1a0a2e",
+            color: "#eee8ff",
             padding: "8px 12px",
             borderRadius: 6,
             fontSize: 13,
@@ -123,7 +123,7 @@ export function MoodTooltip({ mood, children }: MoodTooltipProps) {
           <br />
           {copy.plain}
           <br />
-          <em style={{ color: "#aaa" }}>{copy.action}</em>
+          <em style={{ color: "#c9bfe6" }}>{copy.action}</em>
         </span>
       )}
       {shouldAnnounce && open && (

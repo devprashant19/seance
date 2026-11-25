@@ -13,7 +13,7 @@ export function exportTraceToSvg(
   if (!primaryChannel || primaryChannel.t.length < 2) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <rect width="100%" height="100%" fill="#100e0c" />
-      <text x="50%" y="50%" fill="#888" text-anchor="middle" font-family="monospace">Empty Smoked Drum</text>
+      <text x="50%" y="50%" fill="#b0a6cc" text-anchor="middle" font-family="monospace">Empty Smoked Drum</text>
     </svg>`;
   }
 
@@ -46,8 +46,8 @@ export function exportTraceToSvg(
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#25201b" stroke-width="0.5"/>
     </pattern>
     <rect width="100%" height="100%" fill="url(#smokedGrid)" />
-    <polyline fill="none" stroke="#68d391" stroke-width="1.5" stroke-linecap="round" points="${points.join(" ")}" />
-    <text x="20" y="25" fill="#a0aec0" font-family="monospace" font-size="12">${trace.id} · ${primaryChannel.id} (${primaryChannel.unit})</text>
-    <text x="${width - 20}" y="25" fill="#a0aec0" text-anchor="end" font-family="monospace" font-size="12">${((tMax - tMin) / 1000).toFixed(2)} s</text>
+    <polyline fill="none" stroke="#00ff99" stroke-width="1.5" stroke-linecap="round" points="${points.join(" ")}" />
+    <text x="20" y="25" fill="#b4a9d6" font-family="monospace" font-size="12">${trace.id} · ${primaryChannel.id} (${primaryChannel.unit})</text>
+    <text x="${width - 20}" y="25" fill="#b4a9d6" text-anchor="end" font-family="monospace" font-size="12">${((tMax - tMin) / 1000).toFixed(2)} s</text>
   </svg>`;
 }

@@ -23,3 +23,7 @@ export * from "./drum/index.js";
 
 export { QrCode, qrMatrix, type QrCodeProps } from "./components/QrCode.js";
 
+
+// 3D ghosts (lazy: three.js loads only when a ghost is rendered).
+export { Ghost, GhostChoir, type Ghost3DProps, type ChoirGhost } from "./ghost3d/lazy.js";
+export { MOOD_NEON, PLAYER_NEON, playerNeon } from "./ghost3d/colors.js";
