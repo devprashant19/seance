@@ -467,3 +467,11 @@ pointed at `https://github.com`.
 ### Verified
 - `pnpm -r typecheck` ✔ · root suite 58 files / 398 tests ✔ · `pnpm -r build` ✔ · browser run 25/25 ✔
 - **Not yet verified on real devices:** a real spin / plank / coupled-pendulum recording.
+
+### Apparition Gate: the camera was used but never shown
+The page asked for the webcam but never displayed it, measured without calibration, silently fell back to synthetic
+noise when the camera was unavailable (while saying "active"), and timed successive gate entries, which for a
+pendulum through a central gate is half a period. Now: live video with clickable gate boxes, no numbers before
+Calibrate, "Camera not available" + Retry instead of synthetic numbers, gate distance and blade count as inputs, and
+the period timed from every second entry (entry i to i+2 is one full period). Checked with Chrome's fake webcam and
+with no camera.

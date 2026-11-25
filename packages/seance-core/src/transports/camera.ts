@@ -47,6 +47,8 @@ export class CameraGateSpirit extends BaseSpirit {
   private _lastFrameTimeMs = 0;
   private _isBrowser = false;
   private _seq = 0;
+  private _source: "none" | "camera" | "synthetic" = "none";
+  private _calibrated = false;
 
   constructor(options?: CameraGateSpiritOptions) {
     super();
@@ -58,6 +60,21 @@ export class CameraGateSpirit extends BaseSpirit {
 
   get fps(): number {
     return this._fps;
+  }
+
+  /** Where frames come from: the real webcam, or synthetic noise (tests / camera unavailable). */
+  get source(): "none" | "camera" | "synthetic" {
+    return this._source;
+  }
+
+  /** The live webcam stream, so a page can show what the gate sees. */
+  get mediaStream(): MediaStream | undefined {
+    return this._stream;
+  }
+
+  /** True once a baseline has been measured from real frames. */
+  get calibrated(): boolean {
+    return this._calibrated;
   }
 
   get calibration(): { roi1: BaselineCalibration; roi2: BaselineCalibration } {
@@ -86,6 +103,7 @@ export class CameraGateSpirit extends BaseSpirit {
     if (this._calibrationSamples2.length > 5) {
       this._calib2 = calibrateBaseline(this._calibrationSamples2);
     }
+    this._calibrated = this._calibrationSamples1.length > 5;
   }
 
   override async summon(): Promise<void> {
@@ -120,6 +138,7 @@ export class CameraGateSpirit extends BaseSpirit {
           this._ctx = domCanvas.getContext("2d") as CanvasRenderingContext2D;
         }
 
+        this._source = "camera";
         this._startVideoLoop();
         this.setState("present", "camera photogate active");
         return;
@@ -128,7 +147,9 @@ export class CameraGateSpirit extends BaseSpirit {
       }
     }
 
-    // Synthetic fallback (for tests or unsupported environments)
+    // Synthetic fallback (for tests or unsupported environments). Pages must check `source` and
+    // never present measurements from it as real.
+    this._source = "synthetic";
     this._startSyntheticLoop();
     this.setState("present", "synthetic photogate active");
   }
