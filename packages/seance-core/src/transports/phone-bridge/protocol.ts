@@ -14,7 +14,7 @@ export interface BatchPayload {
 
 export type ClientMessage =
   | { type: "hello"; version: number; role: Role; roomCode?: string; resumeToken?: string }
-  | { type: "ready"; capabilities: readonly string[] }
+  | { type: "ready"; capabilities: readonly string[]; name?: string; instrument?: string }
   | { type: "batch"; payload: BatchPayload }
   | { type: "sync-reply"; t0: number; t1: number; t2: number; t3: number }
   | { type: "peer-hidden" }
@@ -23,7 +23,7 @@ export type ClientMessage =
 
 export type ServerMessage =
   | { type: "welcome"; roomCode: string; peerId: string; resumeToken: string }
-  | { type: "peer-joined"; peerId: string; capabilities: readonly string[] }
+  | { type: "peer-joined"; peerId: string; capabilities: readonly string[]; name?: string; instrument?: string }
   | { type: "peer-left"; peerId: string; reason: string }
   | { type: "batch"; peerId: string; payload: BatchPayload }
   | { type: "sync"; t0: number }
@@ -34,6 +34,24 @@ export type ServerMessage =
   | { type: "error"; code: string; message: string };
 
 export type ProtocolMessage = ClientMessage | ServerMessage;
+
+/** Longest player name shown on screens (characters, after cleaning). */
+export const MAX_NAME_LENGTH = 20;
+
+/**
+ * Clean a player-chosen name for display on other people's screens: drop control and markup
+ * characters, collapse whitespace, cap the length. Returns undefined when nothing is left.
+ */
+export function sanitizeName(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const cleaned = raw
+    .replace(/\s+/g, " ") // line breaks and tabs become spaces, so words aren't glued together
+    .replace(/[\u0000-\u001f\u007f-\u009f<>]/g, "")
+    .replace(/ {2,}/g, " ")
+    .trim();
+  const capped = Array.from(cleaned).slice(0, MAX_NAME_LENGTH).join("").trim();
+  return capped.length > 0 ? capped : undefined;
+}
 
 export function isClientMessage(msg: unknown): msg is ClientMessage {
   if (typeof msg !== "object" || msg === null) return false;

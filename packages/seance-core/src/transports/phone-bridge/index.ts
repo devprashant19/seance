@@ -6,6 +6,8 @@ export {
   isServerMessage,
   validateProtocolMessage,
   validateInstruct,
+  sanitizeName,
+  MAX_NAME_LENGTH,
 } from "./protocol.js";
 
 export type {
@@ -46,3 +48,14 @@ export type { HostSession, HostEvents, DecodedBatch } from "./host-session.js";
 
 export { FakeRelay } from "./fake-relay.js";
 export type { FakeClient } from "./fake-relay.js";
+
+export {
+  INSTRUMENTS,
+  INSTRUMENT_IDS,
+  DEFAULT_INSTRUMENT,
+  INSTRUMENT_COOLDOWN_MS,
+  InstrumentCooldown,
+  isInstrumentId,
+  instrumentInfo,
+} from "./instruments.js";
+export type { InstrumentId, InstrumentInfo } from "./instruments.js";

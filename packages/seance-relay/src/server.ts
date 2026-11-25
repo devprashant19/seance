@@ -4,6 +4,8 @@ import { TokenBucket, checkFrameSize } from "./limits.js";
 import {
   PROTOCOL_VERSION,
   isClientMessage,
+  sanitizeName,
+  isInstrumentId,
   type ServerMessage,
   type ClientMessage,
   type Role,
@@ -89,7 +91,7 @@ export function createRelay(config: RelayConfig = {}) {
         // Tell the resumed host which phones are already in the room.
         for (const peer of existing.peers.values()) {
           if (peer.connected) {
-            sendJson(ws, { type: "peer-joined", peerId: peer.peerId, capabilities: peer.capabilities });
+            sendJson(ws, { type: "peer-joined", peerId: peer.peerId, capabilities: peer.capabilities, name: peer.name, instrument: peer.instrument });
           }
         }
         return;
@@ -141,7 +143,7 @@ export function createRelay(config: RelayConfig = {}) {
         router.register(ws, roomCode, conn);
         socketRooms.set(ws, roomCode);
         sendJson(ws, { type: "welcome", roomCode, peerId: existing.peerId, resumeToken: existing.resumeToken });
-        router.sendToHost(roomCode, { type: "peer-joined", peerId: existing.peerId, capabilities: existing.capabilities });
+        router.sendToHost(roomCode, { type: "peer-joined", peerId: existing.peerId, capabilities: existing.capabilities, name: existing.name, instrument: existing.instrument });
         return;
       }
     }
@@ -205,13 +207,20 @@ export function createRelay(config: RelayConfig = {}) {
       const conn = router.getConnection(ws);
       if (conn?.peerId) {
         const peer = room.peers.get(conn.peerId);
+        const name = sanitizeName(msg.name);
+        const instrument = isInstrumentId(msg.instrument) ? msg.instrument : undefined;
         if (peer) {
           peer.capabilities = [...msg.capabilities];
+          peer.name = name;
+          peer.instrument = instrument;
         }
+        if (name) log(`phone ${conn.peerId} in room ${roomCode} is "${name}"`);
         router.sendToHost(roomCode, {
           type: "peer-joined",
           peerId: conn.peerId,
           capabilities: msg.capabilities,
+          name,
+          instrument,
         });
       }
       return;

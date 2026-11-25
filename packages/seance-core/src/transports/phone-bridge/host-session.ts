@@ -7,7 +7,8 @@
  *
  * Browser-only (uses WebSocket and sessionStorage when present); no React.
  */
-import { decodeBatch, PROTOCOL_VERSION, type BatchPayload } from "./protocol.js";
+import { decodeBatch, sanitizeName, PROTOCOL_VERSION, type BatchPayload } from "./protocol.js";
+import { isInstrumentId, type InstrumentId } from "./instruments.js";
 
 const STORAGE_KEY = "seance-host-session";
 
@@ -59,7 +60,11 @@ export type DecodedBatch = ReturnType<typeof decodeBatch>;
 export interface HostEvents {
   /** `resumed` = an existing room was re-attached (phones already in it are announced next). */
   onWelcome?: (session: HostSession, resumed: boolean) => void;
-  onPeerJoined?: (peerId: string, capabilities: readonly string[]) => void;
+  /**
+   * A phone joined, or re-announced itself (e.g. its "ready" arrived with the player's name).
+   * Treat it as an upsert keyed by `peerId`.
+   */
+  onPeerJoined?: (peerId: string, capabilities: readonly string[], name?: string, instrument?: InstrumentId) => void;
   onPeerLeft?: (peerId: string) => void;
   onBatch?: (peerId: string, batch: DecodedBatch) => void;
   onError?: (code: string, message: string) => void;
@@ -121,7 +126,12 @@ export function openHost(url: string, rawEvents: HostEvents, resume?: HostSessio
         break;
       }
       case "peer-joined":
-        ev.onPeerJoined?.(String(msg["peerId"]), (msg["capabilities"] as string[] | undefined) ?? []);
+        ev.onPeerJoined?.(
+          String(msg["peerId"]),
+          (msg["capabilities"] as string[] | undefined) ?? [],
+          sanitizeName(msg["name"]),
+          isInstrumentId(msg["instrument"]) ? msg["instrument"] : undefined,
+        );
         break;
       case "peer-left":
         ev.onPeerLeft?.(String(msg["peerId"]));

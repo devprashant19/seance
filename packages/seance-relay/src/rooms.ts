@@ -9,6 +9,10 @@ export interface Peer {
   readonly peerId: string;
   /** Channels the phone says it can stream (set by its "ready" message). */
   capabilities: readonly string[];
+  /** Display name the player typed on their phone (cleaned), once their "ready" arrives. */
+  name: string | undefined;
+  /** Banshee Choir instrument the player picked (validated id). */
+  instrument: string | undefined;
   connected: boolean;
   resumeToken: string;
   disconnectedAt: number | undefined;
@@ -72,6 +76,8 @@ export class RoomManager {
     const peer: Peer = {
       peerId,
       capabilities,
+      name: undefined,
+      instrument: undefined,
       connected: true,
       resumeToken,
       disconnectedAt: undefined,

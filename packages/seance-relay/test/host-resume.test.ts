@@ -56,6 +56,41 @@ describe("relay: host resume + batch validation", () => {
     });
   }
 
+  it("passes each player's cleaned name and choir instrument to the host, including after a resume", async () => {
+    const host = await client();
+    host.send({ type: "hello", version: PROTOCOL_VERSION, role: "host" });
+    await vi.waitFor(() => expect(find(host.msgs, "welcome")).toBeDefined());
+    const { roomCode, resumeToken } = find(host.msgs, "welcome") as unknown as { roomCode: string; resumeToken: string };
+
+    const phone = await client();
+    phone.send({ type: "hello", version: PROTOCOL_VERSION, role: "peer", roomCode });
+    await vi.waitFor(() => expect(find(phone.msgs, "welcome")).toBeDefined());
+    phone.send({ type: "ready", capabilities: ["accel"], name: "  <i>Asha</i>  ", instrument: "organ" });
+    await vi.waitFor(() =>
+      expect(host.msgs.find((m) => m.type === "peer-joined" && m["name"] === "iAsha/i")).toBeDefined(),
+    );
+    expect(host.msgs.find((m) => m.type === "peer-joined" && m["name"])!["instrument"]).toBe("organ");
+
+    // Switching instrument = another ready; unknown instruments are dropped.
+    phone.send({ type: "ready", capabilities: ["accel"], name: "Asha", instrument: "kazoo" });
+    await vi.waitFor(() =>
+      expect(host.msgs.filter((m) => m.type === "peer-joined" && m["name"] === "Asha")).toHaveLength(1),
+    );
+    expect(host.msgs.filter((m) => m.type === "peer-joined" && m["name"] === "Asha")[0]!["instrument"]).toBeUndefined();
+    phone.send({ type: "ready", capabilities: ["accel"], name: "Asha", instrument: "bells" });
+    await vi.waitFor(() => expect(host.msgs.find((m) => m["instrument"] === "bells")).toBeDefined());
+
+    // A resumed host (e.g. the Choir) learns the name and instrument without the phone resending.
+    host.ws.close();
+    const choir = await client();
+    choir.send({ type: "hello", version: PROTOCOL_VERSION, role: "host", roomCode, resumeToken });
+    await vi.waitFor(() => expect(find(choir.msgs, "peer-joined")).toBeDefined());
+    expect(find(choir.msgs, "peer-joined")!["name"]).toBe("Asha");
+    expect(find(choir.msgs, "peer-joined")!["instrument"]).toBe("bells");
+    phone.ws.close();
+    choir.ws.close();
+  });
+
   it("gives the host a non-empty secret token", async () => {
     const host = await client();
     host.send({ type: "hello", version: PROTOCOL_VERSION, role: "host" });
