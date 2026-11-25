@@ -1,5 +1,5 @@
 import { defineExperiment } from "seance-core";
-import { analyzeModalFrequencies } from "seance-core";
+import { resampleUniform, spectrumPeaks } from "../spectrum.js";
 import type { LabExperimentDefinition } from "../pendulum-g/index.js";
 import type { ExperimentResult } from "../../oracle/types.js";
 
@@ -7,7 +7,7 @@ export const boardModes: LabExperimentDefinition = defineExperiment({
   id: "board-modes",
   name: "Plank Resonance: Board Modes",
   spooky: "Tap the wooden altar and observe the spirit array vibrate in unison.",
-  plain: "Measure resonant frequencies and mode shapes across multiple phones on a plank.",
+  plain: "Measure the strongest resonant frequency of a plank with a phone lying on it.",
   channels: ["accelG"],
   inputs: [
     {
@@ -31,27 +31,30 @@ export const boardModes: LabExperimentDefinition = defineExperiment({
   ],
   safetyNote: "Rest the plank securely on supports. Phone mass lowers measured frequency.",
   analyze(channels) {
-    const accelG = channels["accelG"] ?? [];
-    const n = accelG.length;
-    const fs = n > 1 ? 1000 / (((accelG[n - 1]?.t ?? 0) - (accelG[0]?.t ?? 0)) / (n - 1) || 20) : 50;
-
-    const zVals: number[] = [];
-    for (let i = 0; i < n; i++) {
-      zVals.push((accelG[i]?.v[2] ?? 9.81) - 9.81);
+    const trace = resampleUniform(channels["accelG"] ?? [], (v) => v[2] ?? 0);
+    if (trace.fs < 20 || trace.durationS < 2) {
+      throw new Error("Too little motion data arrived to look for a resonance. Keep the phone's join page open and retry.");
     }
-
-    const modal = analyzeModalFrequencies([
-      { id: "phone-1", values: zVals, fs },
-      { id: "phone-2", values: zVals.map((v) => v * 0.7), fs },
-    ]);
-
+    // A phone can only see vibrations below half its sample rate (Nyquist).
+    const nyquist = trace.fs / 2;
+    const spec = spectrumPeaks(trace, 2, nyquist * 0.95);
+    const top = spec.peaks[0];
+    // Also require a physically noticeable vibration (≈ 0.02 m/s² amplitude), not just a ratio over silence.
+    if (!top || top.magnitude < 6 * spec.noiseFloor || top.magnitude < 0.005) {
+      throw new Error(
+        `No clear ringing found. Tap the plank firmly near its middle a few times while recording. ` +
+          `Note: this phone samples at about ${Math.round(trace.fs)} Hz, so it can only see vibrations below ` +
+          `about ${Math.round(nyquist)} Hz; stiffer or shorter planks ring higher than that.`,
+      );
+    }
+    // No accepted value exists for this particular plank: report the measurement, not a pass/fail.
     return {
-      measured: modal.sharedPeakFrequencyHz,
-      uncertainty: 0.2,
-      reference: modal.sharedPeakFrequencyHz > 0 ? modal.sharedPeakFrequencyHz : 15.0,
-      referenceUncertainty: 1.0,
+      measured: top.hz,
+      uncertainty: spec.resolutionHz / 2,
+      reference: null,
+      referenceUncertainty: 0,
       unit: "Hz",
-      quantity: "f_res",
+      quantity: "strongest resonance",
     };
   },
 });

@@ -229,11 +229,11 @@ export function NotebookView({
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
           <div>
             <span style={{ fontSize: 11, color: "#8a7bb5" }}>Percent Error</span>
-            <p style={{ fontSize: 16, fontFamily: "monospace" }}>{verdict.percentError.toFixed(2)}%</p>
+            <p style={{ fontSize: 16, fontFamily: "monospace" }}>{Number.isFinite(verdict.percentError) ? `${verdict.percentError.toFixed(2)}%` : "— (no reference)"}</p>
           </div>
           <div>
             <span style={{ fontSize: 11, color: "#8a7bb5" }}>z-score</span>
-            <p style={{ fontSize: 16, fontFamily: "monospace" }}>{verdict.z.toFixed(2)}</p>
+            <p style={{ fontSize: 16, fontFamily: "monospace" }}>{Number.isFinite(verdict.z) ? verdict.z.toFixed(2) : "—"}</p>
           </div>
           <div>
             <span style={{ fontSize: 11, color: "#8a7bb5" }}>Confidence</span>

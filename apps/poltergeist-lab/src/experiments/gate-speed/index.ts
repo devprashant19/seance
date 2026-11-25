@@ -49,13 +49,21 @@ export const gateSpeed: LabExperimentDefinition = defineExperiment({
     }
 
     const dtMs = Math.abs(t2 - t1);
-    const speedRes = computeGateSpeed(t1, dtMs > 10 ? t2 : t1 + 100, distM, distUncM, fps);
+    // Both gates must actually see the object pass, at different times.
+    const MIN_SIGNAL = 15; // brightness change (0–255) that counts as "something crossed"
+    if (max1 < MIN_SIGNAL || max2 < MIN_SIGNAL || dtMs <= 10) {
+      throw new Error(
+        "The object wasn't seen crossing both gates. Recalibrate with nothing in the gates, then roll it through gate 1 and gate 2.",
+      );
+    }
+    const speedRes = computeGateSpeed(t1, t2, distM, distUncM, fps);
 
+    // No accepted value exists for how fast *your* object moved: measurement only.
     return {
       measured: speedRes.speedMPerS,
       uncertainty: speedRes.uncertaintyMPerS,
-      reference: speedRes.speedMPerS > 0 ? speedRes.speedMPerS : 1.0,
-      referenceUncertainty: 0.05,
+      reference: null,
+      referenceUncertainty: 0,
       unit: "m/s",
       quantity: "v",
     };

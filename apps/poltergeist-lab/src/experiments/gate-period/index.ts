@@ -40,7 +40,12 @@ export const gatePeriod: LabExperimentDefinition = defineExperiment({
       : 30;
 
     const periodRes = computeGatePeriod(crossings, fps);
-    const measuredT = periodRes.periodS > 0 ? periodRes.periodS : 2.0;
+    if (!(periodRes.periodS > 0) || periodRes.cycleCount < 1) {
+      throw new Error(
+        "No full swing was seen crossing the gate. Calibrate with the pendulum at rest out of the gate, then let it swing through the gate box for several swings.",
+      );
+    }
+    const measuredT = periodRes.periodS;
     const theoreticalT = 2 * Math.PI * Math.sqrt(L / 9.80665);
 
     return {

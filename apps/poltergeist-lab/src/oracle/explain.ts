@@ -91,6 +91,7 @@ export function diagnoseDiscrepancies(
 
   if (
     facts.experimentId === "singing-ruler" &&
+    facts.result.reference !== null &&
     facts.result.measured < facts.result.reference &&
     facts.verdict.percentError < -15
   ) {

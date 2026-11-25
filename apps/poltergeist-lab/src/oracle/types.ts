@@ -30,14 +30,17 @@ export interface VerdictCause {
   readonly severity: "minor" | "major";
 }
 
-export type VerdictTier = "approves" | "veil" | "disagree" | "cursed";
+/** "measured" = there is no accepted value to compare with, so no pass/fail (value ± uncertainty only). */
+export type VerdictTier = "approves" | "veil" | "disagree" | "cursed" | "measured";
 export type Confidence = "high" | "medium" | "low";
 
 export interface Verdict {
   readonly tier: VerdictTier;
   readonly spooky: string;
   readonly plain: string;
+  /** NaN when there is no reference to compare with. */
   readonly percentError: number;
+  /** NaN when there is no reference to compare with. */
   readonly z: number;
   readonly confidence: Confidence;
   readonly dominantTerm: { readonly name: string; readonly share: number };
@@ -47,7 +50,11 @@ export interface Verdict {
 export interface ExperimentResult {
   readonly measured: number;
   readonly uncertainty: number;
-  readonly reference: number;
+  /**
+   * Independent accepted/theoretical value, or null when none exists for this quantity (e.g. where
+   * the sensor chip sits in *your* phone). Never use the measurement itself as its reference.
+   */
+  readonly reference: number | null;
   readonly referenceUncertainty: number;
   readonly unit: string;
   readonly quantity: string;

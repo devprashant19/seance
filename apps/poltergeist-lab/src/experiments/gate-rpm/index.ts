@@ -41,11 +41,18 @@ export const gateRpm: LabExperimentDefinition = defineExperiment({
     const sig = gateFrames.map((f) => f.v[0] ?? 0);
     const rpmRes = computeGateRpm(sig, fps, blades, expectedMaxFreq);
 
+    if (!(rpmRes.rpm > 0)) {
+      throw new Error("No regular blade passes were seen in the gate. Point the gate box at the spinning blades and recalibrate with the fan off.");
+    }
+    // Frequency resolution of the recording sets the uncertainty: rpm = 60 · f_blade / blades.
+    const durationS = gateFrames.length > 1 ? ((gateFrames[gateFrames.length - 1]?.t ?? 0) - (gateFrames[0]?.t ?? 0)) / 1000 : 0;
+    const sigmaRpm = durationS > 0 ? (60 * (1 / durationS / 2)) / blades : rpmRes.rpm;
+    // "Expected maximum frequency" is only the search limit, not a value to compare against.
     return {
       measured: rpmRes.rpm,
-      uncertainty: Math.max(10, rpmRes.rpm * 0.05),
-      reference: (expectedMaxFreq / blades) * 60,
-      referenceUncertainty: 30,
+      uncertainty: sigmaRpm,
+      reference: null,
+      referenceUncertainty: 0,
       unit: "rpm",
       quantity: "omega",
     };

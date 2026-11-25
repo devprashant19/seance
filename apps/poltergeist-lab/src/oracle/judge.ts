@@ -14,6 +14,7 @@ const SPOOKY_HEADLINES: Record<VerdictTier, string> = {
   veil: "The veil is thin.",
   disagree: "The spirits disagree.",
   cursed: "The data is cursed — here’s why.",
+  measured: "The spirit has spoken.",
 };
 
 const PLAIN_HEADLINES: Record<VerdictTier, string> = {
@@ -21,6 +22,7 @@ const PLAIN_HEADLINES: Record<VerdictTier, string> = {
   veil: "Result is close but not quite within one standard deviation.",
   disagree: "The measured value differs significantly from the reference.",
   cursed: "Data quality is too poor for a trustworthy result.",
+  measured: "There is no accepted value to compare this with, so this is a measurement, not a pass/fail.",
 };
 
 function computeConfidence(
@@ -44,6 +46,7 @@ function computeConfidence(
 }
 
 function computeZ(result: ExperimentResult): number {
+  if (result.reference === null) return Number.NaN;
   const diff = Math.abs(result.measured - result.reference);
   const combinedU = Math.sqrt(
     result.uncertainty ** 2 + result.referenceUncertainty ** 2,
@@ -52,7 +55,9 @@ function computeZ(result: ExperimentResult): number {
 }
 
 function computePercentError(result: ExperimentResult): number {
-  if (result.reference === 0) return result.measured === 0 ? 0 : Infinity;
+  if (result.reference === null) return Number.NaN;
+  // A zero reference has no meaningful relative error (0 vs 0 is not "0 % error").
+  if (result.reference === 0) return Number.NaN;
   return 100 * ((result.measured - result.reference) / result.reference);
 }
 
@@ -80,7 +85,9 @@ function findDominantTerm(
 }
 
 function assignTier(z: number, confidence: Confidence): VerdictTier {
-  if (confidence === "low" || z > 3) return "cursed";
+  if (confidence === "low") return "cursed";
+  if (Number.isNaN(z)) return "measured";
+  if (z > 3) return "cursed";
   if (z <= 1) return "approves";
   if (z <= 2) return "veil";
   return "disagree";

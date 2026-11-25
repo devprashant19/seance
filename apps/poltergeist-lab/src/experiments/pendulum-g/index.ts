@@ -13,6 +13,8 @@ export interface LabExperimentDefinition extends ExperimentDef {
   readonly channels: readonly string[];
   readonly inputs: readonly InputSpec[];
   readonly safetyNote: string;
+  /** Recording length in seconds (default 10). */
+  readonly recordSeconds?: number;
   readonly analyze: (
     channels: Record<string, readonly { t: number; v: readonly number[] }[]>,
     inputs: Record<string, number>,

@@ -19,7 +19,7 @@ type LiveStatus = "connecting" | "waiting-phone" | "live" | "error";
 
 type RunnerState = "SETUP" | "READY_CHECK" | "RECORDING" | "ANALYZING" | "RESULT" | "ERROR";
 
-const RECORD_DURATION_MS = 10_000;
+const DEFAULT_RECORD_MS = 10_000;
 
 interface ChannelBuffer {
   name: string;
@@ -74,6 +74,8 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
     setState("READY_CHECK");
   }, []);
 
+  const recordMs = (experiment.recordSeconds ?? DEFAULT_RECORD_MS / 1000) * 1000;
+
   const handleStartRecording = useCallback(() => {
     setState("RECORDING");
     channelsRef.current = new Map();
@@ -86,20 +88,20 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
     const startTime = Date.now();
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      setProgress(Math.min(elapsed / RECORD_DURATION_MS, 1));
+      setProgress(Math.min(elapsed / recordMs, 1));
     }, 100);
 
     recordTimerRef.current = setTimeout(() => {
       clearInterval(progressInterval);
       setProgress(1);
       setState("ANALYZING");
-    }, RECORD_DURATION_MS);
+    }, recordMs);
 
     return () => {
       clearInterval(progressInterval);
       if (recordTimerRef.current) clearTimeout(recordTimerRef.current);
     };
-  }, [experiment.channels]);
+  }, [experiment.channels, recordMs]);
 
   useEffect(() => {
     if (state !== "ANALYZING") return;
@@ -135,10 +137,21 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         noiseFloor: 0,
       };
 
-      const pendUncBudget: BudgetTerm[] = [
-        { name: "measurement", share: 0.7, value: result.measured, uncertainty: result.uncertainty, unit: result.unit },
-        { name: "reference", share: 0.3, value: result.reference, uncertainty: result.referenceUncertainty, unit: result.unit },
+      if (!Number.isFinite(result.measured) || !Number.isFinite(result.uncertainty)) {
+        throw new Error("The analysis could not produce a number from this recording. Check the setup steps and try again.");
+      }
+      // Shares are each term's fraction of the total variance (not fixed numbers).
+      const terms = [
+        { name: "measurement", value: result.measured, uncertainty: result.uncertainty, unit: result.unit },
+        ...(result.reference !== null
+          ? [{ name: "reference", value: result.reference, uncertainty: result.referenceUncertainty, unit: result.unit }]
+          : []),
       ];
+      const totalVar = terms.reduce((s, t) => s + t.uncertainty ** 2, 0);
+      const pendUncBudget: BudgetTerm[] = terms.map((t) => ({
+        ...t,
+        share: totalVar > 0 ? t.uncertainty ** 2 / totalVar : 1 / terms.length,
+      }));
 
       const v = judge(result, stats, [], pendUncBudget);
       setVerdict(v);
@@ -199,7 +212,7 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 16, marginBottom: 16 }}>Ready to record?</p>
           <p style={{ fontSize: 13, color: "#b4a9d6", marginBottom: 12 }}>
-            Recording lasts {RECORD_DURATION_MS / 1000} seconds. Hold the phone steady or perform the experiment motion.
+            Recording lasts {recordMs / 1000} seconds. Hold the phone steady or perform the experiment motion.
           </p>
           <p role="status" style={{ fontSize: 13, marginBottom: 20, color: liveStatus === "live" ? "#00ff99" : "#ffe066" }}>
             {liveStatus === "live" && "Phone connected — live data is streaming."}
@@ -256,7 +269,7 @@ export function ExperimentRunner({ experiment }: { experiment: ExperimentDefinit
 
       {state === "RESULT" && verdict && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <OraclePanel verdict={verdict} />
+          <OraclePanel verdict={verdict} result={expResult} />
           {expResult && expStats && (
             <button onClick={() => {
               const facts = {
