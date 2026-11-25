@@ -431,3 +431,39 @@ make the ghost 3D everywhere, let players enter a name when joining, add choir i
   sections that used a solid brand fill, and the hero now shows the 3D ghost; its main button opens `/session`.
 - Feature pages' "back" links and the Choir's link now return to `/session` (the lobby with the QR code).
 - Re-verified: typecheck ✔ · root suite 56 files / 383 tests ✔ · builds ✔ · browser run 21/21 ✔.
+
+## 2026-11-25 · Session: honest Oracle results, phone follows the laptop, phone keys (external assistant, not Kiro)
+
+### Fixed: results that could never fail
+The owner saw "0.00 % error · Newton approves" for *Where Does the Spirit Live?*. Root causes found in the code:
+- **spin-find-chip** used a placeholder reference of 0 ± 0; with no spin detected the analysis returned 0, so 0 vs 0 "passed".
+- **board-modes**, **coupled-pendulums** and **gate-speed** used *the measured value itself* as the reference, so they
+  always scored z = 0. board-modes also invented a second phone (`values × 0.7`); coupled-pendulums invented the second
+  pendulum's signal (`z × cos(…)`).
+- **gate-period** substituted 2.0 s when no crossings were found (≈ the theory value for 1 m), and **gate-speed** assumed
+  a 100 ms gap when the object wasn't seen at both gates.
+- **gate-rpm** compared against "expected maximum frequency" (a search limit, not an expected value).
+
+Now: `reference` may be `null` (no accepted value exists) and the Oracle then reports a **measurement** (value ±
+uncertainty, data-quality checks) with no % error, no z and no pass/fail. Experiments throw a clear "redo it" message
+when the data doesn't contain the motion they need (no spin, no ringing, one swing frequency only, no gate crossings)
+and run physics checks where possible (the sensor must lie inside the phone; the in-phase pendulum mode must be near
+√(g/L)/2π). Plank and pendulum peaks come from one real phone's spectrum; uncertainties follow the frequency
+resolution. The uncertainty budget's shares are now real variance fractions (were fixed 70 / 30). Tests cover each case.
+
+### Phone follows the laptop
+The phone page always showed the Choir pad and instruments. The laptop now sends `mode` (lobby / possession / lab /
+choir / other) on every page change; the relay stores it and forwards it to phones, including late joiners. The phone
+shows Choir controls only while the laptop is on the Choir, and page-specific help otherwise.
+
+### Phone keys
+The sing pad is now 8 keys (A–K, the same notes as the laptop keyboard): touch to sing, slide to change notes.
+The laptop remembers the held key between batches; tilt still picks the note when no key is held (drone mode).
+
+### Homepage links
+Platform cards all pointed to `/lab`; Choir now opens `/choir/`, Developer Tools the GitHub README; footer GitHub links
+pointed at `https://github.com`.
+
+### Verified
+- `pnpm -r typecheck` ✔ · root suite 58 files / 398 tests ✔ · `pnpm -r build` ✔ · browser run 25/25 ✔
+- **Not yet verified on real devices:** a real spin / plank / coupled-pendulum recording.

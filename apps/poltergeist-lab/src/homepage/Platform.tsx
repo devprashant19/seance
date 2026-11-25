@@ -16,8 +16,9 @@ const PLATFORMS = [
   },
   {
     title: "Banshee Choir",
-    desc: "Turn phone sensors into musical instruments. Tilt to sing, shake to wail. Web Audio synthesis with ghost looper and bar-synced recording.",
-    link: "/lab",
+    desc: "Every phone becomes a singing 3D ghost. Hold to sing, slide across 8 keys or tilt to change notes, shake for tremolo. 8 synthesised instruments to choose from.",
+    link: "/choir/",
+    external: true,
     linkText: "Open the Choir →",
     icon: (
       <svg className="platform-card-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -31,7 +32,8 @@ const PLATFORMS = [
   {
     title: "Developer Tools",
     desc: "MCP server with 6 tools for trace analysis, live streaming, and experiment automation. 4 custom AI agents. 8 automation hooks.",
-    link: "/lab",
+    link: "https://github.com/devprashant19/seance#readme",
+    external: true,
     linkText: "View Documentation →",
     icon: (
       <svg className="platform-card-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -56,14 +58,26 @@ export function Platform() {
           </p>
         </div>
         <div className="platform-grid reveal-stagger">
-          {PLATFORMS.map((p) => (
-            <Link key={p.title} to={p.link} className="platform-card">
-              {p.icon}
-              <h3 className="platform-card-title">{p.title}</h3>
-              <p className="platform-card-desc">{p.desc}</p>
-              <span className="platform-card-link">{p.linkText}</span>
-            </Link>
-          ))}
+          {PLATFORMS.map((p) => {
+            const body = (
+              <>
+                {p.icon}
+                <h3 className="platform-card-title">{p.title}</h3>
+                <p className="platform-card-desc">{p.desc}</p>
+                <span className="platform-card-link">{p.linkText}</span>
+              </>
+            );
+            // The Choir is a separate app (/choir/) and the docs live on GitHub: plain links, not router links.
+            if (!("external" in p) || !p.external) {
+              return <Link key={p.title} to={p.link} className="platform-card">{body}</Link>;
+            }
+            const offSite = p.link.startsWith("http");
+            return (
+              <a key={p.title} href={p.link} className="platform-card" {...(offSite ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                {body}
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -73,7 +73,7 @@ export function Footer() {
             <ul>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/devprashant19/seance"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -82,7 +82,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/devprashant19/seance/issues"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -91,7 +91,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/devprashant19/seance/blob/main/LICENSE"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -108,7 +108,7 @@ export function Footer() {
           </p>
           <div className="footer-social">
             <a
-              href="https://github.com"
+              href="https://github.com/devprashant19/seance"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
