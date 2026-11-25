@@ -313,3 +313,84 @@ Dated record of engineering sessions, changes, and verification. Kept up to date
    - `pnpm -r build`: 10/10 workspace projects built successfully.
    - `pnpm typecheck`: 0 errors across monorepo.
    - `pnpm test`: 50 passed (all 50 test files), 350 passed (350/350 tests).
+
+---
+
+## 2026-11-24 · Session 12: Judge Path Protocol Alignment, Honesty Pass & Port Configuration
+
+### Objectives
+- Align `apps/poltergeist-lab/src/join-standalone.ts` with real phone-bridge protocol from `seance-core`.
+- Add end-to-end test verifying real relay server, standalone join client message sequence, and host gyro decoding.
+- Audit evidence documentation and fixtures for total scientific honesty: eliminate ungrounded participant/study claims and mark passports/traces as synthetic examples.
+- Enforce Claim Guard validation across all documentation and evidence files in automated test suite.
+- Synchronize `.kiro/settings/mcp.json` relay port to 4000.
+
+### Actions Taken
+1. **Standalone Join Protocol Alignment**:
+   - `apps/poltergeist-lab/src/join-standalone.ts`: Reused `encodeBatch` and `PROTOCOL_VERSION` from `seance-core/transports/phone-bridge`.
+   - Sends `"ready"` message with capabilities `["accelG", "accel", "gyro", "orientation"]`.
+   - Converts rotation rate from deg/s to rad/s (`x = beta * DEG_TO_RAD, y = gamma * DEG_TO_RAD, z = alpha * DEG_TO_RAD`) and orientation angles from deg to rad.
+   - Packs multi-channel samples with incrementing `seq` and responds to `"sync"` probes with `"sync-reply"`.
+   - Bundle size verified: 4.78 kB JS / 2.12 kB gzip (well within initial route download budget).
+2. **Relay Server & Routing Support**:
+   - `packages/seance-relay/src/server.ts`: Dispatches `peer-joined` with capabilities to host when `ready` message arrives.
+   - `packages/seance-relay/src/routing.ts`: Routes `sync-reply` messages from peers directly to room host.
+3. **End-to-End Relay Test**:
+   - `packages/seance-relay/test/join-standalone-e2e.test.ts`: Starts real HTTP + WebSocket server with `createRelay()`, conducts host and simulated phone client handshakes, validates `ready` capability forwarding, `sync-reply` routing, and asserts host decodes non-empty gyro samples with proper physics units.
+4. **Honesty Pass**:
+   - `docs/evidence/study-summary.md` and `docs/studies/ghost-ear-study.md`: Removed invented participant results ($N=8$, 100% claims, P01–P03 numbers); retained ethical protocol, tasks, and hypotheses; clearly noted empirical study status as pending.
+   - `docs/evidence/passports-summary.md` and `docs/evidence/traces-summary.md`: Explicitly noted that existing device passports and traces are synthetic reference fixtures for testing and schema validation.
+   - `fixtures/passports/iphone15-safari.json` and `fixtures/passports/pixel8-chrome.json`: Added `"synthetic": true` and updated notes.
+   - `README.md`: Replaced "Full Accessibility" and "WCAG AAA Ready / Audited" badge with "Accessibility Mode (Study Pending)".
+5. **Claim Guard Extension & Validation**:
+   - `packages/seance-core/src/dsp/claim-guard.ts`: Added forbidden patterns for unverified accessibility audits (`/wcag aaa/`, `/ghost ear audited/`, `/100% of participants/`).
+   - `packages/seance-core/test/skeptic.property.test.ts`: Added Property 4 verifying that `README.md` and all evidence summaries strictly pass Claim Guard without violations.
+6. **Port Configuration**:
+   - `.kiro/settings/mcp.json`: Updated `SEANCE_RELAY_URL` to `ws://localhost:4000`.
+7. **Verification**:
+   - `pnpm -r build`: Clean build across monorepo packages.
+   - `pnpm typecheck`: 0 errors.
+   - `pnpm test`: 51 test files passed, 352/352 tests passed.
+
+## 2026-11-25 · Session: live phone path repair (done outside Kiro, with an external AI coding assistant)
+
+This session's fixes were made with an external assistant at the owner's request, **not** with Kiro, so they are not Kiro evidence. Kiro's unfinished changes from 2026-11-24 (protocol-correct `join-standalone`, honest evidence docs, MCP port 4000, claim-guard patterns, relay `sync-reply`) were kept and built on.
+
+### Problems found (verified by running the app and a scripted relay test)
+1. Landing QR was not a QR code (raw bytes in a 21×21 grid, inverted colours) — unscannable.
+2. Relay always created a NEW room on host hello, so Possession (re-connecting with `roomCode`) never received the phone's data.
+3. Landing never navigated to `/possession/:code` when a phone joined.
+4. Possession read the old `msg.channels` format (relay forwards `payload`), in degrees; its listener used stale `tutorialStep`/`viewState`, so tutorial steps never advanced.
+5. Live experiments never received phone data (buffers never filled) and the Oracle got hard-coded timing stats.
+6. Banshee Choir had no relay room, no QR, no phone data and played no sound (voice engine unused); its phone page sent an invalid `control` message; `/replay` link was dead.
+7. Phones could not reach the relay in dev (hard-coded `ws://localhost:4000`, no HTTPS); root `dev:relay` called a missing script.
+8. iOS orientation permission was never requested.
+
+### Fixes
+- `seance-avatars`: real `QrCode`/`qrMatrix` (qrcode library, dark-on-light, quiet zone) + tests.
+- `seance-relay`: per-room secret host token; host resume with token (old host socket evicted, existing phones re-announced); `HOST_RESUME_FAILED` on bad token; `INVALID_BATCH` on malformed batches; peer capabilities stored properly; 5 new tests.
+- `seance-core`: shared `phone-samples` (sensor events → canonical channels incl. `control.touch`) + property tests.
+- Lab: `live/host-session` (create/resume room), Landing (real QR, navigate on join), Possession (decode payload, refs), Join route → `join.html`, ExperimentRunner (live data while recording, real timing stats, honest "no phone" state), `join-standalone` (shared module, iOS orientation permission, same-origin relay).
+- Choir: host room via core `HostTransport`, QR, one voice per phone (tilt pitch, shake tremolo, touch gate), working keyboard voice, mute/solo; phone page streams sensors + touch.
+- Dev: `/relay` proxy and `--mode phone` HTTPS in both apps; `pnpm dev:phone`; fixed `dev:relay`.
+
+### Verified
+- `pnpm typecheck` ✔ · `pnpm test` ✔ 368/368 (54 files) · `pnpm build` ✔
+- Scripted end-to-end run against the live dev servers: 10/10 checks (room → phone join → possession resume → tilt/gyro data in rad → malformed batch rejected → choir touch data).
+- Join page: 3.27 kB gzip JS + 1.39 kB HTML (measured).
+- **Not yet verified:** a real phone scan (pending owner test), deployment, real sensor recordings.
+
+## 2026-11-25 · Session: one room across pages and apps (external assistant, not Kiro)
+
+**Problem.** Every Lab page opened its own relay connection, and the Choir created a brand-new room. Switching pages or apps meant re-scanning the phone, and the Choir was empty when served under the Lab's origin (`/choir`).
+
+### Fixes
+- `seance-core`: `openHost` / `saveHostSession` / `loadHostSession` / `clearHostSession`. One host-side room client shared by every app on the origin (token kept in `sessionStorage`). New server message: `room-resumed`.
+- `seance-relay`: tells phones `room-resumed` when a host re-attaches with its token. New test covers Lab closes → phone gets `room-paused` → Choir resumes → phone gets `room-resumed` → batches reach the Choir.
+- Lab: `LiveRoomProvider` wraps all routes, so one connection survives page switches. Landing, Possession and ExperimentRunner subscribe to it. Internal links are SPA links (no reload). Landing offers "Go to the ghost" / "Banshee Choir" when a phone is already connected, plus "Start a new séance". The old per-page `live/host-session.ts` was removed.
+- Choir: served at `/choir/` (Vite `base`, router basename, and a Lab dev proxy). It resumes the Lab's room, so phones already connected become singers. It has a "← Poltergeist Lab" link and auto-retries.
+- Phone pages: `join.html` gets a "hold to sing" pad (`control.touch`) and pause/resume status. The Choir join page shows pause/resume status.
+
+### Verified
+- `pnpm -r typecheck` ✔ · tests ✔ (relay 41/41, root 368/368) · `pnpm -r build` ✔
+- **Not yet verified:** real-phone switch Lab → Choir → Lab (pending owner test).

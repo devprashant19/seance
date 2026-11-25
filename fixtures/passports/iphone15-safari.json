@@ -1,5 +1,6 @@
 {
   "schemaVersion": "1.0",
+  "synthetic": true,
   "deviceId": "iphone-15-pro-safari",
   "model": "Apple iPhone 15 Pro",
   "platform": "iOS 18.1 Safari",
@@ -31,5 +32,5 @@
       "gyroBiasRadS": [0.0012, -0.0008, 0.0004]
     }
   },
-  "notes": "Verified still-window on wooden surface at 21C ambient temperature."
+  "notes": "Synthetic reference baseline profile for schema validation and calibration ritual verification. Not measured on physical hardware."
 }

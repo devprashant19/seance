@@ -1,5 +1,6 @@
 {
   "schemaVersion": "1.0",
+  "synthetic": true,
   "deviceId": "pixel-8-chrome",
   "model": "Google Pixel 8",
   "platform": "Android 15 Chrome",
@@ -31,5 +32,5 @@
       "gyroBiasRadS": [-0.0021, 0.0015, -0.0011]
     }
   },
-  "notes": "Verified still-window calibration on desk. Android reports positive z for upward gravity."
+  "notes": "Synthetic reference baseline profile for schema validation and calibration ritual verification. Not measured on physical hardware."
 }

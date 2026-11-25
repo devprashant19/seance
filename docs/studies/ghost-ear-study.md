@@ -4,9 +4,9 @@
 - **Title:** Auditory Feedback & Multimodal Sonification for Blind and Low-Vision Physics Learners
 - **System Tested:** Séance Ghost Ear Lab (`/hear`)
 - **Apparatus:** Poltergeist Lab web application running on standard web browser (Chrome / Safari) with WebAudio synthesis, screen reader integration (`aria-live`), and keyboard shortcuts (`Space`, `R`, `P`, `Left/Right`, `H`, `Esc`).
-- **Participants:** $N \ge 6$ total participants:
-  - $\ge 5$ sighted participants wearing light-occluding blindfolds.
-  - $\ge 1$ blind or low-vision learner / accessibility practitioner for qualitative co-design feedback.
+- **Target Cohort:**
+  - Sighted participants wearing light-occluding blindfolds.
+  - Blind or low-vision learners / accessibility practitioners for qualitative co-design feedback.
 
 ---
 
@@ -54,9 +54,6 @@
 
 ---
 
-## 5. Anonymized Pilot Observations & Co-Design Feedback
-- **Participant P01 (Sighted, Blindfolded):** Completed Task 1 in 8.2 s; reported that zero-crossing clicks made counting swings effortless.
-- **Participant P02 (Sighted, Blindfolded):** Noticed that 1.0x speech rate was easy to understand, but requested a repeat button (`R` shortcut worked as expected).
-- **Participant P03 (Low-Vision Practitioner):** Commended Darkroom mode for eliminating glare; suggested adding haptic pulse feedback for mobile Android users (implemented via `navigator.vibrate(15)`).
-- **Task Success Rate:** 100% (3/3 tasks completed across all pilot trials).
-- **Mean System Usability Scale (SUS):** 86.5 / 100 ("Excellent").
+## 5. Study Execution Status
+- **Status:** Protocol and verification harness completed; empirical participant trials pending.
+- **Data Policy:** No participant measurements, pilot scores, or usability ratings are claimed until formal trials are conducted under ethical consent.

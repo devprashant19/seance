@@ -9,7 +9,7 @@
 | **B1** | Possession view frame rate | 60 fps sustained (p5 ≥ 55 fps) | not measured | — | Measure with the Performance panel on a mid-range laptop |
 | **B2** | Phone → screen latency (Wi-Fi) | < 150 ms median | not measured | — | Measure with clock-synced timestamps (phone-bridge test plan) |
 | **B2** | Phone → screen latency (hotspot) | < 150 ms median | not measured | — | Same method over a phone hotspot |
-| **B3** | Phone join route JS (gzip) | ≤ 50 kB gzip before the Begin tap | **1.98 kB gzip JS** (3.91 kB raw; 3.33 kB total incl HTML) | **PASS** | Standalone mobile entry `join.html` decouples mobile stream client from React DOM/router |
+| **B3** | Phone join route JS (gzip) | ≤ 50 kB gzip before the Begin tap | **3.27 kB gzip JS** (join 1.98 + phone-samples 0.55 + relay-url 0.30 + preload polyfill 0.44) + 1.39 kB HTML, measured from `pnpm build` on 2026-11-25 | **PASS** | `join.html` streams with the real phone-bridge protocol (`encodeBatch`, gyro rad/s, orientation rad) and loads no React |
 | **B3** | Landing route JS (gzip) | ≤ 250 kB gzip | **89.60 kB gzip** (Landing + React + app shell) | **PASS** | |
 | **B4** | Time to first ghost | Tap → ghost active ≤ 5 s | not measured | — | Time it in the hallway test |
 

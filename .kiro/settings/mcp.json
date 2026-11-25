@@ -6,7 +6,7 @@
         "packages/seance-mcp/dist/index.js"
       ],
       "env": {
-        "SEANCE_RELAY_URL": "ws://localhost:8787",
+        "SEANCE_RELAY_URL": "ws://localhost:4000",
         "SEANCE_ROOM": "DEV1",
         "SEANCE_OBSERVER_KEY": "dev-only-not-a-secret"
       },

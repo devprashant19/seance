@@ -5,14 +5,14 @@
 
 [![CI](https://github.com/devprashant19/seance/actions/workflows/ci.yml/badge.svg)](https://github.com/devprashant19/seance/actions/workflows/ci.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
-![Accessibility: WCAG AAA Ready](https://img.shields.io/badge/Accessibility-Ghost%20Ear%20Audited-blue.svg)
+![Accessibility: Study Pending](https://img.shields.io/badge/Accessibility-Study%20Pending-yellow.svg)
 
 ---
 
 ## 🌟 Key Highlights
 
 - **5-Second Zero-Install Setup**: Scan a QR code on your laptop screen. Your phone immediately connects over a lightweight WebSocket relay (`seance-relay`) and streams calibrated 60–100 Hz IMU sensor data.
-- **Ghost Ear (Full Accessibility)**: An accessible laboratory where blind and low-vision learners measure gravity, acoustic stiffness, and rotational dynamics by ear using log-pitch sonification, tilt-scrubbing, Android haptics, and spoken results with expanded units.
+- **Ghost Ear (Accessibility Mode — Study Pending)**: An accessible laboratory where blind and low-vision learners measure gravity, acoustic stiffness, and rotational dynamics by ear using log-pitch sonification, tilt-scrubbing, Android haptics, and spoken results with expanded units.
 - **The Reality Loop**: Guided phone calibration rituals, automated device passports (`/bench`), and event-window extraction that turns real phone physical impacts into permanent regression tests.
 - **Smoked-Drum Recorder**: A tactile, extremum-preserving `<canvas>` seismograph strip chart that tracks raw physical signals at 60 fps without masking micro-peaks or sensor dropouts.
 - **Spirit Array**: Synchronize 2 to 6 phones on a plank or coupled pendulum to measure modal resonance shapes, beat frequencies, and strict clock skew uncertainty bounds ($\Delta t_{skew} \ge \frac{1}{2}\min(RTT)$).
